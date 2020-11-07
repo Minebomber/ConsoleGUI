@@ -172,13 +172,13 @@ void ConsoleGUI::Run() {
 				}
 				// Check click handlers only if state change
 				for (MouseHandler* h : mouseHandlers) {
-					if (h->buttons & (1 << m) &&
-						mousePosition.X >= h->bounds.left &&
-						mousePosition.X <= h->bounds.right &&
-						mousePosition.Y >= h->bounds.top &&
-						mousePosition.Y <= h->bounds.bottom) {
-						if (mouseButtons[m].pressed && h->OnPress) h->OnPress(m);
-						if (mouseButtons[m].released && h->OnRelease) h->OnRelease(m);
+					if (h->GetButtons() & (1 << m) &&
+						mousePosition.X >= h->GetBounds().left &&
+						mousePosition.X <= h->GetBounds().right &&
+						mousePosition.Y >= h->GetBounds().top &&
+						mousePosition.Y <= h->GetBounds().bottom) {
+						if (mouseButtons[m].pressed && h->OnPressExists()) h->InvokeOnPress(m);
+						if (mouseButtons[m].released && h->OnReleaseExists()) h->InvokeOnRelease(m);
 					}
 				}
 			}
@@ -239,13 +239,13 @@ void ConsoleGUI::RemoveElement(GUIElement* e) {
 void ConsoleGUI::AddMouseHandler(MouseHandler* h) {
 	for (size_t i = 0; i < mouseHandlers.size(); i++) {
 		if (mouseHandlers.at(i) == nullptr) {
-			h->id = i;
+			h->SetId(i);
 			mouseHandlers.at(i) = h;
 			return;
 		}
 	}
 	mouseHandlers.push_back(h);
-	h->id = elements.size() - 1;
+	h->SetId(elements.size() - 1);
 }
 
 MouseHandler* ConsoleGUI::GetMouseHandler(int i) {
@@ -253,15 +253,15 @@ MouseHandler* ConsoleGUI::GetMouseHandler(int i) {
 }
 
 MouseHandler* ConsoleGUI::GetMouseHandler(MouseHandler* h) {
-	return GetMouseHandler(h->id);
+	return GetMouseHandler(h->GetId());
 }
 
 void ConsoleGUI::RemoveMouseHandler(int i) {
-	mouseHandlers.at(i)->id = -1;
+	mouseHandlers.at(i)->SetId(1);
 	mouseHandlers.at(i) = nullptr;
 }
 
 void ConsoleGUI::RemoveMouseHandler(MouseHandler* h) {
-	RemoveMouseHandler(h->id);
+	RemoveMouseHandler(h->GetId());
 }
 

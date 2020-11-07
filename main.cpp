@@ -21,7 +21,7 @@ public:
 		e->hAlignment = TEXT_ALIGN_MID;
 		e->vAlignment = TEXT_ALIGN_MID;
 
-		e->handler.buttons = MOUSE_RIGHT_BUTTON;
+		e->handler.SetButtons(MOUSE_RIGHT_BUTTON);
 
 		AddElement(e);
 

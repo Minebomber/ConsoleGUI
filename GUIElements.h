@@ -6,10 +6,21 @@ class ConsoleGUI;
 #include "ConsoleGUI.h"
 
 class EventHandler {
-public:
+private:
 	int id = -1;
-	std::function<void(int)> OnPress;
-	std::function<void(int)> OnRelease;
+	std::function<void(int)> onPress;
+	std::function<void(int)> onRelease;
+public:
+    const int& GetId() const;
+	void SetId(int i);
+
+	bool OnPressExists() const;
+	void InvokeOnPress(int i);
+	void SetOnPress(std::function<void(int)> f);
+	bool OnReleaseExists() const;
+	void InvokeOnRelease(int i);
+	void SetOnRelease(std::function<void(int)> f);
+
 };
 
 enum MouseButtons {
@@ -19,9 +30,14 @@ enum MouseButtons {
 };
 
 class MouseHandler : public EventHandler {
-public:
+private:
 	RECT bounds = { 0, 0, 0, 0 };
 	int buttons = 0;
+public:
+	const RECT& GetBounds();
+	void SetBounds(RECT b);
+	const int& GetButtons();
+	void SetButtons(int b);
 };
 
 class GUIBorder {

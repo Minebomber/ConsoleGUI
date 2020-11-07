@@ -1,5 +1,20 @@
 #include "GUIElements.h"
 
+const int& EventHandler::GetId() const { return id; }
+void EventHandler::SetId(int i) { id = i; }
+
+bool EventHandler::OnPressExists() const { return (bool)onPress; }
+void EventHandler::InvokeOnPress(int i) { onPress(i); }
+void EventHandler::SetOnPress(std::function<void(int)> f) { onPress = f; }
+bool EventHandler::OnReleaseExists() const { return (bool)onRelease; }
+void EventHandler::InvokeOnRelease(int i) { onRelease(i); }
+void EventHandler::SetOnRelease(std::function<void(int)> f) { onRelease = f; }
+
+const RECT& MouseHandler::GetBounds() { return bounds; }
+void MouseHandler::SetBounds(RECT b) { bounds = b; }
+const int& MouseHandler::GetButtons() { return buttons; }
+void MouseHandler::SetButtons(int b) { buttons = b; }
+
 GUIBorder::GUIBorder() {}
 GUIBorder::GUIBorder(WCHAR ch, WORD cl) : chr(ch), color(cl) {}
 GUIBorder::GUIBorder(WCHAR ch, WORD cl, int w) : chr(ch), color(cl), width(w) {}
@@ -71,9 +86,9 @@ void GUILabel::Draw(ConsoleGUI* g) {
 GUIButton::GUIButton(RECT b) : GUILabel(b), handler(), OnPress(), OnRelease() { SetupHandler(); }
 
 void GUIButton::SetupHandler() {
-	handler.bounds = bounds;
-	handler.OnPress = [this](int m) { pressed = true; if (OnPress) OnPress(m); };
-	handler.OnRelease = [this](int m) { pressed = false; if (OnRelease) OnRelease(m); };
+	handler.SetBounds(bounds);
+	handler.SetOnPress([this](int m) { pressed = true; if (OnPress) OnPress(m); });
+	handler.SetOnRelease([this](int m) { pressed = false; if (OnRelease) OnRelease(m); });
 }
 
 void GUIButton::Draw(ConsoleGUI* g) {
