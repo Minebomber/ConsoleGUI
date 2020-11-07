@@ -14,12 +14,6 @@ class MouseHandler;
 class GUIElement;
 #include "GUIElements.h"
 
-struct KeyState {
-	bool pressed;
-	bool released;
-	bool held;
-};
-
 class ConsoleGUI {
 private:
 	int screenWidth = 0;
@@ -55,7 +49,6 @@ private:
 	std::vector<GUIElement*> elements;
 
 	std::vector<MouseHandler*> mouseHandlers;
-
 public:
 	ConsoleGUI();
 	virtual ~ConsoleGUI();
