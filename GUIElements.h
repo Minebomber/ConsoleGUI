@@ -17,10 +17,10 @@ public:
 	bool OnPressExists() const;
 	void InvokeOnPress(int i);
 	void SetOnPress(std::function<void(int)> f);
+
 	bool OnReleaseExists() const;
 	void InvokeOnRelease(int i);
 	void SetOnRelease(std::function<void(int)> f);
-
 };
 
 enum MouseButtons {
@@ -36,20 +36,30 @@ private:
 public:
 	const RECT& GetBounds();
 	void SetBounds(RECT b);
+
 	const int& GetButtons();
 	void SetButtons(int b);
 };
 
 class GUIBorder {
-public:
+private:
 	WCHAR chr = L' ';
 	WORD color = BG_WHITE;
 	int width = 1;
-
+public:
 	GUIBorder();
 	GUIBorder(WCHAR ch, WORD cl);
 	GUIBorder(WCHAR ch, WORD cl, int w);
 	GUIBorder(int w);
+
+	const WCHAR& GetChar() const;
+	void SetChar(WCHAR c);
+
+	const WORD& GetColor() const;
+	void SetColor(WORD c);
+
+	const int& GetWidth() const;
+	void SetWidth(int w);
 
 	operator bool() const;
 
@@ -57,16 +67,32 @@ public:
 };
 
 class GUIElement {
-public:
+private:
 	int id = -1;
 	RECT bounds = { 0, 0, 0, 0 };
 	WCHAR background = L' ';
 	WORD backgroundColor = BG_WHITE;
 	GUIBorder border = { 0 };
-
+public:
 	GUIElement(RECT b);
 	GUIElement(const GUIElement& e);
 	virtual ~GUIElement();
+	
+	const int& GetId() const;
+	void SetId(int i);
+	
+	const RECT& GetBounds() const;
+	virtual void SetBounds(RECT b);
+	
+	const WCHAR& GetBackground() const;
+	void SetBackground(WCHAR b);
+
+	const WORD& GetBackgroundColor() const;
+	void SetBackgroundColor(WORD c);
+
+	const GUIBorder& GetBorder() const;
+	void SetBorder(GUIBorder b);
+
 	virtual void Draw(ConsoleGUI* g);
 };
 

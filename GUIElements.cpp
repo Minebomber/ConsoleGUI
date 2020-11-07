@@ -6,12 +6,14 @@ void EventHandler::SetId(int i) { id = i; }
 bool EventHandler::OnPressExists() const { return (bool)onPress; }
 void EventHandler::InvokeOnPress(int i) { onPress(i); }
 void EventHandler::SetOnPress(std::function<void(int)> f) { onPress = f; }
+
 bool EventHandler::OnReleaseExists() const { return (bool)onRelease; }
 void EventHandler::InvokeOnRelease(int i) { onRelease(i); }
 void EventHandler::SetOnRelease(std::function<void(int)> f) { onRelease = f; }
 
 const RECT& MouseHandler::GetBounds() { return bounds; }
 void MouseHandler::SetBounds(RECT b) { bounds = b; }
+
 const int& MouseHandler::GetButtons() { return buttons; }
 void MouseHandler::SetButtons(int b) { buttons = b; }
 
@@ -19,6 +21,15 @@ GUIBorder::GUIBorder() {}
 GUIBorder::GUIBorder(WCHAR ch, WORD cl) : chr(ch), color(cl) {}
 GUIBorder::GUIBorder(WCHAR ch, WORD cl, int w) : chr(ch), color(cl), width(w) {}
 GUIBorder::GUIBorder(int w) : width(w) {}
+
+const WCHAR& GUIBorder::GetChar() const { return chr; }
+void GUIBorder::SetChar(WCHAR c) { chr = c; }
+
+const WORD& GUIBorder::GetColor() const { return color; }
+void GUIBorder::SetColor(WORD c) { color = c; }
+
+const int& GUIBorder::GetWidth() const { return width; }
+void GUIBorder::SetWidth(int w) { width = w; }
 
 GUIBorder::operator bool() const { return width != 0; }
 
@@ -29,6 +40,21 @@ void GUIBorder::Draw(ConsoleGUI* g, RECT bd) {
 GUIElement::GUIElement(RECT b) : bounds(b) {}
 GUIElement::GUIElement(const GUIElement& e) : bounds(e.bounds), background(e.background), backgroundColor(e.backgroundColor) {}
 GUIElement::~GUIElement() {}
+
+const int& GUIElement::GetId() const { return id; }
+void GUIElement::SetId(int i) { id = i; }
+
+const RECT& GUIElement::GetBounds() const { return bounds; }
+void GUIElement::SetBounds(RECT b) { bounds = b; }
+
+const WCHAR& GUIElement::GetBackground() const { return background; }
+void GUIElement::SetBackground(WCHAR b) { background = b; }
+
+const WORD& GUIElement::GetBackgroundColor() const { return backgroundColor; }
+void GUIElement::SetBackgroundColor(WORD c) { backgroundColor = c; }
+
+const GUIBorder& GUIElement::GetBorder() const { return border; }
+void GUIElement::SetBorder(GUIBorder b) { border = b; }
 
 void GUIElement::Draw(ConsoleGUI* g) {
 	g->Rect(bounds, background, backgroundColor, true);

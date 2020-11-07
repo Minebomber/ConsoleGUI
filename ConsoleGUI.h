@@ -29,7 +29,7 @@ private:
 	CONSOLE_CURSOR_INFO originalConsoleCursorInfo;
 
 	SMALL_RECT windowRect{ 0, 0, 0, 0 };
-
+	
 	CHAR_INFO* screenBuffer = nullptr;
 
 	bool initialized = false;
