@@ -198,23 +198,27 @@ void ConsoleGUI::Run() {
 	}
 }
 
+const int& ConsoleGUI::GetScreenWidth() const { return screenWidth; }
+const int& ConsoleGUI::GetScreenHeight() const { return screenHeight; }
+
+const WCHAR& ConsoleGUI::GetBaseChar() const { return baseChar; }
 void ConsoleGUI::SetBaseChar(WCHAR c) { baseChar = c; }
-WCHAR ConsoleGUI::GetBaseChar() { return baseChar; }
+
+const WORD& ConsoleGUI::GetBaseColor() const { return baseColor; }
 void ConsoleGUI::SetBaseColor(WORD c) { baseColor = c; }
-WORD ConsoleGUI::GetBaseColor() { return baseColor; }
 
 void ConsoleGUI::AddElement(GUIElement* e) {
 	for (size_t i = 0; i < elements.size(); i++) {
 		if (elements.at(i) == nullptr) {
-			e->id = i;
+			e->SetId(i);
 			elements.at(i) = e;
 			return;
 		}
 	}
 	elements.push_back(e);
-	e->id = elements.size() - 1;
+	e->SetId(elements.size() - 1);
 
-	if (auto b = dynamic_cast<GUIButton*>(e)) AddMouseHandler(&b->handler);
+	if (auto b = dynamic_cast<GUIButton*>(e)) AddMouseHandler(&b->GetHandler());
 }
 
 GUIElement* ConsoleGUI::GetElement(int i) {
@@ -222,18 +226,18 @@ GUIElement* ConsoleGUI::GetElement(int i) {
 }
 
 GUIElement* ConsoleGUI::GetElement(GUIElement* e) {
-	return GetElement(e->id);
+	return GetElement(e->GetId());
 }
 
 void ConsoleGUI::RemoveElement(int i) {
-	elements.at(i)->id = -1;
+	elements.at(i)->SetId(-1);
 	elements.at(i) = nullptr;
 }
 
 void ConsoleGUI::RemoveElement(GUIElement* e) {
-	RemoveElement(e->id);
+	RemoveElement(e->GetId());
 
-	if (auto b = dynamic_cast<GUIButton*>(e)) RemoveMouseHandler(&b->handler);
+	if (auto b = dynamic_cast<GUIButton*>(e)) RemoveMouseHandler(&b->GetHandler());
 }
 
 void ConsoleGUI::AddMouseHandler(MouseHandler* h) {

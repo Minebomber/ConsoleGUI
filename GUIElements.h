@@ -6,7 +6,7 @@ class ConsoleGUI;
 #include "ConsoleGUI.h"
 
 class EventHandler {
-private:
+protected:
 	int id = -1;
 	std::function<void(int)> onPress;
 	std::function<void(int)> onRelease;
@@ -30,7 +30,7 @@ enum MouseButtons {
 };
 
 class MouseHandler : public EventHandler {
-private:
+protected:
 	RECT bounds = { 0, 0, 0, 0 };
 	int buttons = 0;
 public:
@@ -42,7 +42,7 @@ public:
 };
 
 class GUIBorder {
-private:
+protected:
 	WCHAR chr = L' ';
 	WORD color = BG_WHITE;
 	int width = 1;
@@ -67,7 +67,7 @@ public:
 };
 
 class GUIElement {
-private:
+protected:
 	int id = -1;
 	RECT bounds = { 0, 0, 0, 0 };
 	WCHAR background = L' ';
@@ -90,7 +90,7 @@ public:
 	const WORD& GetBackgroundColor() const;
 	void SetBackgroundColor(WORD c);
 
-	const GUIBorder& GetBorder() const;
+	GUIBorder& GetBorder();
 	void SetBorder(GUIBorder b);
 
 	virtual void Draw(ConsoleGUI* g);
@@ -110,23 +110,33 @@ enum TextWrap {
 
 class GUILabel : public GUIElement {
 protected:
-	void RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY, WORD c);
-public:
 	std::wstring text = L"";
 	WORD textColor = FG_WHITE;
 	int hAlignment = TEXT_ALIGN_MIN;
 	int vAlignment = TEXT_ALIGN_MIN;
 
+	void RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY, WORD c);
+public:
 	GUILabel(RECT b);
 	GUILabel(const GUILabel& e);
+
+	const std::wstring& GetText() const;
+	void SetText(std::wstring t);
+
+	const WORD& GetTextColor() const;
+	void SetTextColor(WORD c);
+
+	const int& GetHorizontalAlignment() const;
+	void SetHorizontalAlignment(int h);
+
+	const int& GetVerticalAlignment() const;
+	void SetVerticalAlignment(int v);
 
 	virtual void Draw(ConsoleGUI* g) override;
 };
 
 class GUIButton : public GUILabel {
-private:
-	void SetupHandler();
-public:
+protected:
 	WORD pressedTextColor = FG_WHITE;
 	WCHAR pressedBackground = L' ';
 	WORD pressedBackgroundColor = BG_WHITE;
@@ -138,7 +148,25 @@ public:
 	std::function<void(int)> OnPress;
 	std::function<void(int)> OnRelease;
 
+	void SetupHandler();
+public:
 	GUIButton(RECT b);
+
+	void SetBounds(RECT b) override;
+
+	const WORD& GetPressedTextColor() const;
+	void SetPressedTextColor(WORD c);
+
+	const WCHAR& GetPressedBackground() const;
+	void SetPressedBackground(WCHAR b);
+
+	const WORD& GetPressedBackgroundColor() const;
+	void SetPressedBackgroundColor(WORD c);
+
+	GUIBorder& GetPressedBorder();
+	void SetPressedBorder(GUIBorder b);
+
+	MouseHandler& GetHandler();
 
 	virtual void Draw(ConsoleGUI* g) override;
 };

@@ -63,10 +63,13 @@ public:
 
 	virtual bool Initialize() = 0;
 
+	const int& GetScreenWidth() const;
+	const int& GetScreenHeight() const;
+
+	const WCHAR& GetBaseChar() const;
 	void SetBaseChar(WCHAR c);
-	WCHAR GetBaseChar();
+	const WORD& GetBaseColor() const;
 	void SetBaseColor(WORD c);
-	WORD GetBaseColor();
 
 	void AddElement(GUIElement* e);
 	GUIElement* GetElement(int i);

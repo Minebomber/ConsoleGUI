@@ -53,7 +53,7 @@ void GUIElement::SetBackground(WCHAR b) { background = b; }
 const WORD& GUIElement::GetBackgroundColor() const { return backgroundColor; }
 void GUIElement::SetBackgroundColor(WORD c) { backgroundColor = c; }
 
-const GUIBorder& GUIElement::GetBorder() const { return border; }
+GUIBorder& GUIElement::GetBorder() { return border; }
 void GUIElement::SetBorder(GUIBorder b) { border = b; }
 
 void GUIElement::Draw(ConsoleGUI* g) {
@@ -64,8 +64,21 @@ void GUIElement::Draw(ConsoleGUI* g) {
 GUILabel::GUILabel(RECT b) : GUIElement(b) {}
 GUILabel::GUILabel(const GUILabel& e) : GUIElement(e), text(e.text), textColor(e.textColor), hAlignment(e.hAlignment), vAlignment(e.vAlignment) {}
 
+const std::wstring& GUILabel::GetText() const { return text; }
+void GUILabel::SetText(std::wstring t) { text = t; }
+
+const WORD& GUILabel::GetTextColor() const { return textColor; }
+void GUILabel::SetTextColor(WORD c) { textColor = c; }
+
+const int& GUILabel::GetHorizontalAlignment() const { return hAlignment; }
+void GUILabel::SetHorizontalAlignment(int h) { hAlignment = h; }
+
+const int& GUILabel::GetVerticalAlignment() const { return vAlignment; }
+void GUILabel::SetVerticalAlignment(int v) { vAlignment = v; }
+
 void GUILabel::RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY, WORD c) {
 	int yOffset = 0; // default to min
+
 	switch (vAlignment) {
 	case TEXT_ALIGN_MID:
 		yOffset = (maxY - minY - std::count(text.begin(), text.end(), L'\n') + 1) / 2;
@@ -78,13 +91,18 @@ void GUILabel::RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY,
 
 	int y = minY + yOffset;
 
-	int nlPos = text.find(L'\n');
-	int cIdx = 0;
+	size_t nlPos = text.find(L'\n');
+	size_t cIdx = 0;
 
 	while (cIdx < text.length() && y <= maxY) {
 		int elIdx = (nlPos == std::string::npos) ? text.length() : nlPos;
 		int lineLen = elIdx - cIdx;
 
+		// Stay within bounds
+		if (lineLen > maxX - minX) {
+			elIdx -= (lineLen - (maxX - minX));
+			lineLen = maxX - minX + 1;
+		}
 		int xOffset = 0;
 		switch (hAlignment) {
 		case TEXT_ALIGN_MID:
@@ -106,10 +124,26 @@ void GUILabel::RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY,
 
 void GUILabel::Draw(ConsoleGUI* g) {
 	GUIElement::Draw(g);
-	RenderText(g, bounds.left + border.width, bounds.right - border.width, bounds.top + border.width, bounds.bottom - border.width, textColor);
+	RenderText(g, bounds.left + border.GetWidth(), bounds.right - border.GetWidth(), bounds.top + border.GetWidth(), bounds.bottom - border.GetWidth(), textColor);
 }
 
 GUIButton::GUIButton(RECT b) : GUILabel(b), handler(), OnPress(), OnRelease() { SetupHandler(); }
+
+void GUIButton::SetBounds(RECT b) { GUIElement::SetBounds(b); handler.SetBounds(b); }
+
+const WORD& GUIButton::GetPressedTextColor() const { return pressedTextColor; }
+void GUIButton::SetPressedTextColor(WORD c) { pressedTextColor = c; }
+
+const WCHAR& GUIButton::GetPressedBackground() const { return pressedBackground; }
+void GUIButton::SetPressedBackground(WCHAR b) { pressedBackground = b; }
+
+const WORD& GUIButton::GetPressedBackgroundColor() const { return pressedBackgroundColor; }
+void GUIButton::SetPressedBackgroundColor(WORD c) { pressedBackgroundColor = c; }
+
+GUIBorder& GUIButton::GetPressedBorder() { return pressedBorder; }
+void GUIButton::SetPressedBorder(GUIBorder b) { pressedBorder = b; }
+
+MouseHandler& GUIButton::GetHandler() { return handler; }
 
 void GUIButton::SetupHandler() {
 	handler.SetBounds(bounds);
@@ -127,10 +161,9 @@ void GUIButton::Draw(ConsoleGUI* g) {
 	else border.Draw(g, bounds);
 
 	RenderText(g,
-			   bounds.left + (pressed ? pressedBorder.width : border.width),
-			   bounds.right - (pressed ? pressedBorder.width : border.width),
-			   bounds.top + (pressed ? pressedBorder.width : border.width),
-			   bounds.bottom - (pressed ? pressedBorder.width : border.width),
+			   bounds.left + (pressed ? pressedBorder.GetWidth() : border.GetWidth()),
+			   bounds.right - (pressed ? pressedBorder.GetWidth() : border.GetWidth()),
+			   bounds.top + (pressed ? pressedBorder.GetWidth() : border.GetWidth()),
+			   bounds.bottom - (pressed ? pressedBorder.GetWidth() : border.GetWidth()),
 			   tC);
-
 }

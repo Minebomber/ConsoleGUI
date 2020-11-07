@@ -2,28 +2,38 @@
 
 class Test : public ConsoleGUI {
 public:
+	void MouseDown(int m) {
+		
+	}
+
 	bool Initialize() override {
 
-		GUIButton* e = new GUIButton({ 0, 0, 10, 10 });
-		
-		e->background = L' ';
-		e->backgroundColor = BG_DARK_RED;
+		GUILabel* label = new GUILabel({ 10, 10, 40, 20 });
+		label->SetText(L"Lorem ipsum dolor\nsit amet\nconsectetur\nadipiscing elit");
+		label->SetTextColor(FG_BLACK | BG_WHITE);
 
-		e->pressedBackgroundColor = BG_BLACK;
-		e->pressedTextColor = FG_RED;
+		MouseHandler* clickHandler = new MouseHandler();
+		clickHandler->SetButtons(MOUSE_LEFT_BUTTON | MOUSE_RIGHT_BUTTON);
+		clickHandler->SetBounds({ 0, 0, GetScreenWidth(), GetScreenHeight() });
 
-		e->text = L"Test";
-		e->textColor = FG_BLACK | BG_DARK_RED;
+		clickHandler->SetOnPress([label](int m) {
+			if ((1 << m) == MOUSE_LEFT_BUTTON) {
+				// LMB
+				int a = label->GetHorizontalAlignment();
+				a++;
+				a %= 3;
+				label->SetHorizontalAlignment(a);
+			} else {
+				// RMB
+				int a = label->GetVerticalAlignment();
+				a++;
+				a %= 3;
+				label->SetVerticalAlignment(a);
+			}
+		});
 
-		e->border.color = BG_RED;
-		e->border.width = 1;
-
-		e->hAlignment = TEXT_ALIGN_MID;
-		e->vAlignment = TEXT_ALIGN_MID;
-
-		e->handler.SetButtons(MOUSE_RIGHT_BUTTON);
-
-		AddElement(e);
+		AddElement(label);
+		AddMouseHandler(clickHandler);
 
 		return true;
 	}
@@ -31,7 +41,7 @@ public:
 
 int main() {
 	Test t;
-	t.CreateConsole(50, 50, 16, 16);
+	t.CreateConsole(50, 50, 12, 16);
 	t.Run();
 	return 0;
 }
