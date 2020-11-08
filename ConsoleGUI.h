@@ -84,6 +84,5 @@ public:
 	MouseHandler* GetMouseHandler(MouseHandler* h);
 	void RemoveMouseHandler(int i);
 	void RemoveMouseHandler(MouseHandler* h);
-
 };
 }

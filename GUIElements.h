@@ -8,6 +8,7 @@ namespace gui {
 class Console;
 
 class EventHandler {
+	friend class Console;
 protected:
 	int mId = -1;
 	std::function<void(int)> mPressAction;
@@ -32,6 +33,7 @@ enum MouseButtons {
 };
 
 class MouseHandler : public EventHandler {
+	friend class Console;
 protected:
 	RECT mBounds = { 0, 0, 0, 0 };
 	int mButtons = 0;
@@ -44,6 +46,7 @@ public:
 };
 
 class Border {
+	friend class Console;
 protected:
 	WCHAR mChar = L' ';
 	WORD mColor = BG_WHITE;
@@ -69,6 +72,7 @@ public:
 };
 
 class Element {
+	friend class Console;
 protected:
 	int mId = -1;
 	RECT mBounds = { 0, 0, 0, 0 };
@@ -110,6 +114,7 @@ enum TextWrap {
 };
 
 class Label : public Element {
+	friend class Console;
 protected:
 	std::wstring mText = L"";
 	WORD mTextColor = FG_WHITE;
@@ -147,6 +152,7 @@ public:
 };
 
 class Button : public Label {
+	friend class Console;
 protected:
 	WORD mPressedTextColor = FG_WHITE;
 	WCHAR mPressedBackground = L' ';
@@ -179,13 +185,15 @@ public:
 
 	void SetPressAction(std::function<void(int)> f);
 	void SetReleaseAction(std::function<void(int)> f);
-
-	MouseHandler& GetHandler();
+	
+	const int& GetButtons();
+	void SetButtons(int b);
 
 	virtual void Draw(Console* g) override;
 };
 
 class Panel : public Element {
+	friend class Console;
 protected:
 	int mTitleHeight = 3;
 	Label mTitleLabel;
@@ -203,6 +211,7 @@ public:
 };
 
 class ContentPanel : public Panel {
+	friend class Console;
 protected:
 	Element* mpContent = nullptr;
 public:

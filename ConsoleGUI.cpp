@@ -176,13 +176,13 @@ void Console::Run() {
 				}
 				// Check click handlers only if state change
 				for (MouseHandler* h : mouseHandlers) {
-					if (h->GetButtons() & (1 << m) &&
-						mousePosition.X >= h->GetBounds().left &&
-						mousePosition.X <= h->GetBounds().right &&
-						mousePosition.Y >= h->GetBounds().top &&
-						mousePosition.Y <= h->GetBounds().bottom) {
-						if (mouseButtons[m].pressed && h->PressActionExists()) h->InvokePressAction(m);
-						if (mouseButtons[m].released && h->ReleaseActionExists()) h->InvokeReleaseAction(m);
+					if (h->mButtons & (1 << m) &&
+						mousePosition.X >= h->mBounds.left &&
+						mousePosition.X <= h->mBounds.right &&
+						mousePosition.Y >= h->mBounds.top &&
+						mousePosition.Y <= h->mBounds.bottom) {
+						if (mouseButtons[m].pressed && h->mPressAction) h->mPressAction(m);
+						if (mouseButtons[m].released && h->mReleaseAction) h->mReleaseAction(m);
 					}
 				}
 			}
@@ -214,15 +214,15 @@ void Console::SetBaseColor(WORD c) { baseColor = c; }
 void Console::AddElement(Element* e) {
 	for (size_t i = 0; i < elements.size(); i++) {
 		if (elements.at(i) == nullptr) {
-			e->SetId(i);
+			e->mId = i;
 			elements.at(i) = e;
 			return;
 		}
 	}
 	elements.push_back(e);
-	e->SetId(elements.size() - 1);
+	e->mId = elements.size() - 1;
 
-	if (auto b = dynamic_cast<Button*>(e)) AddMouseHandler(&b->GetHandler());
+	if (auto b = dynamic_cast<Button*>(e)) AddMouseHandler(&b->mHandler);
 }
 
 Element* Console::GetElement(int i) {
@@ -230,30 +230,30 @@ Element* Console::GetElement(int i) {
 }
 
 Element* Console::GetElement(Element* e) {
-	return GetElement(e->GetId());
+	return GetElement(e->mId);
 }
 
 void Console::RemoveElement(int i) {
-	elements.at(i)->SetId(-1);
+	elements.at(i)->mId = -1;
 	elements.at(i) = nullptr;
 }
 
 void Console::RemoveElement(Element* e) {
-	RemoveElement(e->GetId());
+	RemoveElement(e->mId);
 
-	if (auto b = dynamic_cast<Button*>(e)) RemoveMouseHandler(&b->GetHandler());
+	if (auto b = dynamic_cast<Button*>(e)) RemoveMouseHandler(&b->mHandler);
 }
 
 void Console::AddMouseHandler(MouseHandler* h) {
 	for (size_t i = 0; i < mouseHandlers.size(); i++) {
 		if (mouseHandlers.at(i) == nullptr) {
-			h->SetId(i);
+			h->mId = i;
 			mouseHandlers.at(i) = h;
 			return;
 		}
 	}
 	mouseHandlers.push_back(h);
-	h->SetId(elements.size() - 1);
+	h->mId = elements.size() - 1;
 }
 
 MouseHandler* Console::GetMouseHandler(int i) {
@@ -261,16 +261,16 @@ MouseHandler* Console::GetMouseHandler(int i) {
 }
 
 MouseHandler* Console::GetMouseHandler(MouseHandler* h) {
-	return GetMouseHandler(h->GetId());
+	return GetMouseHandler(h->mId);
 }
 
 void Console::RemoveMouseHandler(int i) {
-	mouseHandlers.at(i)->SetId(1);
+	mouseHandlers.at(i)->mId = -1;
 	mouseHandlers.at(i) = nullptr;
 }
 
 void Console::RemoveMouseHandler(MouseHandler* h) {
-	RemoveMouseHandler(h->GetId());
+	RemoveMouseHandler(h->mId);
 }
 
 }

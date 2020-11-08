@@ -101,20 +101,26 @@ void Label::RenderText(Console* g, int minX, int maxX, int minY, int maxY, WORD 
 	size_t nlPos = mText.find(L'\n');
 	size_t cIdx = 0;
 	while (cIdx < mText.length() && y <= maxY) {
+		// Line ends with char limit or newline
+		// Add newlines as optional wrap bc find can be expensive
+		// wrap should be bitwise so can or togeth
+		// refactor bc linelen would be end - cidx, so can use if remaining or not??
+
 		int elIdx = (nlPos == std::string::npos) ? mText.length() : nlPos;
 		int lineLen = elIdx - cIdx;
-
 		// Stay within bounds
 		if (lineLen > maxX - minX) {
 			if (mTextWrap == WRAP_WORD) {
+				// Last char is idx of space
 				elIdx = mText.rfind(L' ', cIdx + (maxX - minX));
 				lineLen = elIdx - cIdx;
-			} else if (mTextWrap == WRAP_CHAR || lineLen > maxX - minX) { // def to char if no spac
+			} else if (mTextWrap == WRAP_CHAR || lineLen > maxX - minX) { 
+				// def to char wrap if no spac
 				elIdx -= (lineLen - (maxX - minX));
 				lineLen = maxX - minX + 1;
 			}
 		}
-
+		// Adjust line spacing x
 		int xOffset = 0;
 		if (mAlignH == TEXT_ALIGN_MID) xOffset = (maxX - minX - lineLen + 1) / 2;
 		else if (mAlignH == TEXT_ALIGN_MAX)  xOffset = maxX - minX - lineLen + 1;
@@ -151,7 +157,8 @@ void Button::SetPressedBorder(Border b) { mPressedBorder = b; }
 void Button::SetPressAction(std::function<void(int)> f) { mPressAction = f; }
 void Button::SetReleaseAction(std::function<void(int)> f) { mReleaseAction = f; }
 
-MouseHandler& Button::GetHandler() { return mHandler; }
+const int& Button::GetButtons() { int b = mHandler.GetButtons(); return b; }
+void Button::SetButtons(int b) { mHandler.SetButtons(b); }
 
 void Button::SetupHandler() {
 	mHandler.SetBounds(mBounds);
