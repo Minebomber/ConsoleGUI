@@ -176,34 +176,34 @@ void Button::Draw(Console* g) {
 			   tC);
 }
 
-Panel::Panel(RECT b) : Element(b), titleLabel({ b.left, b.top, b.right, b.top + titleHeight - 1 }) {
-	titleLabel.SetAlignHorizontal(TEXT_ALIGN_MID);
-	titleLabel.SetAlignVertical(TEXT_ALIGN_MID);
+Panel::Panel(RECT b) : Element(b), mTitleLabel({ b.left, b.top, b.right, b.top + mTitleHeight - 1 }) {
+	mTitleLabel.SetAlignHorizontal(TEXT_ALIGN_MID);
+	mTitleLabel.SetAlignVertical(TEXT_ALIGN_MID);
 }
 
-Label& Panel::GetTitleLabel() { return titleLabel; }
+Label& Panel::GetTitleLabel() { return mTitleLabel; }
 
-const int& Panel::GetTitleHeight() const { return titleHeight; }
-void Panel::SetTitleHeight(int h) { titleHeight = h; }
+const int& Panel::GetTitleHeight() const { return mTitleHeight; }
+void Panel::SetTitleHeight(int h) { mTitleHeight = h; }
 
-void Panel::SetBounds(RECT b) { Element::SetBounds(b); titleLabel.SetBounds({ b.left, b.top, b.right, b.top + titleHeight - 1 }); }
+void Panel::SetBounds(RECT b) { Element::SetBounds(b); mTitleLabel.SetBounds({ b.left, b.top, b.right, b.top + mTitleHeight - 1 }); }
 
 void Panel::Draw(Console* g) {
 	Element::Draw(g);
-	titleLabel.Draw(g);
+	mTitleLabel.Draw(g);
 }
 
 ContentPanel::ContentPanel(RECT b) : Panel(b) {}
-ContentPanel::ContentPanel(RECT b, Element* c) : Panel(b), content(c) {}
+ContentPanel::ContentPanel(RECT b, Element* c) : Panel(b), mpContent(c) {}
 
-Element* ContentPanel::GetContent() { return content; }
-void ContentPanel::SetContent(Element* c) { content = c; }
+Element* ContentPanel::GetContent() { return mpContent; }
+void ContentPanel::SetContent(Element* c) { mpContent = c; }
 
-void ContentPanel::SetBounds(RECT b) { Panel::SetBounds(b); if (content) content->SetBounds({ b.left, b.top + titleHeight, b.right, b.bottom }); }
+void ContentPanel::SetBounds(RECT b) { Panel::SetBounds(b); if (mpContent) mpContent->SetBounds({ b.left, b.top + mTitleHeight, b.right, b.bottom }); }
 
 void ContentPanel::Draw(Console* g) {
 	Panel::Draw(g);
-	if (content) content->Draw(g);
+	if (mpContent) mpContent->Draw(g);
 }
 
 }

@@ -187,8 +187,8 @@ public:
 
 class Panel : public Element {
 protected:
-	int titleHeight = 3;
-	Label titleLabel;
+	int mTitleHeight = 3;
+	Label mTitleLabel;
 public:
 	Panel(RECT b);
 
@@ -204,7 +204,7 @@ public:
 
 class ContentPanel : public Panel {
 protected:
-	Element* content = nullptr;
+	Element* mpContent = nullptr;
 public:
 	ContentPanel(RECT b);
 	ContentPanel(RECT b, Element* c);

@@ -101,9 +101,6 @@ void Console::Run() {
 	auto timePoint1 = std::chrono::system_clock::now();
 	auto timePoint2 = std::chrono::system_clock::now();
 
-	int framesElapsed = 0;
-	const int frameLimit = 250;
-
 	SHORT oldKeyStates[256] = { 0 };
 	SHORT newKeyStates[256] = { 0 };
 	bool oldMouseStates[3] = { 0 };
@@ -114,13 +111,10 @@ void Console::Run() {
 	running = true;
 	while (running) {
 		// Time
-		if (framesElapsed == frameLimit) {
-			timePoint2 = std::chrono::system_clock::now();
-			std::chrono::duration<float> timeDelta = timePoint2 - timePoint1;
-			timePoint1 = timePoint2;
-			elapsedTime = timeDelta.count() / frameLimit;
-			framesElapsed = 0;
-		} else framesElapsed++;
+		timePoint2 = std::chrono::system_clock::now();
+		std::chrono::duration<float> timeDelta = timePoint2 - timePoint1;
+		timePoint1 = timePoint2;
+		elapsedTime = timeDelta.count();
 
 		for (int k = 0; k < 256; k++) {
 			newKeyStates[k] = GetAsyncKeyState(k);
