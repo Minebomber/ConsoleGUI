@@ -1,9 +1,11 @@
 #pragma once
 
 #include "Colors.h"
-
-class ConsoleGUI;
 #include "ConsoleGUI.h"
+
+namespace gui {
+
+class Console;
 
 class EventHandler {
 protected:
@@ -11,7 +13,7 @@ protected:
 	std::function<void(int)> onPress;
 	std::function<void(int)> onRelease;
 public:
-    const int& GetId() const;
+	const int& GetId() const;
 	void SetId(int i);
 
 	bool OnPressExists() const;
@@ -41,16 +43,16 @@ public:
 	void SetButtons(int b);
 };
 
-class GUIBorder {
+class Border {
 protected:
 	WCHAR chr = L' ';
 	WORD color = BG_WHITE;
 	int width = 1;
 public:
-	GUIBorder();
-	GUIBorder(WCHAR ch, WORD cl);
-	GUIBorder(WCHAR ch, WORD cl, int w);
-	GUIBorder(int w);
+	Border();
+	Border(WCHAR ch, WORD cl);
+	Border(WCHAR ch, WORD cl, int w);
+	Border(int w);
 
 	const WCHAR& GetChar() const;
 	void SetChar(WCHAR c);
@@ -63,37 +65,37 @@ public:
 
 	operator bool() const;
 
-	virtual void Draw(ConsoleGUI* g, RECT bd);
+	virtual void Draw(Console* g, RECT bd);
 };
 
-class GUIElement {
+class Element {
 protected:
 	int id = -1;
 	RECT bounds = { 0, 0, 0, 0 };
 	WCHAR background = L' ';
 	WORD backgroundColor = BG_WHITE;
-	GUIBorder border = { 0 };
+	Border border = { 0 };
 public:
-	GUIElement(RECT b);
-	GUIElement(const GUIElement& e);
-	virtual ~GUIElement();
-	
+	Element(RECT b);
+	Element(const Element& e);
+	virtual ~Element();
+
 	const int& GetId() const;
 	void SetId(int i);
-	
+
 	const RECT& GetBounds() const;
 	virtual void SetBounds(RECT b);
-	
+
 	const WCHAR& GetBackground() const;
 	void SetBackground(WCHAR b);
 
 	const WORD& GetBackgroundColor() const;
 	void SetBackgroundColor(WORD c);
 
-	GUIBorder& GetBorder();
-	void SetBorder(GUIBorder b);
+	Border& GetBorder();
+	void SetBorder(Border b);
 
-	virtual void Draw(ConsoleGUI* g);
+	virtual void Draw(Console* g);
 };
 
 enum TextAlignment {
@@ -107,7 +109,7 @@ enum TextWrap {
 	WRAP_WORD,
 };
 
-class GUILabel : public GUIElement {
+class Label : public Element {
 protected:
 	std::wstring text = L"";
 	WORD textColor = FG_WHITE;
@@ -121,10 +123,10 @@ protected:
 	int textOffsetY = 0;
 	virtual void UpdateTextOffsetY();
 
-	void RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY, WORD c);
+	void RenderText(Console* g, int minX, int maxX, int minY, int maxY, WORD c);
 public:
-	GUILabel(RECT b);
-	GUILabel(const GUILabel& e);
+	Label(RECT b);
+	Label(const Label& e);
 
 	const std::wstring& GetText() const;
 	void SetText(std::wstring t);
@@ -141,15 +143,15 @@ public:
 	const int& GetTextWrap() const;
 	void SetTextWrap(int w);
 
-	virtual void Draw(ConsoleGUI* g) override;
+	virtual void Draw(Console* g) override;
 };
 
-class GUIButton : public GUILabel {
+class Button : public Label {
 protected:
 	WORD pressedTextColor = FG_WHITE;
 	WCHAR pressedBackground = L' ';
 	WORD pressedBackgroundColor = BG_WHITE;
-	GUIBorder pressedBorder = { 0 };
+	Border pressedBorder = { 0 };
 	bool pressed = false;
 
 	MouseHandler handler;
@@ -159,7 +161,7 @@ protected:
 
 	void SetupHandler();
 public:
-	GUIButton(RECT b);
+	Button(RECT b);
 
 	void SetBounds(RECT b) override;
 
@@ -172,10 +174,43 @@ public:
 	const WORD& GetPressedBackgroundColor() const;
 	void SetPressedBackgroundColor(WORD c);
 
-	GUIBorder& GetPressedBorder();
-	void SetPressedBorder(GUIBorder b);
+	Border& GetPressedBorder();
+	void SetPressedBorder(Border b);
 
 	MouseHandler& GetHandler();
 
-	virtual void Draw(ConsoleGUI* g) override;
+	virtual void Draw(Console* g) override;
 };
+
+class Panel : public Element {
+protected:
+	int titleHeight = 3;
+	Label titleLabel;
+public:
+	Panel(RECT b);
+
+	Label& GetTitleLabel();
+
+	const int& GetTitleHeight() const;
+	void SetTitleHeight(int h);
+
+	virtual void SetBounds(RECT b) override;
+
+	virtual void Draw(Console* g) override;
+};
+
+class ContentPanel : public Panel {
+protected:
+	Element* content = nullptr;
+public:
+	ContentPanel(RECT b);
+	ContentPanel(RECT b, Element* c);
+
+	Element* GetContent();
+	void SetContent(Element* c);
+
+	virtual void SetBounds(RECT b) override;
+
+	virtual void Draw(Console* g) override;
+};
+}

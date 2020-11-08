@@ -1,6 +1,8 @@
 #include "ConsoleGUI.h"
 
-ConsoleGUI::ConsoleGUI() {
+namespace gui {
+
+Console::Console() {
 	console = GetStdHandle(STD_OUTPUT_HANDLE);
 	consoleIn = GetStdHandle(STD_INPUT_HANDLE);
 
@@ -13,7 +15,7 @@ ConsoleGUI::ConsoleGUI() {
 	SetConsoleCursorInfo(console, &originalConsoleCursorInfo);
 }
 
-ConsoleGUI::~ConsoleGUI() {
+Console::~Console() {
 	// Set console to default
 	SetCurrentConsoleFontEx(console, false, &originalConsoleFontInfo);
 	SetConsoleScreenBufferSize(console, originalConsoleScreenBufferInfo.dwSize);
@@ -22,7 +24,7 @@ ConsoleGUI::~ConsoleGUI() {
 	SetConsoleCursorInfo(console, &originalConsoleCursorInfo);
 }
 
-void ConsoleGUI::CreateConsole(int sW, int sH, int cW, int cH) {
+void Console::CreateConsole(int sW, int sH, int cW, int cH) {
 	screenWidth = sW; screenHeight = sH; charWidth = cW; charHeight = cH;
 
 	if (console == INVALID_HANDLE_VALUE) return;
@@ -63,19 +65,19 @@ void ConsoleGUI::CreateConsole(int sW, int sH, int cW, int cH) {
 	initialized = true;
 }
 
-void ConsoleGUI::Set(int x, int y, WCHAR chr, WORD clr) {
+void Console::Set(int x, int y, WCHAR chr, WORD clr) {
 	screenBuffer[y * screenWidth + x].Char.UnicodeChar = chr;
 	screenBuffer[y * screenWidth + x].Attributes = clr;
 }
 
-void ConsoleGUI::Fill(WCHAR chr, WORD clr) {
+void Console::Fill(WCHAR chr, WORD clr) {
 	for (int i = 0; i < screenWidth * screenHeight; i++) {
 		screenBuffer[i].Char.UnicodeChar = chr;
 		screenBuffer[i].Attributes = clr;
 	}
 }
 
-void ConsoleGUI::Rect(RECT r, WCHAR chr, WORD clr, bool fill) {
+void Console::Rect(RECT r, WCHAR chr, WORD clr, bool fill) {
 	for (int i = r.top; i <= r.bottom; i++) {
 		for (int j = r.left; j <= r.right; j++) {
 			if (fill) Set(j, i, chr, clr);
@@ -84,14 +86,14 @@ void ConsoleGUI::Rect(RECT r, WCHAR chr, WORD clr, bool fill) {
 	}
 }
 
-void ConsoleGUI::Write(int x, int y, std::wstring str, WORD clr) {
+void Console::Write(int x, int y, std::wstring str, WORD clr) {
 	for (size_t i = 0; i < str.size(); i++) {
 		screenBuffer[y * screenWidth + x + i].Char.UnicodeChar = str[i];
 		screenBuffer[y * screenWidth + x + i].Attributes = clr;
 	}
 }
 
-void ConsoleGUI::Run() {
+void Console::Run() {
 	if (!initialized) return;
 
 	if (!Initialize()) return;
@@ -99,18 +101,26 @@ void ConsoleGUI::Run() {
 	auto timePoint1 = std::chrono::system_clock::now();
 	auto timePoint2 = std::chrono::system_clock::now();
 
+	int framesElapsed = 0;
+	const int frameLimit = 250;
+
 	SHORT oldKeyStates[256] = { 0 };
 	SHORT newKeyStates[256] = { 0 };
 	bool oldMouseStates[3] = { 0 };
 	bool newMouseStates[3] = { 0 };
 
+	float elapsedTime = 1;
+
 	running = true;
 	while (running) {
 		// Time
-		timePoint2 = std::chrono::system_clock::now();
-		std::chrono::duration<float> timeDelta = timePoint2 - timePoint1;
-		timePoint1 = timePoint2;
-		float elapsedTime = timeDelta.count();
+		if (framesElapsed == frameLimit) {
+			timePoint2 = std::chrono::system_clock::now();
+			std::chrono::duration<float> timeDelta = timePoint2 - timePoint1;
+			timePoint1 = timePoint2;
+			elapsedTime = timeDelta.count() / frameLimit;
+			framesElapsed = 0;
+		} else framesElapsed++;
 
 		for (int k = 0; k < 256; k++) {
 			newKeyStates[k] = GetAsyncKeyState(k);
@@ -186,7 +196,7 @@ void ConsoleGUI::Run() {
 		}
 
 		Fill(baseChar, baseColor);
-		for (GUIElement* e : elements) {
+		for (Element* e : elements) {
 			e->Draw(this);
 		}
 
@@ -198,16 +208,16 @@ void ConsoleGUI::Run() {
 	}
 }
 
-const int& ConsoleGUI::GetScreenWidth() const { return screenWidth; }
-const int& ConsoleGUI::GetScreenHeight() const { return screenHeight; }
+const int& Console::GetScreenWidth() const { return screenWidth; }
+const int& Console::GetScreenHeight() const { return screenHeight; }
 
-const WCHAR& ConsoleGUI::GetBaseChar() const { return baseChar; }
-void ConsoleGUI::SetBaseChar(WCHAR c) { baseChar = c; }
+const WCHAR& Console::GetBaseChar() const { return baseChar; }
+void Console::SetBaseChar(WCHAR c) { baseChar = c; }
 
-const WORD& ConsoleGUI::GetBaseColor() const { return baseColor; }
-void ConsoleGUI::SetBaseColor(WORD c) { baseColor = c; }
+const WORD& Console::GetBaseColor() const { return baseColor; }
+void Console::SetBaseColor(WORD c) { baseColor = c; }
 
-void ConsoleGUI::AddElement(GUIElement* e) {
+void Console::AddElement(Element* e) {
 	for (size_t i = 0; i < elements.size(); i++) {
 		if (elements.at(i) == nullptr) {
 			e->SetId(i);
@@ -218,29 +228,29 @@ void ConsoleGUI::AddElement(GUIElement* e) {
 	elements.push_back(e);
 	e->SetId(elements.size() - 1);
 
-	if (auto b = dynamic_cast<GUIButton*>(e)) AddMouseHandler(&b->GetHandler());
+	if (auto b = dynamic_cast<Button*>(e)) AddMouseHandler(&b->GetHandler());
 }
 
-GUIElement* ConsoleGUI::GetElement(int i) {
+Element* Console::GetElement(int i) {
 	return elements.at(i);
 }
 
-GUIElement* ConsoleGUI::GetElement(GUIElement* e) {
+Element* Console::GetElement(Element* e) {
 	return GetElement(e->GetId());
 }
 
-void ConsoleGUI::RemoveElement(int i) {
+void Console::RemoveElement(int i) {
 	elements.at(i)->SetId(-1);
 	elements.at(i) = nullptr;
 }
 
-void ConsoleGUI::RemoveElement(GUIElement* e) {
+void Console::RemoveElement(Element* e) {
 	RemoveElement(e->GetId());
 
-	if (auto b = dynamic_cast<GUIButton*>(e)) RemoveMouseHandler(&b->GetHandler());
+	if (auto b = dynamic_cast<Button*>(e)) RemoveMouseHandler(&b->GetHandler());
 }
 
-void ConsoleGUI::AddMouseHandler(MouseHandler* h) {
+void Console::AddMouseHandler(MouseHandler* h) {
 	for (size_t i = 0; i < mouseHandlers.size(); i++) {
 		if (mouseHandlers.at(i) == nullptr) {
 			h->SetId(i);
@@ -252,20 +262,21 @@ void ConsoleGUI::AddMouseHandler(MouseHandler* h) {
 	h->SetId(elements.size() - 1);
 }
 
-MouseHandler* ConsoleGUI::GetMouseHandler(int i) {
+MouseHandler* Console::GetMouseHandler(int i) {
 	return mouseHandlers.at(i);
 }
 
-MouseHandler* ConsoleGUI::GetMouseHandler(MouseHandler* h) {
+MouseHandler* Console::GetMouseHandler(MouseHandler* h) {
 	return GetMouseHandler(h->GetId());
 }
 
-void ConsoleGUI::RemoveMouseHandler(int i) {
+void Console::RemoveMouseHandler(int i) {
 	mouseHandlers.at(i)->SetId(1);
 	mouseHandlers.at(i) = nullptr;
 }
 
-void ConsoleGUI::RemoveMouseHandler(MouseHandler* h) {
+void Console::RemoveMouseHandler(MouseHandler* h) {
 	RemoveMouseHandler(h->GetId());
 }
 
+}

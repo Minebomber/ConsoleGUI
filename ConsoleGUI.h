@@ -9,12 +9,14 @@
 #include <algorithm>
 #include <functional>
 #include "Colors.h"
-
-class MouseHandler;
-class GUIElement;
 #include "GUIElements.h"
 
-class ConsoleGUI {
+namespace gui {
+
+class MouseHandler;
+class Element;
+
+class Console {
 private:
 	int screenWidth = 0;
 	int screenHeight = 0;
@@ -29,7 +31,7 @@ private:
 	CONSOLE_CURSOR_INFO originalConsoleCursorInfo;
 
 	SMALL_RECT windowRect{ 0, 0, 0, 0 };
-	
+
 	CHAR_INFO* screenBuffer = nullptr;
 
 	bool initialized = false;
@@ -46,12 +48,12 @@ private:
 	WCHAR baseChar = L' ';
 	WORD baseColor = BG_BLACK;
 
-	std::vector<GUIElement*> elements;
+	std::vector<Element*> elements;
 
 	std::vector<MouseHandler*> mouseHandlers;
 public:
-	ConsoleGUI();
-	virtual ~ConsoleGUI();
+	Console();
+	virtual ~Console();
 	void CreateConsole(int sW, int sH, int cW, int cH);
 
 	void Set(int x, int y, WCHAR chr, WORD clr);
@@ -71,16 +73,17 @@ public:
 	const WORD& GetBaseColor() const;
 	void SetBaseColor(WORD c);
 
-	void AddElement(GUIElement* e);
-	GUIElement* GetElement(int i);
-	GUIElement* GetElement(GUIElement* e);
+	void AddElement(Element* e);
+	Element* GetElement(int i);
+	Element* GetElement(Element* e);
 	void RemoveElement(int i);
-	void RemoveElement(GUIElement* e);
+	void RemoveElement(Element* e);
 
 	void AddMouseHandler(MouseHandler* h);
 	MouseHandler* GetMouseHandler(int i);
 	MouseHandler* GetMouseHandler(MouseHandler* h);
 	void RemoveMouseHandler(int i);
 	void RemoveMouseHandler(MouseHandler* h);
-	
+
 };
+}
