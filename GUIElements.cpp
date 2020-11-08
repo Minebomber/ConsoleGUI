@@ -72,6 +72,12 @@ void GUILabel::UpdateTextLines() {
 	}
 }
 
+void GUILabel::UpdateTextOffsetY() {
+	textOffsetY = 0;
+	if (vAlignment == TEXT_ALIGN_MID) textOffsetY = (bounds.bottom - bounds.top - 2 * border.GetWidth() - textLines + 1) / 2;
+	else if (vAlignment == TEXT_ALIGN_MAX) textOffsetY = bounds.bottom - bounds.top - 2 * border.GetWidth() - textLines;
+}
+
 const std::wstring& GUILabel::GetText() const { return text; }
 void GUILabel::SetText(std::wstring t) { text = t; UpdateTextLines(); }
 
@@ -82,24 +88,13 @@ const int& GUILabel::GetHorizontalAlignment() const { return hAlignment; }
 void GUILabel::SetHorizontalAlignment(int h) { hAlignment = h; }
 
 const int& GUILabel::GetVerticalAlignment() const { return vAlignment; }
-void GUILabel::SetVerticalAlignment(int v) { vAlignment = v; }
+void GUILabel::SetVerticalAlignment(int v) { vAlignment = v; UpdateTextOffsetY(); }
 
 const int& GUILabel::GetTextWrap() const { return textWrap; }
 void GUILabel::SetTextWrap(int w) { textWrap = w; }
 
 void GUILabel::RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY, WORD c) {
-	int yOffset = 0; // default to min
-	switch (vAlignment) {
-	case TEXT_ALIGN_MID:
-		yOffset = (maxY - minY - textLines + 1) / 2;
-		break;
-	case TEXT_ALIGN_MAX:
-		yOffset = maxY - minY - textLines;
-	default:
-		break;
-	}
-
-	int y = minY + yOffset;
+	int y = minY + textOffsetY;
 
 	size_t nlPos = text.find(L'\n');
 	size_t cIdx = 0;
@@ -117,16 +112,10 @@ void GUILabel::RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY,
 				lineLen = maxX - minX + 1;
 			}
 		}
+
 		int xOffset = 0;
-		switch (hAlignment) {
-		case TEXT_ALIGN_MID:
-			xOffset = (maxX - minX - lineLen + 1) / 2;
-			break;
-		case TEXT_ALIGN_MAX:
-			xOffset = maxX - minX - lineLen + 1;
-		default:
-			break;
-		}
+		if (hAlignment == TEXT_ALIGN_MID) xOffset = (maxX - minX - lineLen + 1) / 2;
+		else if (hAlignment == TEXT_ALIGN_MAX)  xOffset = maxX - minX - lineLen + 1;
 
 		g->Write(minX + xOffset, y, text.substr(cIdx, lineLen), c);
 

@@ -116,7 +116,10 @@ protected:
 	int textWrap = WRAP_CHAR;
 
 	int textLines = 1;
-	void UpdateTextLines();
+	virtual void UpdateTextLines();
+
+	int textOffsetY = 0;
+	virtual void UpdateTextOffsetY();
 
 	void RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY, WORD c);
 public:
