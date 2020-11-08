@@ -104,7 +104,6 @@ enum TextAlignment {
 
 enum TextWrap {
 	WRAP_CHAR,
-	WRAP_NEWLINE,
 	WRAP_WORD,
 };
 
@@ -114,6 +113,10 @@ protected:
 	WORD textColor = FG_WHITE;
 	int hAlignment = TEXT_ALIGN_MIN;
 	int vAlignment = TEXT_ALIGN_MIN;
+	int textWrap = WRAP_CHAR;
+
+	int textLines = 1;
+	void UpdateTextLines();
 
 	void RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY, WORD c);
 public:
@@ -131,6 +134,9 @@ public:
 
 	const int& GetVerticalAlignment() const;
 	void SetVerticalAlignment(int v);
+
+	const int& GetTextWrap() const;
+	void SetTextWrap(int w);
 
 	virtual void Draw(ConsoleGUI* g) override;
 };

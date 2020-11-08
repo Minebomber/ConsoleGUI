@@ -64,8 +64,16 @@ void GUIElement::Draw(ConsoleGUI* g) {
 GUILabel::GUILabel(RECT b) : GUIElement(b) {}
 GUILabel::GUILabel(const GUILabel& e) : GUIElement(e), text(e.text), textColor(e.textColor), hAlignment(e.hAlignment), vAlignment(e.vAlignment) {}
 
+void GUILabel::UpdateTextLines() {
+	textLines = 1;
+	for (size_t ci = 0, li = 0; ci < text.length(); ci++) {
+		if (text[ci] == L'\n') textLines++;
+		if (ci - li > bounds.right - bounds.left - 2 * border.GetWidth()) { textLines++; li = ci; }
+	}
+}
+
 const std::wstring& GUILabel::GetText() const { return text; }
-void GUILabel::SetText(std::wstring t) { text = t; }
+void GUILabel::SetText(std::wstring t) { text = t; UpdateTextLines(); }
 
 const WORD& GUILabel::GetTextColor() const { return textColor; }
 void GUILabel::SetTextColor(WORD c) { textColor = c; }
@@ -76,15 +84,17 @@ void GUILabel::SetHorizontalAlignment(int h) { hAlignment = h; }
 const int& GUILabel::GetVerticalAlignment() const { return vAlignment; }
 void GUILabel::SetVerticalAlignment(int v) { vAlignment = v; }
 
+const int& GUILabel::GetTextWrap() const { return textWrap; }
+void GUILabel::SetTextWrap(int w) { textWrap = w; }
+
 void GUILabel::RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY, WORD c) {
 	int yOffset = 0; // default to min
-
 	switch (vAlignment) {
 	case TEXT_ALIGN_MID:
-		yOffset = (maxY - minY - std::count(text.begin(), text.end(), L'\n') + 1) / 2;
+		yOffset = (maxY - minY - textLines + 1) / 2;
 		break;
 	case TEXT_ALIGN_MAX:
-		yOffset = maxY - minY - std::count(text.begin(), text.end(), L'\n');
+		yOffset = maxY - minY - textLines;
 	default:
 		break;
 	}
@@ -93,15 +103,19 @@ void GUILabel::RenderText(ConsoleGUI* g, int minX, int maxX, int minY, int maxY,
 
 	size_t nlPos = text.find(L'\n');
 	size_t cIdx = 0;
-
 	while (cIdx < text.length() && y <= maxY) {
 		int elIdx = (nlPos == std::string::npos) ? text.length() : nlPos;
 		int lineLen = elIdx - cIdx;
 
 		// Stay within bounds
 		if (lineLen > maxX - minX) {
-			elIdx -= (lineLen - (maxX - minX));
-			lineLen = maxX - minX + 1;
+			if (textWrap == WRAP_WORD) {
+				elIdx = text.rfind(L' ', cIdx + (maxX - minX));
+				lineLen = elIdx - cIdx;
+			} else if (textWrap == WRAP_CHAR || lineLen > maxX - minX) { // def to char if no spac
+				elIdx -= (lineLen - (maxX - minX));
+				lineLen = maxX - minX + 1;
+			}
 		}
 		int xOffset = 0;
 		switch (hAlignment) {

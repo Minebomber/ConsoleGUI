@@ -2,15 +2,15 @@
 
 class Test : public ConsoleGUI {
 public:
-	void MouseDown(int m) {
-		
-	}
-
 	bool Initialize() override {
 
 		GUILabel* label = new GUILabel({ 10, 10, 40, 20 });
-		label->SetText(L"Lorem ipsum dolor\nsit amet\nconsectetur\nadipiscing elit");
+		label->SetText(L"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
 		label->SetTextColor(FG_BLACK | BG_WHITE);
+
+		label->SetTextWrap(WRAP_WORD);
+
+		label->GetBorder().SetWidth(1);
 
 		MouseHandler* clickHandler = new MouseHandler();
 		clickHandler->SetButtons(MOUSE_LEFT_BUTTON | MOUSE_RIGHT_BUTTON);
