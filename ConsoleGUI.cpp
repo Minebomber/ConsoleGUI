@@ -187,8 +187,8 @@ void Console::Run() {
 						mousePosition.X <= h->GetBounds().right &&
 						mousePosition.Y >= h->GetBounds().top &&
 						mousePosition.Y <= h->GetBounds().bottom) {
-						if (mouseButtons[m].pressed && h->OnPressExists()) h->InvokeOnPress(m);
-						if (mouseButtons[m].released && h->OnReleaseExists()) h->InvokeOnRelease(m);
+						if (mouseButtons[m].pressed && h->PressActionExists()) h->InvokePressAction(m);
+						if (mouseButtons[m].released && h->ReleaseActionExists()) h->InvokeReleaseAction(m);
 					}
 				}
 			}

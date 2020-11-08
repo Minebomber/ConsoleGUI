@@ -9,20 +9,20 @@ class Console;
 
 class EventHandler {
 protected:
-	int id = -1;
-	std::function<void(int)> onPress;
-	std::function<void(int)> onRelease;
+	int mId = -1;
+	std::function<void(int)> mPressAction;
+	std::function<void(int)> mReleaseAction;
 public:
 	const int& GetId() const;
 	void SetId(int i);
 
-	bool OnPressExists() const;
-	void InvokeOnPress(int i);
-	void SetOnPress(std::function<void(int)> f);
+	bool PressActionExists() const;
+	void InvokePressAction(int i);
+	void SetPressAction(std::function<void(int)> f);
 
-	bool OnReleaseExists() const;
-	void InvokeOnRelease(int i);
-	void SetOnRelease(std::function<void(int)> f);
+	bool ReleaseActionExists() const;
+	void InvokeReleaseAction(int i);
+	void SetReleaseAction(std::function<void(int)> f);
 };
 
 enum MouseButtons {
@@ -33,8 +33,8 @@ enum MouseButtons {
 
 class MouseHandler : public EventHandler {
 protected:
-	RECT bounds = { 0, 0, 0, 0 };
-	int buttons = 0;
+	RECT mBounds = { 0, 0, 0, 0 };
+	int mButtons = 0;
 public:
 	const RECT& GetBounds();
 	void SetBounds(RECT b);
@@ -45,9 +45,9 @@ public:
 
 class Border {
 protected:
-	WCHAR chr = L' ';
-	WORD color = BG_WHITE;
-	int width = 1;
+	WCHAR mChar = L' ';
+	WORD mColor = BG_WHITE;
+	int mWidth = 1;
 public:
 	Border();
 	Border(WCHAR ch, WORD cl);
@@ -70,11 +70,11 @@ public:
 
 class Element {
 protected:
-	int id = -1;
-	RECT bounds = { 0, 0, 0, 0 };
-	WCHAR background = L' ';
-	WORD backgroundColor = BG_WHITE;
-	Border border = { 0 };
+	int mId = -1;
+	RECT mBounds = { 0, 0, 0, 0 };
+	WCHAR mBackground = L' ';
+	WORD mBackgroundColor = BG_WHITE;
+	Border mBorder = { 0 };
 public:
 	Element(RECT b);
 	Element(const Element& e);
@@ -111,16 +111,16 @@ enum TextWrap {
 
 class Label : public Element {
 protected:
-	std::wstring text = L"";
-	WORD textColor = FG_WHITE;
-	int hAlignment = TEXT_ALIGN_MIN;
-	int vAlignment = TEXT_ALIGN_MIN;
-	int textWrap = WRAP_CHAR;
+	std::wstring mText = L"";
+	WORD mTextColor = FG_WHITE;
+	int mAlignH = TEXT_ALIGN_MIN;
+	int mAlignV = TEXT_ALIGN_MIN;
+	int mTextWrap = WRAP_CHAR;
 
-	int textLines = 1;
+	int mTextLines = 1;
 	virtual void UpdateTextLines();
 
-	int textOffsetY = 0;
+	int mTextOffsetY = 0;
 	virtual void UpdateTextOffsetY();
 
 	void RenderText(Console* g, int minX, int maxX, int minY, int maxY, WORD c);
@@ -134,11 +134,11 @@ public:
 	const WORD& GetTextColor() const;
 	void SetTextColor(WORD c);
 
-	const int& GetHorizontalAlignment() const;
-	void SetHorizontalAlignment(int h);
+	const int& GetAlignHorizontal() const;
+	void SetAlignHorizontal(int h);
 
-	const int& GetVerticalAlignment() const;
-	void SetVerticalAlignment(int v);
+	const int& GetAlignVertical() const;
+	void SetAlignVertical(int v);
 
 	const int& GetTextWrap() const;
 	void SetTextWrap(int w);
@@ -148,16 +148,16 @@ public:
 
 class Button : public Label {
 protected:
-	WORD pressedTextColor = FG_WHITE;
-	WCHAR pressedBackground = L' ';
-	WORD pressedBackgroundColor = BG_WHITE;
-	Border pressedBorder = { 0 };
-	bool pressed = false;
+	WORD mPressedTextColor = FG_WHITE;
+	WCHAR mPressedBackground = L' ';
+	WORD mPressedBackgroundColor = BG_WHITE;
+	Border mPressedBorder = { 0 };
+	bool mPressed = false;
 
-	MouseHandler handler;
+	MouseHandler mHandler;
 
-	std::function<void(int)> OnPress;
-	std::function<void(int)> OnRelease;
+	std::function<void(int)> mPressAction;
+	std::function<void(int)> mReleaseAction;
 
 	void SetupHandler();
 public:
@@ -176,6 +176,9 @@ public:
 
 	Border& GetPressedBorder();
 	void SetPressedBorder(Border b);
+
+	void SetPressAction(std::function<void(int)> f);
+	void SetReleaseAction(std::function<void(int)> f);
 
 	MouseHandler& GetHandler();
 

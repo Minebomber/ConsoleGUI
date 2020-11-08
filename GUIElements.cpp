@@ -2,180 +2,183 @@
 
 namespace gui {
 
-const int& EventHandler::GetId() const { return id; }
-void EventHandler::SetId(int i) { id = i; }
+const int& EventHandler::GetId() const { return mId; }
+void EventHandler::SetId(int i) { mId = i; }
 
-bool EventHandler::OnPressExists() const { return (bool)onPress; }
-void EventHandler::InvokeOnPress(int i) { onPress(i); }
-void EventHandler::SetOnPress(std::function<void(int)> f) { onPress = f; }
+bool EventHandler::PressActionExists() const { return (bool)mPressAction; }
+void EventHandler::InvokePressAction(int i) { mPressAction(i); }
+void EventHandler::SetPressAction(std::function<void(int)> f) { mPressAction = f; }
 
-bool EventHandler::OnReleaseExists() const { return (bool)onRelease; }
-void EventHandler::InvokeOnRelease(int i) { onRelease(i); }
-void EventHandler::SetOnRelease(std::function<void(int)> f) { onRelease = f; }
+bool EventHandler::ReleaseActionExists() const { return (bool)mReleaseAction; }
+void EventHandler::InvokeReleaseAction(int i) { mReleaseAction(i); }
+void EventHandler::SetReleaseAction(std::function<void(int)> f) { mReleaseAction = f; }
 
-const RECT& MouseHandler::GetBounds() { return bounds; }
-void MouseHandler::SetBounds(RECT b) { bounds = b; }
+const RECT& MouseHandler::GetBounds() { return mBounds; }
+void MouseHandler::SetBounds(RECT b) { mBounds = b; }
 
-const int& MouseHandler::GetButtons() { return buttons; }
-void MouseHandler::SetButtons(int b) { buttons = b; }
+const int& MouseHandler::GetButtons() { return mButtons; }
+void MouseHandler::SetButtons(int b) { mButtons = b; }
 
 Border::Border() {}
-Border::Border(WCHAR ch, WORD cl) : chr(ch), color(cl) {}
-Border::Border(WCHAR ch, WORD cl, int w) : chr(ch), color(cl), width(w) {}
-Border::Border(int w) : width(w) {}
+Border::Border(WCHAR ch, WORD cl) : mChar(ch), mColor(cl) {}
+Border::Border(WCHAR ch, WORD cl, int w) : mChar(ch), mColor(cl), mWidth(w) {}
+Border::Border(int w) : mWidth(w) {}
 
-const WCHAR& Border::GetChar() const { return chr; }
-void Border::SetChar(WCHAR c) { chr = c; }
+const WCHAR& Border::GetChar() const { return mChar; }
+void Border::SetChar(WCHAR c) { mChar = c; }
 
-const WORD& Border::GetColor() const { return color; }
-void Border::SetColor(WORD c) { color = c; }
+const WORD& Border::GetColor() const { return mColor; }
+void Border::SetColor(WORD c) { mColor = c; }
 
-const int& Border::GetWidth() const { return width; }
-void Border::SetWidth(int w) { width = w; }
+const int& Border::GetWidth() const { return mWidth; }
+void Border::SetWidth(int w) { mWidth = w; }
 
-Border::operator bool() const { return width != 0; }
+Border::operator bool() const { return mWidth != 0; }
 
 void Border::Draw(Console* g, RECT bd) {
-	for (int b = 0; b < width; b++) g->Rect({ bd.left + b, bd.top + b, bd.right - b, bd.bottom - b }, chr, color, false);
+	for (int b = 0; b < mWidth; b++) g->Rect({ bd.left + b, bd.top + b, bd.right - b, bd.bottom - b }, mChar, mColor, false);
 }
 
-Element::Element(RECT b) : bounds(b) {}
-Element::Element(const Element& e) : bounds(e.bounds), background(e.background), backgroundColor(e.backgroundColor) {}
+Element::Element(RECT b) : mBounds(b) {}
+Element::Element(const Element& e) : mBounds(e.mBounds), mBackground(e.mBackground), mBackgroundColor(e.mBackgroundColor) {}
 Element::~Element() {}
 
-const int& Element::GetId() const { return id; }
-void Element::SetId(int i) { id = i; }
+const int& Element::GetId() const { return mId; }
+void Element::SetId(int i) { mId = i; }
 
-const RECT& Element::GetBounds() const { return bounds; }
-void Element::SetBounds(RECT b) { bounds = b; }
+const RECT& Element::GetBounds() const { return mBounds; }
+void Element::SetBounds(RECT b) { mBounds = b; }
 
-const WCHAR& Element::GetBackground() const { return background; }
-void Element::SetBackground(WCHAR b) { background = b; }
+const WCHAR& Element::GetBackground() const { return mBackground; }
+void Element::SetBackground(WCHAR b) { mBackground = b; }
 
-const WORD& Element::GetBackgroundColor() const { return backgroundColor; }
-void Element::SetBackgroundColor(WORD c) { backgroundColor = c; }
+const WORD& Element::GetBackgroundColor() const { return mBackgroundColor; }
+void Element::SetBackgroundColor(WORD c) { mBackgroundColor = c; }
 
-Border& Element::GetBorder() { return border; }
-void Element::SetBorder(Border b) { border = b; }
+Border& Element::GetBorder() { return mBorder; }
+void Element::SetBorder(Border b) { mBorder = b; }
 
 void Element::Draw(Console* g) {
-	g->Rect(bounds, background, backgroundColor, true);
-	border.Draw(g, bounds);
+	g->Rect(mBounds, mBackground, mBackgroundColor, true);
+	mBorder.Draw(g, mBounds);
 }
 
 Label::Label(RECT b) : Element(b) {}
-Label::Label(const Label& e) : Element(e), text(e.text), textColor(e.textColor), hAlignment(e.hAlignment), vAlignment(e.vAlignment) {}
+Label::Label(const Label& e) : Element(e), mText(e.mText), mTextColor(e.mTextColor), mAlignH(e.mAlignH), mAlignV(e.mAlignV) {}
 
 void Label::UpdateTextLines() {
-	textLines = 1;
-	for (size_t ci = 0, li = 0; ci < text.length(); ci++) {
-		if (text[ci] == L'\n') textLines++;
-		if (ci - li > bounds.right - bounds.left - 2 * border.GetWidth()) { textLines++; li = ci; }
+	mTextLines = 1;
+	for (size_t ci = 0, li = 0; ci < mText.length(); ci++) {
+		if (mText[ci] == L'\n') mTextLines++;
+		if (ci - li > mBounds.right - mBounds.left - 2 * mBorder.GetWidth()) { mTextLines++; li = ci; }
 	}
 }
 
 void Label::UpdateTextOffsetY() {
-	textOffsetY = 0;
-	if (vAlignment == TEXT_ALIGN_MID) textOffsetY = (bounds.bottom - bounds.top - 2 * border.GetWidth() - textLines + 1) / 2;
-	else if (vAlignment == TEXT_ALIGN_MAX) textOffsetY = bounds.bottom - bounds.top - 2 * border.GetWidth() - textLines;
+	mTextOffsetY = 0;
+	if (mAlignV == TEXT_ALIGN_MID) mTextOffsetY = (mBounds.bottom - mBounds.top - 2 * mBorder.GetWidth() - mTextLines + 1) / 2;
+	else if (mAlignV == TEXT_ALIGN_MAX) mTextOffsetY = mBounds.bottom - mBounds.top - 2 * mBorder.GetWidth() - mTextLines;
 }
 
-const std::wstring& Label::GetText() const { return text; }
-void Label::SetText(std::wstring t) { text = t; UpdateTextLines(); }
+const std::wstring& Label::GetText() const { return mText; }
+void Label::SetText(std::wstring t) { mText = t; UpdateTextLines(); }
 
-const WORD& Label::GetTextColor() const { return textColor; }
-void Label::SetTextColor(WORD c) { textColor = c; }
+const WORD& Label::GetTextColor() const { return mTextColor; }
+void Label::SetTextColor(WORD c) { mTextColor = c; }
 
-const int& Label::GetHorizontalAlignment() const { return hAlignment; }
-void Label::SetHorizontalAlignment(int h) { hAlignment = h; }
+const int& Label::GetAlignHorizontal() const { return mAlignH; }
+void Label::SetAlignHorizontal(int h) { mAlignH = h; }
 
-const int& Label::GetVerticalAlignment() const { return vAlignment; }
-void Label::SetVerticalAlignment(int v) { vAlignment = v; UpdateTextOffsetY(); }
+const int& Label::GetAlignVertical() const { return mAlignV; }
+void Label::SetAlignVertical(int v) { mAlignV = v; UpdateTextOffsetY(); }
 
-const int& Label::GetTextWrap() const { return textWrap; }
-void Label::SetTextWrap(int w) { textWrap = w; }
+const int& Label::GetTextWrap() const { return mTextWrap; }
+void Label::SetTextWrap(int w) { mTextWrap = w; }
 
 void Label::RenderText(Console* g, int minX, int maxX, int minY, int maxY, WORD c) {
-	int y = minY + textOffsetY;
+	int y = minY + mTextOffsetY;
 
-	size_t nlPos = text.find(L'\n');
+	size_t nlPos = mText.find(L'\n');
 	size_t cIdx = 0;
-	while (cIdx < text.length() && y <= maxY) {
-		int elIdx = (nlPos == std::string::npos) ? text.length() : nlPos;
+	while (cIdx < mText.length() && y <= maxY) {
+		int elIdx = (nlPos == std::string::npos) ? mText.length() : nlPos;
 		int lineLen = elIdx - cIdx;
 
 		// Stay within bounds
 		if (lineLen > maxX - minX) {
-			if (textWrap == WRAP_WORD) {
-				elIdx = text.rfind(L' ', cIdx + (maxX - minX));
+			if (mTextWrap == WRAP_WORD) {
+				elIdx = mText.rfind(L' ', cIdx + (maxX - minX));
 				lineLen = elIdx - cIdx;
-			} else if (textWrap == WRAP_CHAR || lineLen > maxX - minX) { // def to char if no spac
+			} else if (mTextWrap == WRAP_CHAR || lineLen > maxX - minX) { // def to char if no spac
 				elIdx -= (lineLen - (maxX - minX));
 				lineLen = maxX - minX + 1;
 			}
 		}
 
 		int xOffset = 0;
-		if (hAlignment == TEXT_ALIGN_MID) xOffset = (maxX - minX - lineLen + 1) / 2;
-		else if (hAlignment == TEXT_ALIGN_MAX)  xOffset = maxX - minX - lineLen + 1;
+		if (mAlignH == TEXT_ALIGN_MID) xOffset = (maxX - minX - lineLen + 1) / 2;
+		else if (mAlignH == TEXT_ALIGN_MAX)  xOffset = maxX - minX - lineLen + 1;
 
-		g->Write(minX + xOffset, y, text.substr(cIdx, lineLen), c);
+		g->Write(minX + xOffset, y, mText.substr(cIdx, lineLen), c);
 
 		y++;
 		cIdx = elIdx + 1;
-		nlPos = text.find(L'\n', cIdx);
+		nlPos = mText.find(L'\n', cIdx);
 	}
 }
 
 void Label::Draw(Console* g) {
 	Element::Draw(g);
-	RenderText(g, bounds.left + border.GetWidth(), bounds.right - border.GetWidth(), bounds.top + border.GetWidth(), bounds.bottom - border.GetWidth(), textColor);
+	RenderText(g, mBounds.left + mBorder.GetWidth(), mBounds.right - mBorder.GetWidth(), mBounds.top + mBorder.GetWidth(), mBounds.bottom - mBorder.GetWidth(), mTextColor);
 }
 
-Button::Button(RECT b) : Label(b), handler(), OnPress(), OnRelease() { SetupHandler(); }
+Button::Button(RECT b) : Label(b), mHandler(), mPressAction(), mReleaseAction() { SetupHandler(); }
 
-void Button::SetBounds(RECT b) { Element::SetBounds(b); handler.SetBounds(b); }
+void Button::SetBounds(RECT b) { Element::SetBounds(b); mHandler.SetBounds(b); }
 
-const WORD& Button::GetPressedTextColor() const { return pressedTextColor; }
-void Button::SetPressedTextColor(WORD c) { pressedTextColor = c; }
+const WORD& Button::GetPressedTextColor() const { return mPressedTextColor; }
+void Button::SetPressedTextColor(WORD c) { mPressedTextColor = c; }
 
-const WCHAR& Button::GetPressedBackground() const { return pressedBackground; }
-void Button::SetPressedBackground(WCHAR b) { pressedBackground = b; }
+const WCHAR& Button::GetPressedBackground() const { return mPressedBackground; }
+void Button::SetPressedBackground(WCHAR b) { mPressedBackground = b; }
 
-const WORD& Button::GetPressedBackgroundColor() const { return pressedBackgroundColor; }
-void Button::SetPressedBackgroundColor(WORD c) { pressedBackgroundColor = c; }
+const WORD& Button::GetPressedBackgroundColor() const { return mPressedBackgroundColor; }
+void Button::SetPressedBackgroundColor(WORD c) { mPressedBackgroundColor = c; }
 
-Border& Button::GetPressedBorder() { return pressedBorder; }
-void Button::SetPressedBorder(Border b) { pressedBorder = b; }
+Border& Button::GetPressedBorder() { return mPressedBorder; }
+void Button::SetPressedBorder(Border b) { mPressedBorder = b; }
 
-MouseHandler& Button::GetHandler() { return handler; }
+void Button::SetPressAction(std::function<void(int)> f) { mPressAction = f; }
+void Button::SetReleaseAction(std::function<void(int)> f) { mReleaseAction = f; }
+
+MouseHandler& Button::GetHandler() { return mHandler; }
 
 void Button::SetupHandler() {
-	handler.SetBounds(bounds);
-	handler.SetOnPress([this](int m) { pressed = true; if (OnPress) OnPress(m); });
-	handler.SetOnRelease([this](int m) { pressed = false; if (OnRelease) OnRelease(m); });
+	mHandler.SetBounds(mBounds);
+	mHandler.SetPressAction([this](int m) { mPressed = true; if (mPressAction) mPressAction(m); });
+	mHandler.SetReleaseAction([this](int m) { mPressed = false; if (mReleaseAction) mReleaseAction(m); });
 }
 
 void Button::Draw(Console* g) {
-	WCHAR bg = pressed ? pressedBackground : background;
-	WORD bgC = pressed ? pressedBackgroundColor : backgroundColor;
-	WORD tC = pressed ? pressedTextColor : textColor;
+	WCHAR bg = mPressed ? mPressedBackground : mBackground;
+	WORD bgC = mPressed ? mPressedBackgroundColor : mBackgroundColor;
+	WORD tC = mPressed ? mPressedTextColor : mTextColor;
 
-	g->Rect(bounds, bg, bgC, true);
-	if (pressed) pressedBorder.Draw(g, bounds);
-	else border.Draw(g, bounds);
+	g->Rect(mBounds, bg, bgC, true);
+	if (mPressed) mPressedBorder.Draw(g, mBounds);
+	else mBorder.Draw(g, mBounds);
 
 	RenderText(g,
-			   bounds.left + (pressed ? pressedBorder.GetWidth() : border.GetWidth()),
-			   bounds.right - (pressed ? pressedBorder.GetWidth() : border.GetWidth()),
-			   bounds.top + (pressed ? pressedBorder.GetWidth() : border.GetWidth()),
-			   bounds.bottom - (pressed ? pressedBorder.GetWidth() : border.GetWidth()),
+			   mBounds.left + (mPressed ? mPressedBorder.GetWidth() : mBorder.GetWidth()),
+			   mBounds.right - (mPressed ? mPressedBorder.GetWidth() : mBorder.GetWidth()),
+			   mBounds.top + (mPressed ? mPressedBorder.GetWidth() : mBorder.GetWidth()),
+			   mBounds.bottom - (mPressed ? mPressedBorder.GetWidth() : mBorder.GetWidth()),
 			   tC);
 }
 
 Panel::Panel(RECT b) : Element(b), titleLabel({ b.left, b.top, b.right, b.top + titleHeight - 1 }) {
-	titleLabel.SetHorizontalAlignment(TEXT_ALIGN_MID);
-	titleLabel.SetVerticalAlignment(TEXT_ALIGN_MID);
+	titleLabel.SetAlignHorizontal(TEXT_ALIGN_MID);
+	titleLabel.SetAlignVertical(TEXT_ALIGN_MID);
 }
 
 Label& Panel::GetTitleLabel() { return titleLabel; }
