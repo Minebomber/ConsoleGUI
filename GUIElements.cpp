@@ -13,6 +13,9 @@ bool EventHandler::ReleaseActionExists() const { return (bool)mReleaseAction; }
 void EventHandler::InvokeReleaseAction(int i) { mReleaseAction(i); }
 void EventHandler::SetReleaseAction(std::function<void(int)> f) { mReleaseAction = f; }
 
+MouseHandler::MouseHandler() {}
+MouseHandler::MouseHandler(RECT b) : mBounds(b) {}
+
 const RECT& MouseHandler::GetBounds() { return mBounds; }
 void MouseHandler::SetBounds(RECT b) { mBounds = b; }
 
@@ -55,7 +58,6 @@ void Element::SetBackground(WCHAR b) { mBackground = b; }
 const WORD& Element::GetBackgroundColor() const { return mBackgroundColor; }
 void Element::SetBackgroundColor(WORD c) { mBackgroundColor = c; }
 
-Border& Element::GetBorder() { return mBorder; }
 void Element::SetBorder(Border b) { mBorder = b; }
 
 void Element::Draw(Console* g) {
@@ -69,7 +71,7 @@ Label::Label(const Label& e) : Element(e), mText(e.mText), mTextColor(e.mTextCol
 void Label::UpdateTextLines() {
 	mTextLines = 1;
 	for (size_t ci = 0, li = 0; ci < mText.length(); ci++) {
-		if (mText[ci] == L'\n') mTextLines++;
+		if (mText[ci] == L'\n') { mTextLines++; li = ci; }
 		if (ci - li > mBounds.right - mBounds.left - 2 * mBorder.GetWidth()) { mTextLines++; li = ci; }
 	}
 }
@@ -81,7 +83,7 @@ void Label::UpdateTextOffsetY() {
 }
 
 const std::wstring& Label::GetText() const { return mText; }
-void Label::SetText(std::wstring t) { mText = t; UpdateTextLines(); }
+void Label::SetText(std::wstring t) { mText = t; UpdateTextLines(); UpdateTextOffsetY(); }
 
 const WORD& Label::GetTextColor() const { return mTextColor; }
 void Label::SetTextColor(WORD c) { mTextColor = c; }
@@ -94,6 +96,8 @@ void Label::SetAlignVertical(int v) { mAlignV = v; UpdateTextOffsetY(); }
 
 const int& Label::GetTextWrap() const { return mTextWrap; }
 void Label::SetTextWrap(int w) { mTextWrap = w; }
+
+void Label::SetBorder(Border b) { mBorder = b; UpdateTextLines(); UpdateTextOffsetY(); }
 
 void Label::RenderText(Console* g, int minX, int maxX, int minY, int maxY, WORD c) {
 	int y = minY + mTextOffsetY;
@@ -191,7 +195,7 @@ Panel::Panel(RECT b) : Element(b), mTitleLabel({ b.left, b.top, b.right, b.top +
 Label& Panel::GetTitleLabel() { return mTitleLabel; }
 
 const int& Panel::GetTitleHeight() const { return mTitleHeight; }
-void Panel::SetTitleHeight(int h) { mTitleHeight = h; }
+void Panel::SetTitleHeight(int h) { mTitleHeight = h; SetBounds(mBounds); }
 
 void Panel::SetBounds(RECT b) { Element::SetBounds(b); mTitleLabel.SetBounds({ b.left, b.top, b.right, b.top + mTitleHeight - 1 }); }
 
@@ -204,7 +208,7 @@ ContentPanel::ContentPanel(RECT b) : Panel(b) {}
 ContentPanel::ContentPanel(RECT b, Element* c) : Panel(b), mpContent(c) {}
 
 Element* ContentPanel::GetContent() { return mpContent; }
-void ContentPanel::SetContent(Element* c) { mpContent = c; }
+void ContentPanel::SetContent(Element* c) { mpContent = c; SetBounds(mBounds); }
 
 void ContentPanel::SetBounds(RECT b) { Panel::SetBounds(b); if (mpContent) mpContent->SetBounds({ b.left, b.top + mTitleHeight, b.right, b.bottom }); }
 

@@ -205,6 +205,8 @@ void Console::Run() {
 const int& Console::GetScreenWidth() const { return screenWidth; }
 const int& Console::GetScreenHeight() const { return screenHeight; }
 
+const COORD& Console::GetMousePosition() const { return mousePosition; }
+
 const WCHAR& Console::GetBaseChar() const { return baseChar; }
 void Console::SetBaseChar(WCHAR c) { baseChar = c; }
 

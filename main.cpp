@@ -1,90 +1,81 @@
 #include "ConsoleGUI.h"
 
+class CustomView : public gui::Element {
+public:
+	gui::MouseHandler mHandler;
+	COORD c = { 0, 0 };
+	CustomView(RECT b) : gui::Element(b) { mHandler.SetButtons(gui::MOUSE_LEFT_BUTTON); }
+
+	void SetBorder(gui::Border b) override {
+		Element::SetBorder(b);
+		mHandler.SetBounds(
+			{
+			mBounds.left + b.GetWidth(), 
+			mBounds.top + b.GetWidth(), 
+			mBounds.right - b.GetWidth(), 
+			mBounds.bottom - b.GetWidth()
+			}
+		);
+	}
+
+	void Draw(gui::Console* g) override {
+		gui::Element::Draw(g);
+		g->Set(
+			mBounds.left + mBorder.GetWidth() + c.X - 2, 
+			mBounds.top + mBorder.GetWidth() + c.Y - 7, 
+			L' ', 
+			BG_DARK_RED
+		);
+	}
+};
+
 class Test : public gui::Console {
 private:
-	gui::Panel* panel;
-	gui::Button* lButton;
-	gui::Button* rButton;
+	gui::ContentPanel* panel;
+	CustomView* cV;
 
-	gui::Label* lLabel;
-	gui::Label* rLabel;
+	gui::Label* l;
 
 	int lClicks = 0;
 	int rClicks = 0;
 public:
 	bool Initialize() override {
 
-		panel = new gui::Panel({ 1, 1, 48, 28 });
+		panel = new gui::ContentPanel({ 1, 1, 94, 52 });
+		panel->SetTitleHeight(5);
+		panel->GetTitleLabel().SetText(L"Custom\nView\nTest");
+		panel->GetTitleLabel().SetTextColor(FG_BLACK | BG_WHITE);
+		panel->GetTitleLabel().SetBorder({ L' ', BG_GREY, 0 });
+		panel->GetTitleLabel().SetBackgroundColor(BG_WHITE);
 		panel->SetBackgroundColor(BG_DARK_GREY);
-		panel->GetTitleLabel().SetText(L"Click Counter Test");
-		panel->GetTitleLabel().SetTextColor(FG_BLACK | BG_GREY);
-		panel->GetTitleLabel().SetBackgroundColor(BG_GREY);
+		
+		cV = new CustomView({});
+		panel->SetContent(cV);
+		cV->SetBackgroundColor(BG_BLACK);
+		cV->SetBorder({ L' ', BG_DARK_GREY, 1 });
+		cV->mHandler.SetPressAction(
+			[this](int m) {
+				cV->c = GetMousePosition();
+			}
+		);
+
 		AddElement(panel);
-
-		lButton = new gui::Button({3, 15, 23, 26});
-		lButton->SetText(L"Left\nClick\nButton");
-		lButton->SetAlignHorizontal(gui::TEXT_ALIGN_MID);
-		lButton->SetAlignVertical(gui::TEXT_ALIGN_MID);
-		lButton->SetTextColor(FG_BLACK | BG_WHITE);
-		lButton->SetPressedTextColor(FG_WHITE | BG_GREY);
-		lButton->SetPressedBackgroundColor(BG_GREY);
-		lButton->SetButtons(gui::MOUSE_LEFT_BUTTON);
-		lButton->SetPressAction([this](int m) {
-			lClicks++;
-			lLabel->SetText(L"Clicks\n" + std::to_wstring(lClicks));
-		});
-		AddElement(lButton);
-
-		rButton = new gui::Button({ 26, 15, 46, 26 });
-		rButton->SetText(L"Right\nClick\nButton");
-		rButton->SetAlignHorizontal(gui::TEXT_ALIGN_MID);
-		rButton->SetAlignVertical(gui::TEXT_ALIGN_MID);
-		rButton->SetTextColor(FG_BLACK | BG_WHITE);
-		rButton->SetPressedTextColor(FG_WHITE | BG_GREY);
-		rButton->SetPressedBackgroundColor(BG_GREY);
-		rButton->SetButtons(gui::MOUSE_RIGHT_BUTTON);
-		rButton->SetPressAction([this](int m) {
-			rClicks++;
-			rLabel->SetText(L"Clicks\n" + std::to_wstring(rClicks));
-		});
-		AddElement(rButton);
-
-		lLabel = new gui::Label({3, 5, 23, 13});
-		lLabel->SetText(L"Clicks\n0");
-		lLabel->SetTextColor(FG_WHITE | BG_BLACK);
-		lLabel->SetBackgroundColor(BG_BLACK);
-		lLabel->SetAlignHorizontal(gui::TEXT_ALIGN_MID);
-		lLabel->SetAlignVertical(gui::TEXT_ALIGN_MID);
-		lLabel->GetBorder().SetColor(BG_GREY);
-		lLabel->GetBorder().SetWidth(1);
-		AddElement(lLabel);
-
-		rLabel = new gui::Label({ 26, 5, 46, 13 });
-		rLabel->SetText(L"Clicks\n0");
-		rLabel->SetTextColor(FG_WHITE | BG_BLACK);
-		rLabel->SetBackgroundColor(BG_BLACK);
-		rLabel->SetAlignHorizontal(gui::TEXT_ALIGN_MID);
-		rLabel->SetAlignVertical(gui::TEXT_ALIGN_MID);
-		rLabel->GetBorder().SetColor(BG_GREY);
-		rLabel->GetBorder().SetWidth(1);
-		AddElement(rLabel);
-
+		AddMouseHandler(&cV->mHandler);
+		
+		//AddElement(l);
 
 		return true;
 	}
 
 	~Test() {
 		delete panel;
-		delete lButton;
-		delete rButton;
-		delete lLabel;
-		delete rLabel;
+		
 	}
 };
 
 int main() {
 	Test t;
-	t.CreateConsole(50, 50, 14, 14);
+	t.CreateConsole(96, 54, 12, 12);
 	t.Run();
 	return 0;
 }

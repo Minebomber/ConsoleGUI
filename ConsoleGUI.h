@@ -68,6 +68,8 @@ public:
 	const int& GetScreenWidth() const;
 	const int& GetScreenHeight() const;
 
+	const COORD& GetMousePosition() const;
+
 	const WCHAR& GetBaseChar() const;
 	void SetBaseChar(WCHAR c);
 	const WORD& GetBaseColor() const;

@@ -38,6 +38,9 @@ protected:
 	RECT mBounds = { 0, 0, 0, 0 };
 	int mButtons = 0;
 public:
+	MouseHandler();
+	MouseHandler(RECT b);
+
 	const RECT& GetBounds();
 	void SetBounds(RECT b);
 
@@ -96,8 +99,7 @@ public:
 	const WORD& GetBackgroundColor() const;
 	void SetBackgroundColor(WORD c);
 
-	Border& GetBorder();
-	void SetBorder(Border b);
+	virtual void SetBorder(Border b);
 
 	virtual void Draw(Console* g);
 };
@@ -147,6 +149,8 @@ public:
 
 	const int& GetTextWrap() const;
 	void SetTextWrap(int w);
+
+	void SetBorder(Border b) override;
 
 	virtual void Draw(Console* g) override;
 };
