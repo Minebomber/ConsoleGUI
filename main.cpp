@@ -3,8 +3,9 @@
 class CustomView : public gui::Element {
 public:
 	gui::MouseHandler mHandler;
-	COORD c = { 0, 0 };
-	CustomView(RECT b) : gui::Element(b) { mHandler.SetButtons(gui::MOUSE_LEFT_BUTTON); }
+	COORD mLeftPos = { 10, 20 };
+	COORD mRightPos = { 30, 20 };
+	CustomView(RECT b) : gui::Element(b) { mHandler.SetButtons(gui::MOUSE_LEFT_BUTTON | gui::MOUSE_RIGHT_BUTTON); }
 
 	void SetBorder(gui::Border b) override {
 		Element::SetBorder(b);
@@ -21,10 +22,17 @@ public:
 	void Draw(gui::Console* g) override {
 		gui::Element::Draw(g);
 		g->Set(
-			mBounds.left + mBorder.GetWidth() + c.X - 2, 
-			mBounds.top + mBorder.GetWidth() + c.Y - 7, 
+			mBounds.left + mBorder.GetWidth() + mLeftPos.X - 2, 
+			mBounds.top + mBorder.GetWidth() + mLeftPos.Y - 7,
 			L' ', 
 			BG_DARK_RED
+		);
+
+		g->Set(
+			mBounds.left + mBorder.GetWidth() + mRightPos.X - 2,
+			mBounds.top + mBorder.GetWidth() + mRightPos.Y - 7,
+			L' ',
+			BG_DARK_BLUE
 		);
 	}
 };
@@ -55,7 +63,14 @@ public:
 		cV->SetBorder({ L' ', BG_DARK_GREY, 1 });
 		cV->mHandler.SetPressAction(
 			[this](int m) {
-				cV->c = GetMousePosition();
+				switch (m) {
+				case gui::MOUSE_LEFT_BUTTON:
+					cV->mLeftPos = GetMousePosition();
+					break;
+				case gui::MOUSE_RIGHT_BUTTON:
+					cV->mRightPos = GetMousePosition();
+					break;
+				}	
 			}
 		);
 

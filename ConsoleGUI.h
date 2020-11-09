@@ -18,24 +18,24 @@ class Element;
 
 class Console {
 private:
-	int screenWidth = 0;
-	int screenHeight = 0;
-	int charWidth = 0;
-	int charHeight = 0;
+	int mScreenWidth = 0;
+	int mScreenHeight = 0;
+	int mCharWidth = 0;
+	int mCharHeight = 0;
 
-	HANDLE console = nullptr;
-	HANDLE consoleIn = nullptr;
+	HANDLE mConsole = nullptr;
+	HANDLE mConsoleIn = nullptr;
 
-	CONSOLE_FONT_INFOEX originalConsoleFontInfo;
-	CONSOLE_SCREEN_BUFFER_INFO originalConsoleScreenBufferInfo;
-	CONSOLE_CURSOR_INFO originalConsoleCursorInfo;
+	CONSOLE_FONT_INFOEX mOriginalConsoleFontInfo;
+	CONSOLE_SCREEN_BUFFER_INFO mOriginalConsoleScreenBufferInfo;
+	CONSOLE_CURSOR_INFO mOriginalConsoleCursorInfo;
 
-	SMALL_RECT windowRect{ 0, 0, 0, 0 };
+	SMALL_RECT mWindowRect{ 0, 0, 0, 0 };
 
-	CHAR_INFO* screenBuffer = nullptr;
+	CHAR_INFO* mScreenBuffer = nullptr;
 
-	bool initialized = false;
-	bool running = false;
+	bool mInitialized = false;
+	bool mRunning = false;
 
 	struct KeyState {
 		bool pressed;
@@ -43,14 +43,14 @@ private:
 		bool held;
 	} keyboard[256] = { 0 }, mouseButtons[5] = { 0 };
 
-	COORD mousePosition;
+	COORD mMousePosition;
 
-	WCHAR baseChar = L' ';
-	WORD baseColor = BG_BLACK;
+	WCHAR mBaseChar = L' ';
+	WORD mBaseColor = BG_BLACK;
 
-	std::vector<Element*> elements;
+	std::vector<Element*> mElements;
 
-	std::vector<MouseHandler*> mouseHandlers;
+	std::vector<MouseHandler*> mMouseHandlers;
 public:
 	Console();
 	virtual ~Console();

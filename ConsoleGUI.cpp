@@ -3,39 +3,39 @@
 namespace gui {
 
 Console::Console() {
-	console = GetStdHandle(STD_OUTPUT_HANDLE);
-	consoleIn = GetStdHandle(STD_INPUT_HANDLE);
+	mConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	mConsoleIn = GetStdHandle(STD_INPUT_HANDLE);
 
 	// Get console defaults
-	originalConsoleFontInfo.cbSize = sizeof(originalConsoleFontInfo);
-	GetCurrentConsoleFontEx(console, false, &originalConsoleFontInfo);
-	GetConsoleScreenBufferInfo(console, &originalConsoleScreenBufferInfo);
-	GetConsoleCursorInfo(console, &originalConsoleCursorInfo);
-	originalConsoleCursorInfo.bVisible = false;
-	SetConsoleCursorInfo(console, &originalConsoleCursorInfo);
+	mOriginalConsoleFontInfo.cbSize = sizeof(mOriginalConsoleFontInfo);
+	GetCurrentConsoleFontEx(mConsole, false, &mOriginalConsoleFontInfo);
+	GetConsoleScreenBufferInfo(mConsole, &mOriginalConsoleScreenBufferInfo);
+	GetConsoleCursorInfo(mConsole, &mOriginalConsoleCursorInfo);
+	mOriginalConsoleCursorInfo.bVisible = false;
+	SetConsoleCursorInfo(mConsole, &mOriginalConsoleCursorInfo);
 }
 
 Console::~Console() {
 	// Set console to default
-	SetCurrentConsoleFontEx(console, false, &originalConsoleFontInfo);
-	SetConsoleScreenBufferSize(console, originalConsoleScreenBufferInfo.dwSize);
-	SetConsoleWindowInfo(console, true, &originalConsoleScreenBufferInfo.srWindow);
-	originalConsoleCursorInfo.bVisible = true;
-	SetConsoleCursorInfo(console, &originalConsoleCursorInfo);
+	SetCurrentConsoleFontEx(mConsole, false, &mOriginalConsoleFontInfo);
+	SetConsoleScreenBufferSize(mConsole, mOriginalConsoleScreenBufferInfo.dwSize);
+	SetConsoleWindowInfo(mConsole, true, &mOriginalConsoleScreenBufferInfo.srWindow);
+	mOriginalConsoleCursorInfo.bVisible = true;
+	SetConsoleCursorInfo(mConsole, &mOriginalConsoleCursorInfo);
 }
 
 void Console::CreateConsole(int sW, int sH, int cW, int cH) {
-	screenWidth = sW; screenHeight = sH; charWidth = cW; charHeight = cH;
+	mScreenWidth = sW; mScreenHeight = sH; mCharWidth = cW; mCharHeight = cH;
 
-	if (console == INVALID_HANDLE_VALUE) return;
+	if (mConsole == INVALID_HANDLE_VALUE) return;
 
-	windowRect = { 0, 0, 1, 1 };
-	SetConsoleWindowInfo(console, TRUE, &windowRect);
+	mWindowRect = { 0, 0, 1, 1 };
+	SetConsoleWindowInfo(mConsole, TRUE, &mWindowRect);
 
-	COORD coord = { (SHORT)screenWidth, (SHORT)screenHeight };
-	if (!SetConsoleScreenBufferSize(console, coord)) return;
+	COORD coord = { (SHORT)mScreenWidth, (SHORT)mScreenHeight };
+	if (!SetConsoleScreenBufferSize(mConsole, coord)) return;
 
-	if (!SetConsoleActiveScreenBuffer(console)) return;
+	if (!SetConsoleActiveScreenBuffer(mConsole)) return;
 
 	CONSOLE_FONT_INFOEX cfi;
 	cfi.cbSize = sizeof(cfi);
@@ -46,34 +46,34 @@ void Console::CreateConsole(int sW, int sH, int cW, int cH) {
 	cfi.FontWeight = FW_NORMAL;
 	wcscpy_s(cfi.FaceName, L"Consolas");
 
-	if (!SetCurrentConsoleFontEx(console, false, &cfi)) return;
+	if (!SetCurrentConsoleFontEx(mConsole, false, &cfi)) return;
 
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
-	if (!GetConsoleScreenBufferInfo(console, &csbi)) return;
+	if (!GetConsoleScreenBufferInfo(mConsole, &csbi)) return;
 
 	if (sW > csbi.dwMaximumWindowSize.X) return;
 	if (sH > csbi.dwMaximumWindowSize.Y) return;
 
-	windowRect = { 0, 0, (SHORT)sW - 1, (SHORT)sH - 1 };
-	if (!SetConsoleWindowInfo(console, TRUE, &windowRect)) return;
+	mWindowRect = { 0, 0, (SHORT)sW - 1, (SHORT)sH - 1 };
+	if (!SetConsoleWindowInfo(mConsole, TRUE, &mWindowRect)) return;
 
-	if (!SetConsoleMode(consoleIn, ENABLE_EXTENDED_FLAGS | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT)) return;
+	if (!SetConsoleMode(mConsoleIn, ENABLE_EXTENDED_FLAGS | ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT)) return;
 
-	screenBuffer = new CHAR_INFO[sW * sH];
-	Fill(baseChar, baseColor);
+	mScreenBuffer = new CHAR_INFO[sW * sH];
+	Fill(mBaseChar, mBaseColor);
 
-	initialized = true;
+	mInitialized = true;
 }
 
 void Console::Set(int x, int y, WCHAR chr, WORD clr) {
-	screenBuffer[y * screenWidth + x].Char.UnicodeChar = chr;
-	screenBuffer[y * screenWidth + x].Attributes = clr;
+	mScreenBuffer[y * mScreenWidth + x].Char.UnicodeChar = chr;
+	mScreenBuffer[y * mScreenWidth + x].Attributes = clr;
 }
 
 void Console::Fill(WCHAR chr, WORD clr) {
-	for (int i = 0; i < screenWidth * screenHeight; i++) {
-		screenBuffer[i].Char.UnicodeChar = chr;
-		screenBuffer[i].Attributes = clr;
+	for (int i = 0; i < mScreenWidth * mScreenHeight; i++) {
+		mScreenBuffer[i].Char.UnicodeChar = chr;
+		mScreenBuffer[i].Attributes = clr;
 	}
 }
 
@@ -88,13 +88,13 @@ void Console::Rect(RECT r, WCHAR chr, WORD clr, bool fill) {
 
 void Console::Write(int x, int y, std::wstring str, WORD clr) {
 	for (size_t i = 0; i < str.size(); i++) {
-		screenBuffer[y * screenWidth + x + i].Char.UnicodeChar = str[i];
-		screenBuffer[y * screenWidth + x + i].Attributes = clr;
+		mScreenBuffer[y * mScreenWidth + x + i].Char.UnicodeChar = str[i];
+		mScreenBuffer[y * mScreenWidth + x + i].Attributes = clr;
 	}
 }
 
 void Console::Run() {
-	if (!initialized) return;
+	if (!mInitialized) return;
 
 	if (!Initialize()) return;
 
@@ -108,8 +108,8 @@ void Console::Run() {
 
 	float elapsedTime = 1;
 
-	running = true;
-	while (running) {
+	mRunning = true;
+	while (mRunning) {
 		// Time
 		timePoint2 = std::chrono::system_clock::now();
 		std::chrono::duration<float> timeDelta = timePoint2 - timePoint1;
@@ -134,8 +134,8 @@ void Console::Run() {
 
 		INPUT_RECORD inputBuffer[32];
 		DWORD events = 0;
-		GetNumberOfConsoleInputEvents(consoleIn, &events);
-		if (events > 0) ReadConsoleInput(consoleIn, inputBuffer, 32, &events);
+		GetNumberOfConsoleInputEvents(mConsoleIn, &events);
+		if (events > 0) ReadConsoleInput(mConsoleIn, inputBuffer, 32, &events);
 
 		for (DWORD i = 0; i < events; i++) {
 			switch (inputBuffer[i].EventType) {
@@ -145,7 +145,7 @@ void Console::Run() {
 			case MOUSE_EVENT:
 				switch (inputBuffer[i].Event.MouseEvent.dwEventFlags) {
 				case MOUSE_MOVED:
-					mousePosition = inputBuffer[i].Event.MouseEvent.dwMousePosition;
+					mMousePosition = inputBuffer[i].Event.MouseEvent.dwMousePosition;
 					break;
 				case 0:
 				case DOUBLE_CLICK:
@@ -175,22 +175,22 @@ void Console::Run() {
 					mouseButtons[m].held = false;
 				}
 				// Check click handlers only if state change
-				for (MouseHandler* h : mouseHandlers) {
+				for (MouseHandler* h : mMouseHandlers) {
 					if (h->mButtons & (1 << m) &&
-						mousePosition.X >= h->mBounds.left &&
-						mousePosition.X <= h->mBounds.right &&
-						mousePosition.Y >= h->mBounds.top &&
-						mousePosition.Y <= h->mBounds.bottom) {
-						if (mouseButtons[m].pressed && h->mPressAction) h->mPressAction(m);
-						if (mouseButtons[m].released && h->mReleaseAction) h->mReleaseAction(m);
+						mMousePosition.X >= h->mBounds.left &&
+						mMousePosition.X <= h->mBounds.right &&
+						mMousePosition.Y >= h->mBounds.top &&
+						mMousePosition.Y <= h->mBounds.bottom) {
+						if (mouseButtons[m].pressed && h->mPressAction) h->mPressAction(1 << m);
+						if (mouseButtons[m].released && h->mReleaseAction) h->mReleaseAction(1 << m);
 					}
 				}
 			}
 			oldMouseStates[m] = newMouseStates[m];
 		}
 
-		Fill(baseChar, baseColor);
-		for (Element* e : elements) {
+		Fill(mBaseChar, mBaseColor);
+		for (Element* e : mElements) {
 			e->Draw(this);
 		}
 
@@ -198,37 +198,37 @@ void Console::Run() {
 		WCHAR title[256];
 		swprintf(title, 256, L"FPS: %3.0f", 1 / elapsedTime);
 		SetConsoleTitle(title);
-		WriteConsoleOutput(console, screenBuffer, { (SHORT)screenWidth, (SHORT)screenHeight }, { 0, 0 }, &windowRect);
+		WriteConsoleOutput(mConsole, mScreenBuffer, { (SHORT)mScreenWidth, (SHORT)mScreenHeight }, { 0, 0 }, &mWindowRect);
 	}
 }
 
-const int& Console::GetScreenWidth() const { return screenWidth; }
-const int& Console::GetScreenHeight() const { return screenHeight; }
+const int& Console::GetScreenWidth() const { return mScreenWidth; }
+const int& Console::GetScreenHeight() const { return mScreenHeight; }
 
-const COORD& Console::GetMousePosition() const { return mousePosition; }
+const COORD& Console::GetMousePosition() const { return mMousePosition; }
 
-const WCHAR& Console::GetBaseChar() const { return baseChar; }
-void Console::SetBaseChar(WCHAR c) { baseChar = c; }
+const WCHAR& Console::GetBaseChar() const { return mBaseChar; }
+void Console::SetBaseChar(WCHAR c) { mBaseChar = c; }
 
-const WORD& Console::GetBaseColor() const { return baseColor; }
-void Console::SetBaseColor(WORD c) { baseColor = c; }
+const WORD& Console::GetBaseColor() const { return mBaseColor; }
+void Console::SetBaseColor(WORD c) { mBaseColor = c; }
 
 void Console::AddElement(Element* e) {
-	for (size_t i = 0; i < elements.size(); i++) {
-		if (elements.at(i) == nullptr) {
+	for (size_t i = 0; i < mElements.size(); i++) {
+		if (mElements.at(i) == nullptr) {
 			e->mId = i;
-			elements.at(i) = e;
+			mElements.at(i) = e;
 			return;
 		}
 	}
-	elements.push_back(e);
-	e->mId = elements.size() - 1;
+	mElements.push_back(e);
+	e->mId = mElements.size() - 1;
 
 	if (auto b = dynamic_cast<Button*>(e)) AddMouseHandler(&b->mHandler);
 }
 
 Element* Console::GetElement(int i) {
-	return elements.at(i);
+	return mElements.at(i);
 }
 
 Element* Console::GetElement(Element* e) {
@@ -236,8 +236,8 @@ Element* Console::GetElement(Element* e) {
 }
 
 void Console::RemoveElement(int i) {
-	elements.at(i)->mId = -1;
-	elements.at(i) = nullptr;
+	mElements.at(i)->mId = -1;
+	mElements.at(i) = nullptr;
 }
 
 void Console::RemoveElement(Element* e) {
@@ -247,19 +247,19 @@ void Console::RemoveElement(Element* e) {
 }
 
 void Console::AddMouseHandler(MouseHandler* h) {
-	for (size_t i = 0; i < mouseHandlers.size(); i++) {
-		if (mouseHandlers.at(i) == nullptr) {
+	for (size_t i = 0; i < mMouseHandlers.size(); i++) {
+		if (mMouseHandlers.at(i) == nullptr) {
 			h->mId = i;
-			mouseHandlers.at(i) = h;
+			mMouseHandlers.at(i) = h;
 			return;
 		}
 	}
-	mouseHandlers.push_back(h);
-	h->mId = elements.size() - 1;
+	mMouseHandlers.push_back(h);
+	h->mId = mElements.size() - 1;
 }
 
 MouseHandler* Console::GetMouseHandler(int i) {
-	return mouseHandlers.at(i);
+	return mMouseHandlers.at(i);
 }
 
 MouseHandler* Console::GetMouseHandler(MouseHandler* h) {
@@ -267,8 +267,8 @@ MouseHandler* Console::GetMouseHandler(MouseHandler* h) {
 }
 
 void Console::RemoveMouseHandler(int i) {
-	mouseHandlers.at(i)->mId = -1;
-	mouseHandlers.at(i) = nullptr;
+	mMouseHandlers.at(i)->mId = -1;
+	mMouseHandlers.at(i) = nullptr;
 }
 
 void Console::RemoveMouseHandler(MouseHandler* h) {
