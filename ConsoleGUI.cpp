@@ -118,16 +118,23 @@ void Console::Run() {
 
 		for (int k = 0; k < 256; k++) {
 			newKeyStates[k] = GetAsyncKeyState(k);
-			keyboard[k].pressed = false;
-			keyboard[k].released = false;
+			mKeyboard[k].pressed = false;
+			mKeyboard[k].released = false;
 			if (newKeyStates[k] != oldKeyStates[k]) {
 				if (newKeyStates[k] & 0x8000) {
-					keyboard[k].pressed = !keyboard[k].held;
-					keyboard[k].held = true;
+					mKeyboard[k].pressed = !mKeyboard[k].held;
+					mKeyboard[k].held = true;
 				} else {
-					keyboard[k].released = true;
-					keyboard[k].held = false;
+					mKeyboard[k].released = true;
+					mKeyboard[k].held = false;
 				}
+				if (mActiveKeyboardHandler) {
+					if (mActiveKeyboardHandler->mKeys.find(k) != std::wstring::npos) {
+						if (mKeyboard[k].pressed && mActiveKeyboardHandler->mPressAction) mActiveKeyboardHandler->mPressAction(this, k);
+						if (mKeyboard[k].released && mActiveKeyboardHandler->mReleaseAction) mActiveKeyboardHandler->mReleaseAction(this, k);
+					}
+				}
+				
 			}
 			oldKeyStates[k] = newKeyStates[k];
 		}
@@ -164,16 +171,19 @@ void Console::Run() {
 
 		// Mouse
 		for (int m = 0; m < 3; m++) {
-			mouseButtons[m].pressed = false;
-			mouseButtons[m].released = false;
+			mMouseButtons[m].pressed = false;
+			mMouseButtons[m].released = false;
 			if (newMouseStates[m] != oldMouseStates[m]) {
 				if (newMouseStates[m]) {
-					mouseButtons[m].pressed = true;
-					mouseButtons[m].held = true;
+					mMouseButtons[m].pressed = true;
+					mMouseButtons[m].held = true;
 				} else {
-					mouseButtons[m].released = true;
-					mouseButtons[m].held = false;
+					mMouseButtons[m].released = true;
+					mMouseButtons[m].held = false;
 				}
+
+				if (m == 0 && mMouseButtons[m].pressed) mActiveKeyboardHandler = nullptr;
+
 				// Check click handlers only if state change
 				for (MouseHandler* h : mMouseHandlers) {
 					if (h->mButtons & (1 << m) &&
@@ -181,8 +191,8 @@ void Console::Run() {
 						mMousePosition.X <= h->mBounds.right &&
 						mMousePosition.Y >= h->mBounds.top &&
 						mMousePosition.Y <= h->mBounds.bottom) {
-						if (mouseButtons[m].pressed && h->mPressAction) h->mPressAction(1 << m);
-						if (mouseButtons[m].released && h->mReleaseAction) h->mReleaseAction(1 << m);
+						if (mMouseButtons[m].pressed && h->mPressAction) h->mPressAction(this, 1 << m);
+						if (mMouseButtons[m].released && h->mReleaseAction) h->mReleaseAction(this, 1 << m);
 					}
 				}
 			}
@@ -201,6 +211,8 @@ void Console::Run() {
 		WriteConsoleOutput(mConsole, mScreenBuffer, { (SHORT)mScreenWidth, (SHORT)mScreenHeight }, { 0, 0 }, &mWindowRect);
 	}
 }
+
+void Console::Stop() { mRunning = false; }
 
 const int& Console::GetScreenWidth() const { return mScreenWidth; }
 const int& Console::GetScreenHeight() const { return mScreenHeight; }
@@ -224,7 +236,7 @@ void Console::AddElement(Element* e) {
 	mElements.push_back(e);
 	e->mId = mElements.size() - 1;
 
-	if (auto b = dynamic_cast<Button*>(e)) AddMouseHandler(&b->mHandler);
+	if (e->mMouseHandler) AddMouseHandler(e->mMouseHandler);
 }
 
 Element* Console::GetElement(int i) {
@@ -236,14 +248,14 @@ Element* Console::GetElement(Element* e) {
 }
 
 void Console::RemoveElement(int i) {
+	if (mElements.at(i)->mMouseHandler) RemoveMouseHandler(mElements.at(i)->mMouseHandler);
+
 	mElements.at(i)->mId = -1;
 	mElements.at(i) = nullptr;
 }
 
 void Console::RemoveElement(Element* e) {
 	RemoveElement(e->mId);
-
-	if (auto b = dynamic_cast<Button*>(e)) RemoveMouseHandler(&b->mHandler);
 }
 
 void Console::AddMouseHandler(MouseHandler* h) {
@@ -255,24 +267,31 @@ void Console::AddMouseHandler(MouseHandler* h) {
 		}
 	}
 	mMouseHandlers.push_back(h);
-	h->mId = mElements.size() - 1;
+	h->mId = mMouseHandlers.size() - 1;
 }
 
-MouseHandler* Console::GetMouseHandler(int i) {
-	return mMouseHandlers.at(i);
-}
+MouseHandler* Console::GetMouseHandler(int i) { return mMouseHandlers.at(i); }
 
-MouseHandler* Console::GetMouseHandler(MouseHandler* h) {
-	return GetMouseHandler(h->mId);
-}
+MouseHandler* Console::GetMouseHandler(MouseHandler* h) { return GetMouseHandler(h->mId); }
 
 void Console::RemoveMouseHandler(int i) {
 	mMouseHandlers.at(i)->mId = -1;
 	mMouseHandlers.at(i) = nullptr;
 }
 
-void Console::RemoveMouseHandler(MouseHandler* h) {
-	RemoveMouseHandler(h->mId);
+void Console::RemoveMouseHandler(MouseHandler* h) { RemoveMouseHandler(h->mId); }
+
+KeyboardHandler* Console::GetActiveKeyboardHandler() const { return mActiveKeyboardHandler; }
+void Console::SetActiveKeyboardHandler(KeyboardHandler* h) { mActiveKeyboardHandler = h; }
+
+void RunAfterDelay(int ms, std::function<void()> f) {
+	std::thread t( [ms, f] { std::this_thread::sleep_for(std::chrono::milliseconds(ms)); f(); });
+	t.detach();
+}
+
+std::future<void> ExecuteAsync(std::function<void()> f) {
+	std::future<void> r = std::async(std::launch::async, f);
+	return r;
 }
 
 }

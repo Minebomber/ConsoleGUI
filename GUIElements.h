@@ -11,19 +11,21 @@ class EventHandler {
 	friend class Console;
 protected:
 	int mId = -1;
-	std::function<void(int)> mPressAction;
-	std::function<void(int)> mReleaseAction;
+	std::function<void(Console*, int)> mPressAction;
+	std::function<void(Console*, int)> mReleaseAction;
 public:
+	EventHandler();
+
 	const int& GetId() const;
 	void SetId(int i);
 
 	bool PressActionExists() const;
-	void InvokePressAction(int i);
-	void SetPressAction(std::function<void(int)> f);
+	void InvokePressAction(Console *c, int i);
+	void SetPressAction(std::function<void(Console*, int)> f);
 
 	bool ReleaseActionExists() const;
-	void InvokeReleaseAction(int i);
-	void SetReleaseAction(std::function<void(int)> f);
+	void InvokeReleaseAction(Console* c, int i);
+	void SetReleaseAction(std::function<void(Console*, int)> f);
 };
 
 enum MouseButtons {
@@ -40,12 +42,25 @@ protected:
 public:
 	MouseHandler();
 	MouseHandler(RECT b);
+	MouseHandler(RECT b, int bt);
 
 	const RECT& GetBounds();
 	void SetBounds(RECT b);
 
 	const int& GetButtons();
 	void SetButtons(int b);
+};
+
+class KeyboardHandler : public EventHandler {
+	friend class Console;
+protected:
+	std::wstring mKeys = L"";
+public:
+	KeyboardHandler();
+	KeyboardHandler(std::wstring k);
+
+	const std::wstring& GetKeys() const;
+	void SetKeys(std::wstring k);
 };
 
 class Border {
@@ -82,6 +97,10 @@ protected:
 	WCHAR mBackground = L' ';
 	WORD mBackgroundColor = BG_WHITE;
 	Border mBorder = { 0 };
+	MouseHandler* mMouseHandler = nullptr;
+	KeyboardHandler* mKeyboardHandler = nullptr;
+
+	virtual void SetupHandlers(); 
 public:
 	Element(RECT b);
 	Element(const Element& e);
@@ -99,9 +118,10 @@ public:
 	const WORD& GetBackgroundColor() const;
 	void SetBackgroundColor(WORD c);
 
+	const Border& GetBorder() const;
 	virtual void SetBorder(Border b);
 
-	virtual void Draw(Console* g);
+	virtual void Draw(Console* c);
 };
 
 enum TextAlignment {
@@ -130,7 +150,7 @@ protected:
 	int mTextOffsetY = 0;
 	virtual void UpdateTextOffsetY();
 
-	void RenderText(Console* g, int minX, int maxX, int minY, int maxY, WORD c);
+	void RenderText(Console* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl);
 public:
 	Label(RECT b);
 	Label(const Label& e);
@@ -152,7 +172,7 @@ public:
 
 	void SetBorder(Border b) override;
 
-	virtual void Draw(Console* g) override;
+	virtual void Draw(Console* c) override;
 };
 
 class Button : public Label {
@@ -164,16 +184,12 @@ protected:
 	Border mPressedBorder = { 0 };
 	bool mPressed = false;
 
-	MouseHandler mHandler;
-
 	std::function<void(int)> mPressAction;
 	std::function<void(int)> mReleaseAction;
 
-	void SetupHandler();
+	virtual void SetupHandlers() override;
 public:
 	Button(RECT b);
-
-	void SetBounds(RECT b) override;
 
 	const WORD& GetPressedTextColor() const;
 	void SetPressedTextColor(WORD c);
@@ -184,7 +200,7 @@ public:
 	const WORD& GetPressedBackgroundColor() const;
 	void SetPressedBackgroundColor(WORD c);
 
-	Border& GetPressedBorder();
+	const Border& GetPressedBorder() const;
 	void SetPressedBorder(Border b);
 
 	void SetPressAction(std::function<void(int)> f);
@@ -193,7 +209,39 @@ public:
 	const int& GetButtons();
 	void SetButtons(int b);
 
-	virtual void Draw(Console* g) override;
+	virtual void Draw(Console* c) override;
+};
+
+enum class CharsetT {
+	NUMERIC = 1,
+	ALPHABET = 2,
+	ALPHANUM = 3,
+};
+
+class Charset {
+public:
+	static std::wstring Get(CharsetT t);
+};
+
+class TextField : public Label {
+	friend class Console;
+protected:
+	virtual void SetupHandlers() override;
+
+	bool mCapitalize = false;
+	bool mDeleting = false;
+	int mNumDeleted = 0;
+
+	std::future<void> mDeleteFuture;
+
+	void Backspace();
+
+	CharsetT mCharset = CharsetT::ALPHANUM;
+public:
+	TextField(RECT b);
+	TextField(RECT b, CharsetT c);
+
+	virtual void Draw(Console* c) override;
 };
 
 class Panel : public Element {
@@ -211,13 +259,13 @@ public:
 
 	virtual void SetBounds(RECT b) override;
 
-	virtual void Draw(Console* g) override;
+	virtual void Draw(Console* c) override;
 };
 
 class ContentPanel : public Panel {
 	friend class Console;
 protected:
-	Element* mpContent = nullptr;
+	Element* mContent = nullptr;
 public:
 	ContentPanel(RECT b);
 	ContentPanel(RECT b, Element* c);
@@ -227,6 +275,6 @@ public:
 
 	virtual void SetBounds(RECT b) override;
 
-	virtual void Draw(Console* g) override;
+	virtual void Draw(Console* c) override;
 };
 }

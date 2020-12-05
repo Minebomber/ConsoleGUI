@@ -1,90 +1,63 @@
 #include "ConsoleGUI.h"
 
-class CustomView : public gui::Element {
-public:
-	gui::MouseHandler mHandler;
-	COORD mLeftPos = { 10, 20 };
-	COORD mRightPos = { 30, 20 };
-	CustomView(RECT b) : gui::Element(b) { mHandler.SetButtons(gui::MOUSE_LEFT_BUTTON | gui::MOUSE_RIGHT_BUTTON); }
-
-	void SetBorder(gui::Border b) override {
-		Element::SetBorder(b);
-		mHandler.SetBounds(
-			{
-			mBounds.left + b.GetWidth(), 
-			mBounds.top + b.GetWidth(), 
-			mBounds.right - b.GetWidth(), 
-			mBounds.bottom - b.GetWidth()
-			}
-		);
-	}
-
-	void Draw(gui::Console* g) override {
-		gui::Element::Draw(g);
-		g->Set(
-			mBounds.left + mBorder.GetWidth() + mLeftPos.X - 2, 
-			mBounds.top + mBorder.GetWidth() + mLeftPos.Y - 7,
-			L' ', 
-			BG_DARK_RED
-		);
-
-		g->Set(
-			mBounds.left + mBorder.GetWidth() + mRightPos.X - 2,
-			mBounds.top + mBorder.GetWidth() + mRightPos.Y - 7,
-			L' ',
-			BG_DARK_BLUE
-		);
-	}
-};
-
 class Test : public gui::Console {
 private:
-	gui::ContentPanel* panel;
-	CustomView* cV;
-
-	gui::Label* l;
-
-	int lClicks = 0;
-	int rClicks = 0;
+	gui::TextField* tf = nullptr;
+	gui::Label* lab = nullptr;
+	gui::Button* btn = nullptr;
 public:
 	bool Initialize() override {
 
-		panel = new gui::ContentPanel({ 1, 1, 94, 52 });
-		panel->SetTitleHeight(5);
-		panel->GetTitleLabel().SetText(L"Custom\nView\nTest");
-		panel->GetTitleLabel().SetTextColor(FG_BLACK | BG_WHITE);
-		panel->GetTitleLabel().SetBorder({ L' ', BG_GREY, 0 });
-		panel->GetTitleLabel().SetBackgroundColor(BG_WHITE);
-		panel->SetBackgroundColor(BG_DARK_GREY);
-		
-		cV = new CustomView({});
-		panel->SetContent(cV);
-		cV->SetBackgroundColor(BG_BLACK);
-		cV->SetBorder({ L' ', BG_DARK_GREY, 1 });
-		cV->mHandler.SetPressAction(
-			[this](int m) {
-				switch (m) {
-				case gui::MOUSE_LEFT_BUTTON:
-					cV->mLeftPos = GetMousePosition();
-					break;
-				case gui::MOUSE_RIGHT_BUTTON:
-					cV->mRightPos = GetMousePosition();
-					break;
-				}	
+		tf = new gui::TextField({ 5, 5, 25, 7 }, gui::CharsetT::ALPHANUM);
+		tf->SetText(L"Textfield");
+		tf->SetTextColor(FG_WHITE | BG_DARK_GREY);
+		tf->SetBorder({ L' ', BG_GREY, 0 });
+		tf->SetBackgroundColor(BG_DARK_GREY);
+		AddElement(tf);
+
+		lab = new gui::Label({ 5, 10, 25, 12 });
+		lab->SetText(L"");
+		lab->SetTextColor(FG_WHITE);
+		lab->SetBackgroundColor(BG_BLACK);
+		lab->SetBorder({ L'-', FG_DARK_GREY });
+		lab->SetAlignHorizontal(gui::TEXT_ALIGN_MID);
+		AddElement(lab);
+
+		btn = new gui::Button({ 30, 5, 39, 7 });
+		btn->SetText(L"Submit");
+		btn->SetTextColor(BG_GREY | FG_BLACK);
+		btn->SetBackgroundColor(BG_GREY);
+		btn->SetPressedTextColor(BG_DARK_GREY | FG_WHITE);
+		btn->SetPressedBackgroundColor(BG_DARK_GREY);
+		btn->SetAlignHorizontal(gui::TEXT_ALIGN_MID);
+		btn->SetAlignVertical(gui::TEXT_ALIGN_MID);
+		btn->SetButtons(gui::MOUSE_LEFT_BUTTON);
+
+		btn->SetPressAction(
+			[&](int m) {
+				if (tf->GetText() == L"TEST") {
+					lab->SetText(L"Valid");
+					lab->SetTextColor(FG_DARK_GREEN);
+				} else {
+					lab->SetText(L"Invalid");
+					lab->SetTextColor(FG_DARK_RED);
+				}
+				gui::RunAfterDelay(1500, [this]() {
+					lab->SetText(L"");
+					lab->SetTextColor(FG_WHITE);
+					}
+				);
 			}
 		);
 
-		AddElement(panel);
-		AddMouseHandler(&cV->mHandler);
-		
-		//AddElement(l);
-
+		AddElement(btn);
 		return true;
 	}
 
 	~Test() {
-		delete panel;
-		
+		delete tf;
+		delete btn;
+		delete lab;
 	}
 };
 

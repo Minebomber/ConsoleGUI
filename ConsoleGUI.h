@@ -8,12 +8,16 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <future>
+#include <thread>
+#include <atomic>
 #include "Colors.h"
 #include "GUIElements.h"
 
 namespace gui {
 
 class MouseHandler;
+class KeyboardHandler;
 class Element;
 
 class Console {
@@ -41,7 +45,7 @@ private:
 		bool pressed;
 		bool released;
 		bool held;
-	} keyboard[256] = { 0 }, mouseButtons[5] = { 0 };
+	} mKeyboard[256] = { 0 }, mMouseButtons[3] = { 0 };
 
 	COORD mMousePosition;
 
@@ -51,6 +55,8 @@ private:
 	std::vector<Element*> mElements;
 
 	std::vector<MouseHandler*> mMouseHandlers;
+
+	KeyboardHandler* mActiveKeyboardHandler = nullptr;
 public:
 	Console();
 	virtual ~Console();
@@ -62,6 +68,7 @@ public:
 	void Write(int x, int y, std::wstring str, WORD clr);
 
 	void Run();
+	void Stop();
 
 	virtual bool Initialize() = 0;
 
@@ -86,5 +93,18 @@ public:
 	MouseHandler* GetMouseHandler(MouseHandler* h);
 	void RemoveMouseHandler(int i);
 	void RemoveMouseHandler(MouseHandler* h);
+
+	/*void AddKeyboardHandler(KeyboardHandler* h);
+	KeyboardHandler* GetKeyboardHandler(int i);
+	KeyboardHandler* GetKeyboardHandler(KeyboardHandler* h);
+	void RemoveKeyboardHandler(int i);
+	void RemoveKeyboardHandler(KeyboardHandler* h);*/
+
+	KeyboardHandler* GetActiveKeyboardHandler() const;
+	void SetActiveKeyboardHandler(KeyboardHandler* h);
+
 };
+
+void RunAfterDelay(int ms, std::function<void()> f);
+std::future<void> ExecuteAsync(std::function<void()> f);
 }
