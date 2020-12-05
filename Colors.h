@@ -1,5 +1,5 @@
 #pragma once
-
+namespace gui {
 enum Color {
 	FG_BLACK = 0x0000,
 	FG_DARK_BLUE = 0x0001,
@@ -34,3 +34,4 @@ enum Color {
 	BG_YELLOW = 0x00E0,
 	BG_WHITE = 0x00F0,
 };
+}
