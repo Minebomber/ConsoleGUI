@@ -226,7 +226,11 @@ public:
 class TextField : public Label {
 	friend class Console;
 protected:
-	virtual void SetupHandlers() override;
+	WORD mEnabledTextColor = FG_WHITE;
+	WCHAR mEnabledBackground = L' ';
+	WORD mEnabledBackgroundColor = BG_WHITE;
+	Border mEnabledBorder = { 0 };
+	bool mEnabled = false;
 
 	bool mCapitalize = false;
 	bool mDeleting = false;
@@ -234,12 +238,28 @@ protected:
 
 	std::future<void> mDeleteFuture;
 
-	void Backspace();
-
 	CharsetT mCharset = CharsetT::ALPHANUM;
+
+	virtual void SetupHandlers() override;
+	void Backspace();
 public:
 	TextField(RECT b);
 	TextField(RECT b, CharsetT c);
+
+	const WORD& GetEnabledTextColor() const;
+	void SetEnabledTextColor(WORD c);
+
+	const WCHAR& GetEnabledBackground() const;
+	void SetEnabledBackground(WCHAR b);
+
+	const WORD& GetEnabledBackgroundColor() const;
+	void SetEnabledBackgroundColor(WORD c);
+
+	const Border& GetEnabledBorder() const;
+	void SetEnabledBorder(Border b);
+
+	const bool& GetEnabled() const;
+	void SetEnabled(bool b);
 
 	virtual void Draw(Console* c) override;
 };

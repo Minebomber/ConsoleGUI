@@ -8,14 +8,18 @@ private:
 public:
 	bool Initialize() override {
 
-		tf = new gui::TextField({ 5, 5, 25, 7 }, gui::CharsetT::ALPHANUM);
+		tf = new gui::TextField({ 5, 5, 27, 9 }, gui::CharsetT::ALPHANUM);
 		tf->SetText(L"Textfield");
 		tf->SetTextColor(gui::FG_WHITE | gui::BG_DARK_GREY);
-		tf->SetBorder({ L' ', gui::BG_GREY, 0 });
+		tf->SetBorder({ L' ', gui::BG_GREY, 1 });
 		tf->SetBackgroundColor(gui::BG_DARK_GREY);
+		tf->SetEnabledTextColor(gui::FG_WHITE | gui::BG_BLACK);
+		tf->SetEnabledBackgroundColor(gui::BG_BLACK);
+		tf->SetEnabledBorder({L' ', gui::BG_WHITE, 1});
+		tf->SetTextWrap(gui::WRAP_WORD);
 		AddElement(tf);
 
-		lab = new gui::Label({ 5, 10, 25, 12 });
+		lab = new gui::Label({ 6, 11, 26, 13 });
 		lab->SetText(L"");
 		lab->SetTextColor(gui::FG_WHITE);
 		lab->SetBackgroundColor(gui::BG_BLACK);
@@ -23,7 +27,7 @@ public:
 		lab->SetAlignHorizontal(gui::TEXT_ALIGN_MID);
 		AddElement(lab);
 
-		btn = new gui::Button({ 30, 5, 39, 7 });
+		btn = new gui::Button({ 30, 6, 39, 8 });
 		btn->SetText(L"Submit");
 		btn->SetTextColor(gui::BG_GREY | gui::FG_BLACK);
 		btn->SetBackgroundColor(gui::BG_GREY);
@@ -35,7 +39,7 @@ public:
 
 		btn->SetPressAction(
 			[&](int m) {
-				if (tf->GetText() == L"TEST") {
+				if (tf->GetText() == L"test") {
 					lab->SetText(L"Valid");
 					lab->SetTextColor(gui::FG_DARK_GREEN);
 				} else {

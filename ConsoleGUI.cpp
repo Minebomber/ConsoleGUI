@@ -182,8 +182,10 @@ void Console::Run() {
 					mMouseButtons[m].held = false;
 				}
 
-				if (m == 0 && mMouseButtons[m].pressed) mActiveKeyboardHandler = nullptr;
-
+				if (m == 0 && mMouseButtons[m].pressed) {
+					mActiveKeyboardHandler = nullptr;
+					ApplyToElements([](Element* e) { if (auto t = dynamic_cast<TextField*>(e)) t->SetEnabled(false); });
+				}
 				// Check click handlers only if state change
 				for (MouseHandler* h : mMouseHandlers) {
 					if (h->mButtons & (1 << m) &&
@@ -283,6 +285,10 @@ void Console::RemoveMouseHandler(MouseHandler* h) { RemoveMouseHandler(h->mId); 
 
 KeyboardHandler* Console::GetActiveKeyboardHandler() const { return mActiveKeyboardHandler; }
 void Console::SetActiveKeyboardHandler(KeyboardHandler* h) { mActiveKeyboardHandler = h; }
+
+void Console::ApplyToElements(std::function<void(Element*)> f) {
+	for (Element* e : mElements) f(e);
+}
 
 void RunAfterDelay(int ms, std::function<void()> f) {
 	std::thread t( [ms, f] { std::this_thread::sleep_for(std::chrono::milliseconds(ms)); f(); });

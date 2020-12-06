@@ -236,8 +236,9 @@ void TextField::SetupHandlers() {
 
 	mMouseHandler = new MouseHandler(mBounds, MOUSE_LEFT_BUTTON);
 
-	mMouseHandler->SetReleaseAction([this](Console* c, int m) {
+	mMouseHandler->SetPressAction([this](Console* c, int m) {
 		c->SetActiveKeyboardHandler(mKeyboardHandler);
+		mEnabled = true;
 	});
 
 	mKeyboardHandler = new KeyboardHandler(L"\x08\x0D\x10 " + Charset::Get(mCharset));
@@ -273,17 +274,38 @@ void TextField::SetupHandlers() {
 	});
 }
 
+const WORD& TextField::GetEnabledTextColor() const { return mEnabledTextColor; }
+void TextField::SetEnabledTextColor(WORD c) { mEnabledTextColor = c; }
 
+const WCHAR& TextField::GetEnabledBackground() const { return mEnabledBackground; }
+void TextField::SetEnabledBackground(WCHAR b) { mEnabledBackground = b; }
+
+const WORD& TextField::GetEnabledBackgroundColor() const { return mEnabledBackgroundColor; }
+void TextField::SetEnabledBackgroundColor(WORD c) { mEnabledBackgroundColor = c; }
+
+const Border& TextField::GetEnabledBorder() const { return mEnabledBorder; }
+void TextField::SetEnabledBorder(Border b) { mEnabledBorder = b; }
+
+const bool& TextField::GetEnabled() const { return mEnabled; }
+void TextField::SetEnabled(bool b) { mEnabled = b; }
 
 void TextField::Draw(Console* c) {
-	Element::Draw(c);
-	RenderText(
-		c, mBounds.left + mBorder.GetWidth(), 
-		mBounds.right - mBorder.GetWidth(), 
-		mBounds.top + mBorder.GetWidth(), 
-		mBounds.bottom - mBorder.GetWidth(), 
-		mText + L"_", 
-		mTextColor
+
+	WCHAR bg = mEnabled ? mEnabledBackground : mBackground;
+	WORD bgC = mEnabled ? mEnabledBackgroundColor : mBackgroundColor;
+	WORD tC = mEnabled ? mEnabledTextColor : mTextColor;
+
+	c->Rect(mBounds, bg, bgC, true);
+	if (mEnabled) mEnabledBorder.Draw(c, mBounds);
+	else mBorder.Draw(c, mBounds);
+
+	RenderText(c,
+		mBounds.left + (mEnabled ? mEnabledBorder.GetWidth() : mBorder.GetWidth()),
+		mBounds.right - (mEnabled ? mEnabledBorder.GetWidth() : mBorder.GetWidth()),
+		mBounds.top + (mEnabled ? mEnabledBorder.GetWidth() : mBorder.GetWidth()),
+		mBounds.bottom - (mEnabled ? mEnabledBorder.GetWidth() : mBorder.GetWidth()),
+		mText + (mEnabled ? L"_" : L""),
+		tC
 	);
 }
 

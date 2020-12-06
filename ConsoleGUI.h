@@ -94,15 +94,10 @@ public:
 	void RemoveMouseHandler(int i);
 	void RemoveMouseHandler(MouseHandler* h);
 
-	/*void AddKeyboardHandler(KeyboardHandler* h);
-	KeyboardHandler* GetKeyboardHandler(int i);
-	KeyboardHandler* GetKeyboardHandler(KeyboardHandler* h);
-	void RemoveKeyboardHandler(int i);
-	void RemoveKeyboardHandler(KeyboardHandler* h);*/
-
 	KeyboardHandler* GetActiveKeyboardHandler() const;
 	void SetActiveKeyboardHandler(KeyboardHandler* h);
 
+	void ApplyToElements(std::function<void(Element*)> f);
 };
 
 void RunAfterDelay(int ms, std::function<void()> f);
