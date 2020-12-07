@@ -10,7 +10,11 @@ class MouseHandler;
 class KeyboardHandler;
 
 class Window {
+	friend class Console;
 protected:
+	int mWidth = 0;
+	int mHeight = 0;
+
 	std::vector<Element*> mElements;
 
 	std::vector<MouseHandler*> mMouseHandlers;
@@ -23,14 +27,19 @@ protected:
 		bool held;
 	} mKeyboard[256] = { 0 }, mMouseButtons[3] = { 0 };
 
-	COORD mMousePosition;
+	COORD mMousePosition{ 0 };
 
 	WCHAR mBaseChar = L' ';
 	WORD mBaseColor = 0;
 
 	CHAR_INFO* mBuffer = nullptr;
 public:
-	Window() {}
+	Window(int w, int h) : mWidth(w), mHeight(h), mBuffer(new CHAR_INFO[w * h]) {}
+
+	void Set(int x, int y, WCHAR chr, WORD clr);
+	void Fill(WCHAR chr, WORD clr);
+	void Rect(RECT r, WCHAR chr, WORD clr, bool fill = false);
+	void Write(int x, int y, std::wstring str, WORD clr);
 
 	const COORD& GetMousePosition() const { return mMousePosition; }
 
@@ -55,8 +64,9 @@ public:
 	void SetActiveKeyboardHandler(KeyboardHandler* h) { mActiveKeyboardHandler = h; }
 
 	void ApplyToElements(std::function<void(Element*)> f) { for (Element* e : mElements) f(e); }
-};
 
+	void Display();
+};
 
 }
 

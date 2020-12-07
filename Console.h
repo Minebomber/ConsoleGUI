@@ -12,12 +12,14 @@
 #include <thread>
 #include <atomic>
 #include "Elements.h"
+#include "Window.h"
 
 namespace gui {
 
 class MouseHandler;
 class KeyboardHandler;
 class Element;
+class Window;
 
 class Console {
 private:
@@ -35,36 +37,17 @@ private:
 
 	SMALL_RECT mWindowRect{ 0, 0, 0, 0 };
 
-	CHAR_INFO* mScreenBuffer = nullptr;
-
 	bool mInitialized = false;
 	bool mRunning = false;
 
-	struct KeyState {
-		bool pressed;
-		bool released;
-		bool held;
-	} mKeyboard[256] = { 0 }, mMouseButtons[3] = { 0 };
-
-	COORD mMousePosition;
-
-	WCHAR mBaseChar = L' ';
-	WORD mBaseColor = 0;
-
-	std::vector<Element*> mElements;
-
-	std::vector<MouseHandler*> mMouseHandlers;
-
-	KeyboardHandler* mActiveKeyboardHandler = nullptr;
+	Window* mCurrentWindow = nullptr;
 public:
 	Console();
 	virtual ~Console();
 	void CreateConsole(int sW, int sH, int cW, int cH);
 
-	void Set(int x, int y, WCHAR chr, WORD clr);
-	void Fill(WCHAR chr, WORD clr);
-	void Rect(RECT r, WCHAR chr, WORD clr, bool fill = false);
-	void Write(int x, int y, std::wstring str, WORD clr);
+	Window* GetCurrentWindow() { return mCurrentWindow; }
+	void SetCurrentWindow(Window* w) { mCurrentWindow = w; }
 
 	void Run();
 	void Stop();
@@ -73,30 +56,6 @@ public:
 
 	const int& GetScreenWidth() const { return mScreenWidth; }
 	const int& GetScreenHeight() const { return mScreenHeight; }
-
-	const COORD& GetMousePosition() const { return mMousePosition; }
-
-	const WCHAR& GetBaseChar() const { return mBaseChar; }
-	void SetBaseChar(WCHAR c) { mBaseChar = c; }
-	const WORD& GetBaseColor() const { return mBaseColor; }
-	void SetBaseColor(WORD c) { mBaseColor = c; }
-
-	void AddElement(Element* e);
-	Element* GetElement(int i);
-	Element* GetElement(Element* e);
-	void RemoveElement(int i);
-	void RemoveElement(Element* e);
-
-	void AddMouseHandler(MouseHandler* h);
-	MouseHandler* GetMouseHandler(int i);
-	MouseHandler* GetMouseHandler(MouseHandler* h);
-	void RemoveMouseHandler(int i);
-	void RemoveMouseHandler(MouseHandler* h);
-
-	KeyboardHandler* GetActiveKeyboardHandler() const { return mActiveKeyboardHandler; }
-	void SetActiveKeyboardHandler(KeyboardHandler* h) { mActiveKeyboardHandler = h; }
-
-	void ApplyToElements(std::function<void(Element*)> f) { for (Element* e : mElements) f(e); }
 };
 
 inline void RunAfterDelay(int ms, std::function<void()> f) {

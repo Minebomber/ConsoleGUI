@@ -2,7 +2,7 @@
 
 namespace gui {
 
-void Border::Draw(Console* c, RECT b) {
+void Border::Draw(Window* c, RECT b) {
 
 	for (int wi = 0; wi < mWidth; wi++) {
 		int x0 = b.left + wi; int x1 = b.right - wi;
@@ -25,7 +25,7 @@ void Border::Draw(Console* c, RECT b) {
 	}
 }
 
-void TitledBorder::Draw(Console* c, RECT b) {
+void TitledBorder::Draw(Window* c, RECT b) {
 	Border::Draw(c, b);
 	int spanX = b.right - b.left;
 	int tW = mTitle.length();
@@ -35,7 +35,7 @@ void TitledBorder::Draw(Console* c, RECT b) {
 	c->Set(x0 + tW, b.top, L'\x2523', mColor);
 }
 
-void Element::Draw(Console* c) {
+void Element::Draw(Window* c) {
 	c->Rect(mBounds, L' ', mBackgroundColor, true);
 	mBorder->Draw(c, mBounds);
 }
@@ -54,7 +54,7 @@ void Label::UpdateTextOffsetY() {
 	else if (mAlignV == TEXT_ALIGN_MAX) mTextOffsetY = mBounds.bottom - mBounds.top - 2 * mBorder->GetWidth() - mTextLines;
 }
 
-void Label::RenderText(Console* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl) {
+void Label::RenderText(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl) {
 	int spanX = maxX - minX;
 	int y = minY + mTextOffsetY;
 	size_t nlPos = s.find(L'\n');
@@ -87,7 +87,7 @@ void Label::RenderText(Console* c, int minX, int maxX, int minY, int maxY, std::
 	}
 }
 
-void Label::Draw(Console* c) {
+void Label::Draw(Window* c) {
 	Element::Draw(c);
 	RenderText(
 		c, 
@@ -102,11 +102,11 @@ void Label::Draw(Console* c) {
 
 void Button::SetupHandlers() {
 	mMouseHandler = new MouseHandler(mBounds, MOUSE_LEFT_BUTTON);
-	mMouseHandler->SetPressAction([this](Console* c, int m) { mPressed = true; if (mPressAction) mPressAction(m); });
-	mMouseHandler->SetReleaseAction([this](Console* c, int m) { mPressed = false; if (mReleaseAction) mReleaseAction(m); });
+	mMouseHandler->SetPressAction([this](Window* c, int m) { mPressed = true; if (mPressAction) mPressAction(m); });
+	mMouseHandler->SetReleaseAction([this](Window* c, int m) { mPressed = false; if (mReleaseAction) mReleaseAction(m); });
 }
 
-void Button::Draw(Console* c) {
+void Button::Draw(Window* c) {
 	WORD bgC = mPressed ? mPressedBackgroundColor : mBackgroundColor;
 	WORD tC = mPressed ? mPressedTextColor : mTextColor;
 
@@ -136,14 +136,14 @@ void TextField::SetupHandlers() {
 
 	mMouseHandler = new MouseHandler(mBounds, MOUSE_LEFT_BUTTON);
 
-	mMouseHandler->SetPressAction([this](Console* c, int m) {
+	mMouseHandler->SetPressAction([this](Window* c, int m) {
 		c->SetActiveKeyboardHandler(mKeyboardHandler);
 		mEnabled = true;
 	});
 
 	mKeyboardHandler = new KeyboardHandler(L"\x08\x0D\x10" + mCharset);
 
-	mKeyboardHandler->SetPressAction([this](Console* c, int k) {
+	mKeyboardHandler->SetPressAction([this](Window* c, int k) {
 		if (k == VK_SHIFT) mCapitalize = true;
 		else if (k == VK_BACK) {
 			mDeleting = true;
@@ -165,7 +165,7 @@ void TextField::SetupHandlers() {
 		}
 	});
 
-	mKeyboardHandler->SetReleaseAction([this](Console* c, int k) {
+	mKeyboardHandler->SetReleaseAction([this](Window* c, int k) {
 		if (k == VK_SHIFT) mCapitalize = false;
 		else if (k == VK_BACK) {
 			mDeleting = false;
@@ -174,7 +174,7 @@ void TextField::SetupHandlers() {
 	});
 }
 
-void TextField::Draw(Console* c) {
+void TextField::Draw(Window* c) {
 	WORD bgC = mEnabled ? mEnabledBackgroundColor : mBackgroundColor;
 	WORD tC = mEnabled ? mEnabledTextColor : mTextColor;
 
@@ -192,12 +192,12 @@ void TextField::Draw(Console* c) {
 	);
 }
 
-void Panel::Draw(Console* c) {
+void Panel::Draw(Window* c) {
 	Element::Draw(c);
 	mTitleLabel.Draw(c);
 }
 
-void ContentPanel::Draw(Console* c) {
+void ContentPanel::Draw(Window* c) {
 	Panel::Draw(c);
 	if (mContent) mContent->Draw(c);
 }
