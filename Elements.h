@@ -186,7 +186,7 @@ public:
 	const WORD& GetBackgroundColor() const { return mBackgroundColor; }
 	void SetBackgroundColor(WORD c) { mBackgroundColor = c; }
 
-	Border& GetBorder() { return *mBorder; }
+	Border* GetBorder() { return mBorder; }
 	virtual void SetBorder(Border* b) { if (mBorder) delete mBorder; mBorder = b; }
 
 	virtual void Draw(Window* c);
@@ -257,7 +257,7 @@ public:
 	const WORD& GetPressedBackgroundColor() const { return mPressedBackgroundColor; }
 	void SetPressedBackgroundColor(WORD c) { mPressedBackgroundColor = c; }
 
-	Border& GetPressedBorder() { return *mPressedBorder; }
+	Border* GetPressedBorder() { return mPressedBorder; }
 	void SetPressedBorder(Border* b) { if (mPressedBorder) delete mPressedBorder; mPressedBorder = b; }
 
 	const bool& GetPressed() const { return mPressed; }
@@ -301,7 +301,7 @@ public:
 	const WORD& GetEnabledBackgroundColor() const { return mEnabledBackgroundColor; }
 	void SetEnabledBackgroundColor(WORD c) { mEnabledBackgroundColor = c; }
 
-	Border& GetEnabledBorder() { return* mEnabledBorder; }
+	Border* GetEnabledBorder() { return mEnabledBorder; }
 	void SetEnabledBorder(Border* b) { if (mEnabledBorder) delete mEnabledBorder; mEnabledBorder = b; }
 
 	const bool& GetEnabled() const { return mEnabled; }
