@@ -2,48 +2,86 @@
 
 class Test : public gui::Console {
 private:
-	gui::TextField* tf = nullptr;
-	gui::Label* lab = nullptr;
-	gui::Button* btn = nullptr;
-
-	void CheckText(int m) {
-		if (tf->GetText() == L"test") {
-			lab->SetText(L"Valid");
-			lab->SetTextColor(gui::FG_DARK_GREEN);
+	gui::Panel* pnl;
+	gui::Label* l1, * l2, * l3;
+	gui::TextField* tf1, * tf2, * tf3;
+	gui::Button* btn;
+	
+	void Check(int _) {
+		if (tf1->GetText() == L"a") {
+			l1->SetTextColor(gui::FG_DARK_GREEN);
 		} else {
-			lab->SetText(L"Invalid");
-			lab->SetTextColor(gui::FG_DARK_RED);
+			l1->SetTextColor(gui::FG_DARK_RED);
 		}
-		gui::RunAfterDelay(1500, [this]() {
-			lab->SetText(L"");
-			lab->SetTextColor(gui::FG_WHITE);
-			}
-		);
+
+		if (tf2->GetText() == L"b") {
+			l2->SetTextColor(gui::FG_DARK_GREEN);
+		} else {
+			l2->SetTextColor(gui::FG_DARK_RED);
+		}
+
+		if (tf3->GetText() == L"c") {
+			l3->SetTextColor(gui::FG_DARK_GREEN);
+		} else {
+			l3->SetTextColor(gui::FG_DARK_RED);
+		}
+
+		gui::RunAfterDelay(500, [this]() {
+			l1->SetTextColor(gui::FG_WHITE);
+			l2->SetTextColor(gui::FG_WHITE);
+			l3->SetTextColor(gui::FG_WHITE);
+			tf1->SetText(L"");
+			tf2->SetText(L"");
+			tf3->SetText(L"");
+		});
 	}
 
 public:
 	bool Initialize() override {
-		tf = new gui::TextField({ 5, 5, 27, 9 }, gui::Charset::Alphanum());
-		tf->SetText(L"Textfield");
-		tf->SetTextColor(gui::FG_WHITE | gui::BG_DARK_GREY);
-		tf->SetBorder({ L' ', gui::BG_GREY, 1 });
-		tf->SetBackgroundColor(gui::BG_DARK_GREY);
-		tf->SetEnabledTextColor(gui::FG_WHITE | gui::BG_BLACK);
-		tf->SetEnabledBackgroundColor(gui::BG_BLACK);
-		tf->SetEnabledBorder({L' ', gui::BG_WHITE, 1});
-		tf->SetTextWrap(gui::WRAP_WORD);
-		AddElement(tf);
+		pnl = new gui::Panel({ 2, 2, 28, 24 });
+		pnl->SetBackgroundColor(gui::BG_BLACK);
+		pnl->SetBorder({ L' ', gui::BG_DARK_CYAN, 1 });
+		pnl->GetTitleLabel().SetText(L"Test Program");
+		pnl->GetTitleLabel().SetBackgroundColor(gui::BG_DARK_CYAN);
+		pnl->GetTitleLabel().SetTextColor(gui::FG_WHITE | gui::BG_DARK_CYAN);
+		pnl->SetTitleHeight(5);
+		AddElement(pnl);
 
-		lab = new gui::Label({ 6, 11, 26, 13 });
-		lab->SetText(L"");
-		lab->SetTextColor(gui::FG_WHITE);
-		lab->SetBackgroundColor(gui::BG_BLACK);
-		lab->SetBorder({ L'-', gui::FG_DARK_GREY });
-		lab->SetAlignHorizontal(gui::TEXT_ALIGN_MID);
-		AddElement(lab);
+		l1 = new gui::Label({ 5, 9, 11, 9 });
+		l1->SetText(L"Value 1");
+		l1->SetBackgroundColor(gui::BG_BLACK);
+		l1->SetTextColor(gui::FG_WHITE);
+		AddElement(l1);
 
-		btn = new gui::Button({ 30, 6, 39, 8 });
-		btn->SetText(L"Submit");
+		l2 = new gui::Label(*l1);
+		l2->SetText(L"Value 2");
+		l2->SetBounds({ 5, 13, 11, 13 });
+		AddElement(l2);
+
+		l3 = new gui::Label(*l1);
+		l3->SetText(L"Value 3");
+		l3->SetBounds({ 5, 17, 11, 17 });
+		AddElement(l3);
+
+		tf1 = new gui::TextField({13, 8, 25, 10}, gui::Charset::Alphanum());
+		tf1->SetBackgroundColor(gui::BG_DARK_GREY);
+		tf1->SetTextColor(gui::FG_WHITE | gui::BG_DARK_GREY);
+		tf1->SetBorder({ L' ', gui::BG_GREY, 1 });
+		tf1->SetEnabledBackgroundColor(gui::BG_BLACK);
+		tf1->SetEnabledTextColor(gui::FG_WHITE | gui::BG_BLACK);
+		tf1->SetEnabledBorder({ L'#', gui::FG_WHITE, 1 });
+		AddElement(tf1);
+
+		tf2 = new gui::TextField(*tf1);
+		tf2->SetBounds({ 13, 12, 25, 14 });
+		AddElement(tf2);
+
+		tf3 = new gui::TextField(*tf1);
+		tf3->SetBounds({ 13, 16, 25, 18 });
+		AddElement(tf3);
+
+		btn = new gui::Button({ 6, 20, 24, 22 });
+		btn->SetText(L"Check");
 		btn->SetTextColor(gui::BG_GREY | gui::FG_BLACK);
 		btn->SetBackgroundColor(gui::BG_GREY);
 		btn->SetPressedTextColor(gui::BG_DARK_GREY | gui::FG_WHITE);
@@ -52,22 +90,23 @@ public:
 		btn->SetAlignVertical(gui::TEXT_ALIGN_MID);
 		btn->SetButtons(gui::MOUSE_LEFT_BUTTON);
 
-		btn->SetPressAction(std::bind(&Test::CheckText, this, std::placeholders::_1));
-
 		AddElement(btn);
+		btn->SetPressAction(std::bind(&Test::Check, this, std::placeholders::_1));
+
 		return true;
 	}
 
 	~Test() {
-		delete tf;
+		delete pnl;
+		delete l1; delete l2; delete l3;
+		delete tf1; delete tf2; delete tf3;
 		delete btn;
-		delete lab;
 	}
 };
 
 int main() {
 	Test t;
-	t.CreateConsole(96, 54, 12, 12);
+	t.CreateConsole(31, 27, 12, 18);
 	t.Run();
 	return 0;
 }

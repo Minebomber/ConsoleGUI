@@ -217,6 +217,8 @@ public:
 
 	void SetBorder(Border b) override { mBorder = b; UpdateTextLines(); UpdateTextOffsetY(); }
 
+	virtual void SetBounds(RECT b) override { Element::SetBounds(b); UpdateTextLines(); UpdateTextOffsetY();}
+
 	virtual void Draw(Console* c) override;
 };
 
@@ -307,6 +309,10 @@ protected:
 	Label mTitleLabel;
 public:
 	Panel(RECT b) : Element(b), mTitleLabel({ b.left, b.top, b.right, b.top + mTitleHeight - 1 }) {
+		mTitleLabel.SetAlignHorizontal(TEXT_ALIGN_MID);
+		mTitleLabel.SetAlignVertical(TEXT_ALIGN_MID);
+	}
+	Panel(RECT b, int h) : Element(b), mTitleHeight(h), mTitleLabel({ b.left, b.top, b.right, b.top + mTitleHeight - 1 }) {
 		mTitleLabel.SetAlignHorizontal(TEXT_ALIGN_MID);
 		mTitleLabel.SetAlignVertical(TEXT_ALIGN_MID);
 	}

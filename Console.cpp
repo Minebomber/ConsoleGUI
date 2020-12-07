@@ -228,6 +228,7 @@ const WORD& Console::GetBaseColor() const { return mBaseColor; }
 void Console::SetBaseColor(WORD c) { mBaseColor = c; }
 
 void Console::AddElement(Element* e) {
+	if (e->GetId() != -1) return;
 	for (size_t i = 0; i < mElements.size(); i++) {
 		if (mElements.at(i) == nullptr) {
 			e->mId = i;
@@ -261,6 +262,7 @@ void Console::RemoveElement(Element* e) {
 }
 
 void Console::AddMouseHandler(MouseHandler* h) {
+	if (h->GetId() != -1) return;
 	for (size_t i = 0; i < mMouseHandlers.size(); i++) {
 		if (mMouseHandlers.at(i) == nullptr) {
 			h->mId = i;
