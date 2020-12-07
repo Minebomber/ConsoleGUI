@@ -111,14 +111,14 @@ void Button::Draw(Window* c) {
 	WORD tC = mPressed ? mPressedTextColor : mTextColor;
 
 	c->Rect(mBounds, L' ', bgC, true);
-	if (mPressed) mPressedBorder.Draw(c, mBounds);
+	if (mPressed) mPressedBorder->Draw(c, mBounds);
 	else mBorder->Draw(c, mBounds);
 
 	RenderText(c,
-		mBounds.left + (mPressed ? mPressedBorder.GetWidth() : mBorder->GetWidth()),
-		mBounds.right - (mPressed ? mPressedBorder.GetWidth() : mBorder->GetWidth()),
-		mBounds.top + (mPressed ? mPressedBorder.GetWidth() : mBorder->GetWidth()),
-		mBounds.bottom - (mPressed ? mPressedBorder.GetWidth() : mBorder->GetWidth()),
+		mBounds.left + (mPressed ? mPressedBorder->GetWidth() : mBorder->GetWidth()),
+		mBounds.right - (mPressed ? mPressedBorder->GetWidth() : mBorder->GetWidth()),
+		mBounds.top + (mPressed ? mPressedBorder->GetWidth() : mBorder->GetWidth()),
+		mBounds.bottom - (mPressed ? mPressedBorder->GetWidth() : mBorder->GetWidth()),
 		mText,
 		tC
 	);
@@ -179,14 +179,14 @@ void TextField::Draw(Window* c) {
 	WORD tC = mEnabled ? mEnabledTextColor : mTextColor;
 
 	c->Rect(mBounds, L' ', bgC, true);
-	if (mEnabled) mEnabledBorder.Draw(c, mBounds);
+	if (mEnabled) mEnabledBorder->Draw(c, mBounds);
 	else mBorder->Draw(c, mBounds);
 
 	RenderText(c,
-		mBounds.left + (mEnabled ? mEnabledBorder.GetWidth() : mBorder->GetWidth()),
-		mBounds.right - (mEnabled ? mEnabledBorder.GetWidth() : mBorder->GetWidth()),
-		mBounds.top + (mEnabled ? mEnabledBorder.GetWidth() : mBorder->GetWidth()),
-		mBounds.bottom - (mEnabled ? mEnabledBorder.GetWidth() : mBorder->GetWidth()),
+		mBounds.left + (mEnabled ? mEnabledBorder->GetWidth() : mBorder->GetWidth()),
+		mBounds.right - (mEnabled ? mEnabledBorder->GetWidth() : mBorder->GetWidth()),
+		mBounds.top + (mEnabled ? mEnabledBorder->GetWidth() : mBorder->GetWidth()),
+		mBounds.bottom - (mEnabled ? mEnabledBorder->GetWidth() : mBorder->GetWidth()),
 		mText + (mEnabled ? L"_" : L""),
 		tC
 	);
