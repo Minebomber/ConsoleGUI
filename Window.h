@@ -33,6 +33,9 @@ protected:
 	WORD mBaseColor = 0;
 
 	CHAR_INFO* mBuffer = nullptr;
+
+	std::function<void(void)> mOnHideCallback;
+	std::function<void(void)> mOnShowCallback;
 public:
 	Window(int w, int h) : mWidth(w), mHeight(h), mBuffer(new CHAR_INFO[w * h]) {}
 
@@ -66,6 +69,12 @@ public:
 	void ApplyToElements(std::function<void(Element*)> f) { for (Element* e : mElements) f(e); }
 
 	void Display();
+
+	void OnHide() { if (mOnHideCallback) mOnHideCallback(); }
+	void OnShow() { if (mOnShowCallback) mOnShowCallback(); }
+
+	void SetOnHideCallback(std::function<void(void)> f) { mOnHideCallback = f; }
+	void SetOnShowCallback(std::function<void(void)> f) { mOnShowCallback = f; }
 };
 
 }

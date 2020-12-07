@@ -39,11 +39,11 @@ public:
 		btn2->SetAlignVertical(gui::TEXT_ALIGN_MID);
 		w2->AddElement(btn2);
 
-		btn1->SetReleaseAction([this](int _) {
+		btn1->SetPressAction([this](int _) {
 			SetCurrentWindow(w2);
 		});
 
-		btn2->SetReleaseAction([this](int _) {
+		btn2->SetPressAction([this](int _) {
 			SetCurrentWindow(w1);
 		});
 

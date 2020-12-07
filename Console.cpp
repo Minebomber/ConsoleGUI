@@ -59,6 +59,12 @@ void Console::CreateConsole(int sW, int sH, int cW, int cH) {
 	mInitialized = true;
 }
 
+void Console::SetCurrentWindow(Window* w) { 
+	if (mCurrentWindow) mCurrentWindow->OnHide(); 
+	if (w) w->OnShow(); 
+	mCurrentWindow = w; 
+}
+
 void Console::Run() {
 	if (!mInitialized) return;
 

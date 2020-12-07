@@ -47,7 +47,7 @@ public:
 	void CreateConsole(int sW, int sH, int cW, int cH);
 
 	Window* GetCurrentWindow() { return mCurrentWindow; }
-	void SetCurrentWindow(Window* w) { mCurrentWindow = w; }
+	void SetCurrentWindow(Window* w);
 
 	void Run();
 	void Stop();
