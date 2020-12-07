@@ -1,9 +1,43 @@
 #pragma once
 
-#include "Colors.h"
-#include "ConsoleGUI.h"
+#include "Console.h"
 
 namespace gui {
+
+enum Colors {
+	FG_BLACK = 0x0000,
+	FG_DARK_BLUE = 0x0001,
+	FG_DARK_GREEN = 0x0002,
+	FG_DARK_CYAN = 0x0003,
+	FG_DARK_RED = 0x0004,
+	FG_DARK_MAGENTA = 0x0005,
+	FG_DARK_YELLOW = 0x0006,
+	FG_GREY = 0x0007,
+	FG_DARK_GREY = 0x0008,
+	FG_BLUE = 0x0009,
+	FG_GREEN = 0x000A,
+	FG_CYAN = 0x000B,
+	FG_RED = 0x000C,
+	FG_MAGENTA = 0x000D,
+	FG_YELLOW = 0x000E,
+	FG_WHITE = 0x000F,
+	BG_BLACK = 0x0000,
+	BG_DARK_BLUE = 0x0010,
+	BG_DARK_GREEN = 0x0020,
+	BG_DARK_CYAN = 0x0030,
+	BG_DARK_RED = 0x0040,
+	BG_DARK_MAGENTA = 0x0050,
+	BG_DARK_YELLOW = 0x0060,
+	BG_GREY = 0x0070,
+	BG_DARK_GREY = 0x0080,
+	BG_BLUE = 0x0090,
+	BG_GREEN = 0x00A0,
+	BG_CYAN = 0x00B0,
+	BG_RED = 0x00C0,
+	BG_MAGENTA = 0x00D0,
+	BG_YELLOW = 0x00E0,
+	BG_WHITE = 0x00F0,
+};
 
 enum MouseButtons {
 	MOUSE_LEFT_BUTTON = 0b001,
@@ -39,6 +73,7 @@ protected:
 	std::function<void(Console*, int)> mReleaseAction;
 public:
 	EventHandler() : mPressAction(), mReleaseAction() {}
+	EventHandler(const EventHandler& h) : mPressAction(h.mPressAction), mReleaseAction(h.mReleaseAction) {}
 
 	const int& GetId() const { return mId; }
 	void SetId(int i) { mId = i; }
@@ -58,9 +93,10 @@ protected:
 	RECT mBounds = { 0, 0, 0, 0 };
 	int mButtons = 0;
 public:
-	MouseHandler() {}
-	MouseHandler(RECT b) : mBounds(b) {}
-	MouseHandler(RECT b, int bt) : mBounds(b), mButtons(bt) {}
+	MouseHandler() : EventHandler() {}
+	MouseHandler(RECT b) : EventHandler(), mBounds(b) {}
+	MouseHandler(RECT b, int bt) : EventHandler(), mBounds(b), mButtons(bt) {}
+	MouseHandler(const MouseHandler& h) : EventHandler(h), mBounds(h.mBounds), mButtons(h.mButtons) {}
 
 	const RECT& GetBounds() { return mBounds; }
 	void SetBounds(RECT b) { mBounds = b; }
@@ -76,6 +112,7 @@ protected:
 public:
 	KeyboardHandler() : EventHandler() {}
 	KeyboardHandler(std::wstring k) : EventHandler(), mKeys(k) {}
+	KeyboardHandler(const KeyboardHandler& h) : EventHandler(h), mKeys(h.mKeys) {}
 
 	const std::wstring& GetKeys() const { return mKeys; }
 	void SetKeys(std::wstring k) { mKeys = k; }
@@ -92,6 +129,7 @@ public:
 	Border(WCHAR ch, WORD cl) : mChar(ch), mColor(cl) {}
 	Border(WCHAR ch, WORD cl, int w) : mChar(ch), mColor(cl), mWidth(w) {}
 	Border(int w) : mWidth(w) {}
+	Border(const Border& b) : Border(b.mChar, b.mColor, b.mWidth) {}
 
 	const WCHAR& GetChar() const { return mChar; }
 	void SetChar(WCHAR c) { mChar = c; }
@@ -121,7 +159,7 @@ protected:
 	virtual void SetupHandlers() {}
 public:
 	Element(RECT b) : mBounds(b), mMouseHandler(nullptr), mKeyboardHandler(nullptr) {}
-	Element(const Element& e) : mBounds(e.mBounds), mBackground(e.mBackground), mBackgroundColor(e.mBackgroundColor), mMouseHandler(e.mMouseHandler), mKeyboardHandler(e.mKeyboardHandler) {}
+	Element(const Element& e) : mBounds(e.mBounds), mBackground(e.mBackground), mBackgroundColor(e.mBackgroundColor), mBorder(e.mBorder), mMouseHandler(e.mMouseHandler), mKeyboardHandler(e.mKeyboardHandler) {}
 	virtual ~Element() { if (mMouseHandler) delete mMouseHandler; if (mKeyboardHandler) delete mKeyboardHandler; }
 
 	const int& GetId() const { return mId; }
@@ -160,7 +198,7 @@ protected:
 	void RenderText(Console* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl);
 public:
 	Label(RECT b) : Element(b) {}
-	Label(const Label& e) : Element(e), mText(e.mText), mTextColor(e.mTextColor), mAlignH(e.mAlignH), mAlignV(e.mAlignV) {}
+	Label(const Label& e) : Element(e), mText(e.mText), mTextColor(e.mTextColor), mAlignH(e.mAlignH), mAlignV(e.mAlignV), mTextWrap(e.mTextWrap), mTextLines(e.mTextLines), mTextOffsetY(e.mTextOffsetY) {}
 
 	const std::wstring& GetText() const { return mText; }
 	void SetText(std::wstring t) { mText = t; UpdateTextLines(); UpdateTextOffsetY(); }
@@ -197,6 +235,7 @@ protected:
 	virtual void SetupHandlers() override;
 public:
 	Button(RECT b) : Label(b), mPressAction(), mReleaseAction() { SetupHandlers(); }
+	Button(const Button& e) : Label(e), mPressedTextColor(e.mPressedTextColor), mPressedBackground(e.mPressedBackground), mPressedBackgroundColor(e.mPressedBackgroundColor), mPressedBorder(e.mPressedBorder), mPressed(e.mPressed), mPressAction(e.mPressAction), mReleaseAction(e.mReleaseAction) { SetupHandlers();  }
 
 	const WORD& GetPressedTextColor() const { return mPressedTextColor; }
 	void SetPressedTextColor(WORD c) { mPressedTextColor = c; }
@@ -241,6 +280,7 @@ protected:
 public:
 	TextField(RECT b) : Label(b) { SetupHandlers(); }
 	TextField(RECT b, std::wstring c) : Label(b), mCharset(c) { SetupHandlers(); }
+	TextField(const TextField& e) : Label(e), mEnabledTextColor(e.mEnabledTextColor), mEnabledBackground(e.mEnabledBackground), mEnabledBackgroundColor(e.mEnabledBackgroundColor), mEnabledBorder(e.mEnabledBorder), mEnabled(e.mEnabled), mCharset(e.mCharset) { SetupHandlers(); }
 
 	const WORD& GetEnabledTextColor() const { return mEnabledTextColor; }
 	void SetEnabledTextColor(WORD c) { mEnabledTextColor = c; }
@@ -270,6 +310,7 @@ public:
 		mTitleLabel.SetAlignHorizontal(TEXT_ALIGN_MID);
 		mTitleLabel.SetAlignVertical(TEXT_ALIGN_MID);
 	}
+	Panel(const Panel& e) : Element(e), mTitleHeight(e.mTitleHeight), mTitleLabel(e.mTitleLabel) {}
 
 	Label& GetTitleLabel() { return mTitleLabel; }
 
@@ -288,6 +329,7 @@ protected:
 public:
 	ContentPanel(RECT b) : Panel(b) {}
 	ContentPanel(RECT b, Element* c) : Panel(b), mContent(c) {}
+	ContentPanel(const ContentPanel& e) : Panel(e), mContent(e.mContent) {}
 
 	Element* GetContent() { return mContent; }
 	void SetContent(Element* c) { mContent = c; SetBounds(mBounds); }

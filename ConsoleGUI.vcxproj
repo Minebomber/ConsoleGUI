@@ -139,14 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ConsoleGUI.cpp" />
-    <ClCompile Include="GUIElements.cpp" />
+    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Elements.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Colors.h" />
-    <ClInclude Include="ConsoleGUI.h" />
-    <ClInclude Include="GUIElements.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="Elements.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

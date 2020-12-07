@@ -11,8 +11,7 @@
 #include <future>
 #include <thread>
 #include <atomic>
-#include "Colors.h"
-#include "GUIElements.h"
+#include "Elements.h"
 
 namespace gui {
 
@@ -50,7 +49,7 @@ private:
 	COORD mMousePosition;
 
 	WCHAR mBaseChar = L' ';
-	WORD mBaseColor = BG_BLACK;
+	WORD mBaseColor = 0;
 
 	std::vector<Element*> mElements;
 

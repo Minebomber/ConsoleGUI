@@ -1,13 +1,28 @@
-#include "ConsoleGUI.h"
+#include "Console.h"
 
 class Test : public gui::Console {
 private:
 	gui::TextField* tf = nullptr;
 	gui::Label* lab = nullptr;
 	gui::Button* btn = nullptr;
+
+	void CheckText(int m) {
+		if (tf->GetText() == L"test") {
+			lab->SetText(L"Valid");
+			lab->SetTextColor(gui::FG_DARK_GREEN);
+		} else {
+			lab->SetText(L"Invalid");
+			lab->SetTextColor(gui::FG_DARK_RED);
+		}
+		gui::RunAfterDelay(1500, [this]() {
+			lab->SetText(L"");
+			lab->SetTextColor(gui::FG_WHITE);
+			}
+		);
+	}
+
 public:
 	bool Initialize() override {
-
 		tf = new gui::TextField({ 5, 5, 27, 9 }, gui::Charset::Alphanum());
 		tf->SetText(L"Textfield");
 		tf->SetTextColor(gui::FG_WHITE | gui::BG_DARK_GREY);
@@ -37,22 +52,7 @@ public:
 		btn->SetAlignVertical(gui::TEXT_ALIGN_MID);
 		btn->SetButtons(gui::MOUSE_LEFT_BUTTON);
 
-		btn->SetPressAction(
-			[&](int m) {
-				if (tf->GetText() == L"test") {
-					lab->SetText(L"Valid");
-					lab->SetTextColor(gui::FG_DARK_GREEN);
-				} else {
-					lab->SetText(L"Invalid");
-					lab->SetTextColor(gui::FG_DARK_RED);
-				}
-				gui::RunAfterDelay(1500, [this]() {
-					lab->SetText(L"");
-					lab->SetTextColor(gui::FG_WHITE);
-					}
-				);
-			}
-		);
+		btn->SetPressAction(std::bind(&Test::CheckText, this, std::placeholders::_1));
 
 		AddElement(btn);
 		return true;
