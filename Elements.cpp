@@ -2,27 +2,56 @@
 
 namespace gui {
 
-void Border::Draw(Console* c, RECT bd) {
-	for (int b = 0; b < mWidth; b++) c->Rect({ bd.left + b, bd.top + b, bd.right - b, bd.bottom - b }, mChar, mColor, false);
+void Border::Draw(Console* c, RECT b) {
+
+	for (int wi = 0; wi < mWidth; wi++) {
+		int x0 = b.left + wi; int x1 = b.right - wi;
+		int y0 = b.top + wi; int y1 = b.bottom - wi;
+
+		c->Set(x0, y0, L'\x250F', mColor);
+		c->Set(x1, y0, L'\x2513', mColor);
+		c->Set(x0, y1, L'\x2517', mColor);
+		c->Set(x1, y1, L'\x251B', mColor);
+
+		for (int x = x0 + 1; x < x1; x++) {
+			c->Set(x, y0, L'\x2501', mColor);
+			c->Set(x, y1, L'\x2501', mColor);
+		}
+
+		for (int y = y0 + 1; y < y1; y++) {
+			c->Set(x0, y, L'\x2503', mColor);
+			c->Set(x1, y, L'\x2503', mColor);
+		}
+	}
+}
+
+void TitledBorder::Draw(Console* c, RECT b) {
+	Border::Draw(c, b);
+	int spanX = b.right - b.left;
+	int tW = mTitle.length();
+	int x0 = b.left + ((spanX - tW) / 2) + 1;
+	c->Set(x0 - 1, b.top, L'\x252B', mColor);
+	c->Write(x0, b.top, mTitle, mColor);
+	c->Set(x0 + tW, b.top, L'\x2523', mColor);
 }
 
 void Element::Draw(Console* c) {
-	c->Rect(mBounds, mBackground, mBackgroundColor, true);
-	mBorder.Draw(c, mBounds);
+	c->Rect(mBounds, L' ', mBackgroundColor, true);
+	mBorder->Draw(c, mBounds);
 }
 
 void Label::UpdateTextLines() {
 	mTextLines = 1;
 	for (int ci = 0, li = 0; ci < (int)mText.length(); ci++) {
 		if (mText[ci] == L'\n') { mTextLines++; li = ci; }
-		if (ci - li > mBounds.right - mBounds.left - 2 * mBorder.GetWidth()) { mTextLines++; li = ci; }
+		if (ci - li > mBounds.right - mBounds.left - 2 * mBorder->GetWidth()) { mTextLines++; li = ci; }
 	}
 }
 
 void Label::UpdateTextOffsetY() {
 	mTextOffsetY = 0;
-	if (mAlignV == TEXT_ALIGN_MID) mTextOffsetY = (mBounds.bottom - mBounds.top - 2 * mBorder.GetWidth() - mTextLines + 1) / 2;
-	else if (mAlignV == TEXT_ALIGN_MAX) mTextOffsetY = mBounds.bottom - mBounds.top - 2 * mBorder.GetWidth() - mTextLines;
+	if (mAlignV == TEXT_ALIGN_MID) mTextOffsetY = (mBounds.bottom - mBounds.top - 2 * mBorder->GetWidth() - mTextLines + 1) / 2;
+	else if (mAlignV == TEXT_ALIGN_MAX) mTextOffsetY = mBounds.bottom - mBounds.top - 2 * mBorder->GetWidth() - mTextLines;
 }
 
 void Label::RenderText(Console* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl) {
@@ -62,10 +91,10 @@ void Label::Draw(Console* c) {
 	Element::Draw(c);
 	RenderText(
 		c, 
-		mBounds.left + mBorder.GetWidth(), 
-		mBounds.right - mBorder.GetWidth(), 
-		mBounds.top + mBorder.GetWidth(), 
-		mBounds.bottom - mBorder.GetWidth(), 
+		mBounds.left + mBorder->GetWidth(), 
+		mBounds.right - mBorder->GetWidth(), 
+		mBounds.top + mBorder->GetWidth(), 
+		mBounds.bottom - mBorder->GetWidth(), 
 		mText, 
 		mTextColor
 	);
@@ -78,19 +107,18 @@ void Button::SetupHandlers() {
 }
 
 void Button::Draw(Console* c) {
-	WCHAR bg = mPressed ? mPressedBackground : mBackground;
 	WORD bgC = mPressed ? mPressedBackgroundColor : mBackgroundColor;
 	WORD tC = mPressed ? mPressedTextColor : mTextColor;
 
-	c->Rect(mBounds, bg, bgC, true);
+	c->Rect(mBounds, L' ', bgC, true);
 	if (mPressed) mPressedBorder.Draw(c, mBounds);
-	else mBorder.Draw(c, mBounds);
+	else mBorder->Draw(c, mBounds);
 
 	RenderText(c,
-		mBounds.left + (mPressed ? mPressedBorder.GetWidth() : mBorder.GetWidth()),
-		mBounds.right - (mPressed ? mPressedBorder.GetWidth() : mBorder.GetWidth()),
-		mBounds.top + (mPressed ? mPressedBorder.GetWidth() : mBorder.GetWidth()),
-		mBounds.bottom - (mPressed ? mPressedBorder.GetWidth() : mBorder.GetWidth()),
+		mBounds.left + (mPressed ? mPressedBorder.GetWidth() : mBorder->GetWidth()),
+		mBounds.right - (mPressed ? mPressedBorder.GetWidth() : mBorder->GetWidth()),
+		mBounds.top + (mPressed ? mPressedBorder.GetWidth() : mBorder->GetWidth()),
+		mBounds.bottom - (mPressed ? mPressedBorder.GetWidth() : mBorder->GetWidth()),
 		mText,
 		tC
 	);
@@ -147,20 +175,18 @@ void TextField::SetupHandlers() {
 }
 
 void TextField::Draw(Console* c) {
-
-	WCHAR bg = mEnabled ? mEnabledBackground : mBackground;
 	WORD bgC = mEnabled ? mEnabledBackgroundColor : mBackgroundColor;
 	WORD tC = mEnabled ? mEnabledTextColor : mTextColor;
 
-	c->Rect(mBounds, bg, bgC, true);
+	c->Rect(mBounds, L' ', bgC, true);
 	if (mEnabled) mEnabledBorder.Draw(c, mBounds);
-	else mBorder.Draw(c, mBounds);
+	else mBorder->Draw(c, mBounds);
 
 	RenderText(c,
-		mBounds.left + (mEnabled ? mEnabledBorder.GetWidth() : mBorder.GetWidth()),
-		mBounds.right - (mEnabled ? mEnabledBorder.GetWidth() : mBorder.GetWidth()),
-		mBounds.top + (mEnabled ? mEnabledBorder.GetWidth() : mBorder.GetWidth()),
-		mBounds.bottom - (mEnabled ? mEnabledBorder.GetWidth() : mBorder.GetWidth()),
+		mBounds.left + (mEnabled ? mEnabledBorder.GetWidth() : mBorder->GetWidth()),
+		mBounds.right - (mEnabled ? mEnabledBorder.GetWidth() : mBorder->GetWidth()),
+		mBounds.top + (mEnabled ? mEnabledBorder.GetWidth() : mBorder->GetWidth()),
+		mBounds.bottom - (mEnabled ? mEnabledBorder.GetWidth() : mBorder->GetWidth()),
 		mText + (mEnabled ? L"_" : L""),
 		tC
 	);

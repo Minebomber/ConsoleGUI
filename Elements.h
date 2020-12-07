@@ -121,18 +121,13 @@ public:
 class Border {
 	friend class Console;
 protected:
-	WCHAR mChar = L' ';
-	WORD mColor = BG_WHITE;
+	WORD mColor = FG_WHITE;
 	int mWidth = 1;
 public:
 	Border() {}
-	Border(WCHAR ch, WORD cl) : mChar(ch), mColor(cl) {}
-	Border(WCHAR ch, WORD cl, int w) : mChar(ch), mColor(cl), mWidth(w) {}
+	Border(WORD cl, int w) : mColor(cl), mWidth(w) {}
 	Border(int w) : mWidth(w) {}
-	Border(const Border& b) : Border(b.mChar, b.mColor, b.mWidth) {}
-
-	const WCHAR& GetChar() const { return mChar; }
-	void SetChar(WCHAR c) { mChar = c; }
+	Border(const Border& b) : Border(b.mColor, b.mWidth) {}
 
 	const WORD& GetColor() const { return mColor; }
 	void SetColor(WORD c) { mColor = c; }
@@ -142,7 +137,23 @@ public:
 
 	operator bool() const { return mWidth != 0; }
 
-	virtual void Draw(Console* c, RECT bd);
+	virtual void Draw(Console* c, RECT b);
+};
+
+class TitledBorder : public Border {
+	friend class Console;
+protected:
+	std::wstring mTitle = L"";
+public:
+	TitledBorder(std::wstring t) : Border(), mTitle(t) {}
+	TitledBorder(std::wstring t, WORD cl) : Border(cl, 1), mTitle(t) {}
+	TitledBorder(std::wstring t, WORD cl, int w) : Border(cl, w), mTitle(t) {}
+	TitledBorder(const TitledBorder& b) : TitledBorder(b.mTitle, b.mColor, b.mWidth) {}
+
+	const std::wstring& GetTitle() const { return mTitle; }
+	void SetTitle(std::wstring s) { mTitle = s; }
+	
+	virtual void Draw(Console* c, RECT b) override;
 };
 
 class Element {
@@ -150,17 +161,16 @@ class Element {
 protected:
 	int mId = -1;
 	RECT mBounds = { 0, 0, 0, 0 };
-	WCHAR mBackground = L' ';
 	WORD mBackgroundColor = BG_WHITE;
-	Border mBorder = { 0 };
+	Border* mBorder = nullptr;
 	MouseHandler* mMouseHandler = nullptr;
 	KeyboardHandler* mKeyboardHandler = nullptr;
 
 	virtual void SetupHandlers() {}
 public:
-	Element(RECT b) : mBounds(b), mMouseHandler(nullptr), mKeyboardHandler(nullptr) {}
-	Element(const Element& e) : mBounds(e.mBounds), mBackground(e.mBackground), mBackgroundColor(e.mBackgroundColor), mBorder(e.mBorder), mMouseHandler(e.mMouseHandler), mKeyboardHandler(e.mKeyboardHandler) {}
-	virtual ~Element() { if (mMouseHandler) delete mMouseHandler; if (mKeyboardHandler) delete mKeyboardHandler; }
+	Element(RECT b) : mBounds(b), mBorder(new Border(FG_WHITE, 1)), mMouseHandler(nullptr), mKeyboardHandler(nullptr) {}
+	Element(const Element& e) : mBounds(e.mBounds), mBackgroundColor(e.mBackgroundColor), mBorder(new Border(*e.mBorder)), mMouseHandler(e.mMouseHandler), mKeyboardHandler(e.mKeyboardHandler) {}
+	virtual ~Element() { if (mBorder) delete mBorder;  if (mMouseHandler) delete mMouseHandler; if (mKeyboardHandler) delete mKeyboardHandler; }
 
 	const int& GetId() const { return mId; }
 	void SetId(int i) { mId = i; }
@@ -168,14 +178,11 @@ public:
 	const RECT& GetBounds() const { return mBounds; }
 	virtual void SetBounds(RECT b) { mBounds = b; if (mMouseHandler) mMouseHandler->SetBounds(b); }
 
-	const WCHAR& GetBackground() const { return mBackground; }
-	void SetBackground(WCHAR b) { mBackground = b; }
-
 	const WORD& GetBackgroundColor() const { return mBackgroundColor; }
 	void SetBackgroundColor(WORD c) { mBackgroundColor = c; }
 
-	const Border& GetBorder() const { return mBorder; }
-	virtual void SetBorder(Border b) { mBorder = b; }
+	const Border& GetBorder() const { return *mBorder; }
+	virtual void SetBorder(Border* b) { if (mBorder) delete mBorder; mBorder = b; }
 
 	virtual void Draw(Console* c);
 };
@@ -215,7 +222,7 @@ public:
 	const int& GetTextWrap() const { return mTextWrap; }
 	void SetTextWrap(int w) { mTextWrap = w; }
 
-	void SetBorder(Border b) override { mBorder = b; UpdateTextLines(); UpdateTextOffsetY(); }
+	void SetBorder(Border* b) override { Element::SetBorder(b); UpdateTextLines(); UpdateTextOffsetY(); }
 
 	virtual void SetBounds(RECT b) override { Element::SetBounds(b); UpdateTextLines(); UpdateTextOffsetY();}
 
@@ -226,7 +233,6 @@ class Button : public Label {
 	friend class Console;
 protected:
 	WORD mPressedTextColor = FG_WHITE;
-	WCHAR mPressedBackground = L' ';
 	WORD mPressedBackgroundColor = BG_WHITE;
 	Border mPressedBorder = { 0 };
 	bool mPressed = false;
@@ -237,13 +243,10 @@ protected:
 	virtual void SetupHandlers() override;
 public:
 	Button(RECT b) : Label(b), mPressAction(), mReleaseAction() { SetupHandlers(); }
-	Button(const Button& e) : Label(e), mPressedTextColor(e.mPressedTextColor), mPressedBackground(e.mPressedBackground), mPressedBackgroundColor(e.mPressedBackgroundColor), mPressedBorder(e.mPressedBorder), mPressed(e.mPressed), mPressAction(e.mPressAction), mReleaseAction(e.mReleaseAction) { SetupHandlers();  }
+	Button(const Button& e) : Label(e), mPressedTextColor(e.mPressedTextColor), mPressedBackgroundColor(e.mPressedBackgroundColor), mPressedBorder(e.mPressedBorder), mPressed(e.mPressed), mPressAction(e.mPressAction), mReleaseAction(e.mReleaseAction) { SetupHandlers();  }
 
 	const WORD& GetPressedTextColor() const { return mPressedTextColor; }
 	void SetPressedTextColor(WORD c) { mPressedTextColor = c; }
-
-	const WCHAR& GetPressedBackground() const { return mPressedBackground; }
-	void SetPressedBackground(WCHAR b) { mPressedBackground = b; }
 
 	const WORD& GetPressedBackgroundColor() const { return mPressedBackgroundColor; }
 	void SetPressedBackgroundColor(WORD c) { mPressedBackgroundColor = c; }
@@ -266,7 +269,6 @@ class TextField : public Label {
 	friend class Console;
 protected:
 	WORD mEnabledTextColor = FG_WHITE;
-	WCHAR mEnabledBackground = L' ';
 	WORD mEnabledBackgroundColor = BG_WHITE;
 	Border mEnabledBorder = { 0 };
 	bool mEnabled = false;
@@ -284,13 +286,10 @@ protected:
 public:
 	TextField(RECT b) : Label(b) { SetupHandlers(); }
 	TextField(RECT b, std::wstring c) : Label(b), mCharset(c) { SetupHandlers(); }
-	TextField(const TextField& e) : Label(e), mEnabledTextColor(e.mEnabledTextColor), mEnabledBackground(e.mEnabledBackground), mEnabledBackgroundColor(e.mEnabledBackgroundColor), mEnabledBorder(e.mEnabledBorder), mEnabled(e.mEnabled), mCharset(e.mCharset) { SetupHandlers(); }
+	TextField(const TextField& e) : Label(e), mEnabledTextColor(e.mEnabledTextColor), mEnabledBackgroundColor(e.mEnabledBackgroundColor), mEnabledBorder(e.mEnabledBorder), mEnabled(e.mEnabled), mCharset(e.mCharset) { SetupHandlers(); }
 
 	const WORD& GetEnabledTextColor() const { return mEnabledTextColor; }
 	void SetEnabledTextColor(WORD c) { mEnabledTextColor = c; }
-
-	const WCHAR& GetEnabledBackground() const { return mEnabledBackground; }
-	void SetEnabledBackground(WCHAR b) { mEnabledBackground = b; }
 
 	const WORD& GetEnabledBackgroundColor() const { return mEnabledBackgroundColor; }
 	void SetEnabledBackgroundColor(WORD c) { mEnabledBackgroundColor = c; }

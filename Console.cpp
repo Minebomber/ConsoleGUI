@@ -39,13 +39,10 @@ void Console::CreateConsole(int sW, int sH, int cW, int cH) {
 
 	CONSOLE_FONT_INFOEX cfi;
 	cfi.cbSize = sizeof(cfi);
-	cfi.nFont = 0;
+	GetCurrentConsoleFontEx(mConsole, false, &cfi);
 	cfi.dwFontSize.X = cW;
 	cfi.dwFontSize.Y = cH;
-	cfi.FontFamily = FF_DONTCARE;
-	cfi.FontWeight = FW_NORMAL;
-	wcscpy_s(cfi.FaceName, L"Consolas");
-
+	cfi.FontFamily = FF_MODERN;
 	if (!SetCurrentConsoleFontEx(mConsole, false, &cfi)) return;
 
 	CONSOLE_SCREEN_BUFFER_INFO csbi;

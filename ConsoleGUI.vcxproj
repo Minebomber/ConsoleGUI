@@ -142,10 +142,12 @@
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Elements.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h" />
     <ClInclude Include="Elements.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
