@@ -8,7 +8,7 @@ private:
 public:
 	bool Initialize() override {
 
-		tf = new gui::TextField({ 5, 5, 27, 9 }, gui::CharsetT::ALPHANUM);
+		tf = new gui::TextField({ 5, 5, 27, 9 }, gui::Charset::Alphanum());
 		tf->SetText(L"Textfield");
 		tf->SetTextColor(gui::FG_WHITE | gui::BG_DARK_GREY);
 		tf->SetBorder({ L' ', gui::BG_GREY, 1 });
