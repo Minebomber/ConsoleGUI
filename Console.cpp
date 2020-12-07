@@ -110,6 +110,7 @@ void Console::Run() {
 
 	mRunning = true;
 	while (mRunning) {
+
 		// Time
 		timePoint2 = std::chrono::system_clock::now();
 		std::chrono::duration<float> timeDelta = timePoint2 - timePoint1;
@@ -211,21 +212,13 @@ void Console::Run() {
 		swprintf(title, 256, L"FPS: %3.0f", 1 / elapsedTime);
 		SetConsoleTitle(title);
 		WriteConsoleOutput(mConsole, mScreenBuffer, { (SHORT)mScreenWidth, (SHORT)mScreenHeight }, { 0, 0 }, &mWindowRect);
+		
+		// Check exit
+		if (mKeyboard[VK_ESCAPE].held && mKeyboard['Q'].held) Stop();
 	}
 }
 
 void Console::Stop() { mRunning = false; }
-
-const int& Console::GetScreenWidth() const { return mScreenWidth; }
-const int& Console::GetScreenHeight() const { return mScreenHeight; }
-
-const COORD& Console::GetMousePosition() const { return mMousePosition; }
-
-const WCHAR& Console::GetBaseChar() const { return mBaseChar; }
-void Console::SetBaseChar(WCHAR c) { mBaseChar = c; }
-
-const WORD& Console::GetBaseColor() const { return mBaseColor; }
-void Console::SetBaseColor(WORD c) { mBaseColor = c; }
 
 void Console::AddElement(Element* e) {
 	if (e->GetId() != -1) return;
@@ -284,22 +277,5 @@ void Console::RemoveMouseHandler(int i) {
 }
 
 void Console::RemoveMouseHandler(MouseHandler* h) { RemoveMouseHandler(h->mId); }
-
-KeyboardHandler* Console::GetActiveKeyboardHandler() const { return mActiveKeyboardHandler; }
-void Console::SetActiveKeyboardHandler(KeyboardHandler* h) { mActiveKeyboardHandler = h; }
-
-void Console::ApplyToElements(std::function<void(Element*)> f) {
-	for (Element* e : mElements) f(e);
-}
-
-void RunAfterDelay(int ms, std::function<void()> f) {
-	std::thread t( [ms, f] { std::this_thread::sleep_for(std::chrono::milliseconds(ms)); f(); });
-	t.detach();
-}
-
-std::future<void> ExecuteAsync(std::function<void()> f) {
-	std::future<void> r = std::async(std::launch::async, f);
-	return r;
-}
 
 }

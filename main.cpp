@@ -19,14 +19,14 @@ private:
 		} else {
 			l2->SetTextColor(gui::FG_DARK_RED);
 		}
-
+		 
 		if (tf3->GetText() == L"c") {
 			l3->SetTextColor(gui::FG_DARK_GREEN);
 		} else {
 			l3->SetTextColor(gui::FG_DARK_RED);
 		}
 
-		gui::RunAfterDelay(500, [this]() {
+		gui::RunAfterDelay(250, [this]() {
 			l1->SetTextColor(gui::FG_WHITE);
 			l2->SetTextColor(gui::FG_WHITE);
 			l3->SetTextColor(gui::FG_WHITE);
@@ -66,7 +66,7 @@ public:
 		tf1 = new gui::TextField({13, 8, 25, 10}, gui::Charset::Alphanum());
 		tf1->SetBackgroundColor(gui::BG_DARK_GREY);
 		tf1->SetTextColor(gui::FG_WHITE | gui::BG_DARK_GREY);
-		tf1->SetBorder({ L' ', gui::BG_GREY, 1 });
+		tf1->SetBorder({ L'#', gui::FG_GREY | gui::BG_DARK_GREY, 1 });
 		tf1->SetEnabledBackgroundColor(gui::BG_BLACK);
 		tf1->SetEnabledTextColor(gui::FG_WHITE | gui::BG_BLACK);
 		tf1->SetEnabledBorder({ L'#', gui::FG_WHITE, 1 });
@@ -105,8 +105,8 @@ public:
 };
 
 int main() {
-	Test t;
-	t.CreateConsole(31, 27, 12, 18);
+	Test t;//       31
+	t.CreateConsole(31, 27, 10, 18);
 	t.Run();
 	return 0;
 }

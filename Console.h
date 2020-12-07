@@ -71,15 +71,15 @@ public:
 
 	virtual bool Initialize() = 0;
 
-	const int& GetScreenWidth() const;
-	const int& GetScreenHeight() const;
+	const int& GetScreenWidth() const { return mScreenWidth; }
+	const int& GetScreenHeight() const { return mScreenHeight; }
 
-	const COORD& GetMousePosition() const;
+	const COORD& GetMousePosition() const { return mMousePosition; }
 
-	const WCHAR& GetBaseChar() const;
-	void SetBaseChar(WCHAR c);
-	const WORD& GetBaseColor() const;
-	void SetBaseColor(WORD c);
+	const WCHAR& GetBaseChar() const { return mBaseChar; }
+	void SetBaseChar(WCHAR c) { mBaseChar = c; }
+	const WORD& GetBaseColor() const { return mBaseColor; }
+	void SetBaseColor(WORD c) { mBaseColor = c; }
 
 	void AddElement(Element* e);
 	Element* GetElement(int i);
@@ -93,12 +93,20 @@ public:
 	void RemoveMouseHandler(int i);
 	void RemoveMouseHandler(MouseHandler* h);
 
-	KeyboardHandler* GetActiveKeyboardHandler() const;
-	void SetActiveKeyboardHandler(KeyboardHandler* h);
+	KeyboardHandler* GetActiveKeyboardHandler() const { return mActiveKeyboardHandler; }
+	void SetActiveKeyboardHandler(KeyboardHandler* h) { mActiveKeyboardHandler = h; }
 
-	void ApplyToElements(std::function<void(Element*)> f);
+	void ApplyToElements(std::function<void(Element*)> f) { for (Element* e : mElements) f(e); }
 };
 
-void RunAfterDelay(int ms, std::function<void()> f);
-std::future<void> ExecuteAsync(std::function<void()> f);
+inline void RunAfterDelay(int ms, std::function<void()> f) {
+	std::thread t([ms, f] { std::this_thread::sleep_for(std::chrono::milliseconds(ms)); f(); });
+	t.detach();
+}
+
+inline std::future<void> ExecuteAsync(std::function<void()> f) {
+	std::future<void> r = std::async(std::launch::async, f);
+	return r;
+}
+
 }

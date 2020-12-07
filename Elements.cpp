@@ -28,19 +28,13 @@ void Label::UpdateTextOffsetY() {
 void Label::RenderText(Console* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl) {
 	int spanX = maxX - minX;
 	int y = minY + mTextOffsetY;
-
 	size_t nlPos = s.find(L'\n');
 	size_t cIdx = 0;
 	while (cIdx < s.length() && y <= maxY) {
-		// Line ends with char limit or newline
-		// Add newlines as optional wrap bc find can be expensive
-		// wrap should be bitwise so can or togeth
-		// refactor bc linelen would be end - cidx, so can use if remaining or not??
-
 		int elIdx = (nlPos == std::string::npos) ? s.length() : nlPos;
 		int lineLen = elIdx - cIdx;
 		// Stay within bounds
-		if (lineLen > maxX - minX) {
+		if (lineLen > spanX) {
 			if (mTextWrap == WRAP_WORD) {
 				// Last char is idx of space
 				elIdx = s.rfind(L' ', cIdx + spanX);
