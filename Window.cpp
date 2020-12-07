@@ -2,6 +2,24 @@
 
 namespace gui {
 
+WindowScheme* WindowScheme::Default() {
+	return new WindowScheme(
+		FG_WHITE, BG_BLACK, FG_WHITE,
+		FG_DARK_GREY, BG_BLACK, FG_DARK_GREY,
+		FG_GREY, BG_BLACK, FG_GREY, 
+		true 
+	);
+}
+
+WindowScheme* WindowScheme::Green() {
+	return new WindowScheme(
+		FG_DARK_GREEN, BG_BLACK, FG_DARK_GREEN,
+		FG_GREEN, BG_BLACK, FG_GREEN,
+		FG_GREEN, BG_BLACK, FG_GREEN,
+		true 
+	);
+}
+
 void Window::Set(int x, int y, WCHAR chr, WORD clr) {
 	mBuffer[y * mWidth + x].Char.UnicodeChar = chr;
 	mBuffer[y * mWidth + x].Attributes = clr;
@@ -43,6 +61,35 @@ void Window::AddElement(Element* e) {
 	e->mId = mElements.size() - 1;
 
 	if (e->mMouseHandler) AddMouseHandler(e->mMouseHandler);
+
+	if (mColorScheme) {
+		e->SetBackgroundColor(mColorScheme->GetBackgroundColor());
+		e->GetBorder()->SetColor(mColorScheme->GetBorderColor());
+		e->GetBorder()->SetWidth(mColorScheme->GetBorderWidth());
+
+		if (auto lab = dynamic_cast<Label*>(e)) {
+			lab->SetTextColor(mColorScheme->GetTextColor());
+		}
+
+		if (auto btn = dynamic_cast<Button*>(e)) {
+			btn->SetPressedTextColor(mColorScheme->GetPressedTextColor());
+			btn->SetPressedBackgroundColor(mColorScheme->GetPressedBackgroundColor());
+			btn->GetPressedBorder()->SetColor(mColorScheme->GetPressedBorderColor());
+			btn->GetPressedBorder()->SetWidth(mColorScheme->GetPressedBorderWidth());
+		}
+
+		if (auto tf = dynamic_cast<TextField*>(e)) {
+			tf->SetDisabledTextColor(mColorScheme->GetDisabledTextColor());
+			tf->SetDisabledBackgroundColor(mColorScheme->GetDisabledBackgroundColor());
+			tf->GetDisabledBorder()->SetColor(mColorScheme->GetDisabledBorderColor());
+			tf->GetDisabledBorder()->SetWidth(mColorScheme->GetDisabledBorderWidth());
+		}
+
+		if (auto lab = dynamic_cast<Label*>(e)) {
+			lab->UpdateTextLines();
+			lab->UpdateTextOffsetY();
+		}
+	}
 }
 
 Element* Window::GetElement(int i) {

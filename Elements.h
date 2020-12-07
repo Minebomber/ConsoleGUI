@@ -197,8 +197,8 @@ class Label : public Element {
 protected:
 	std::wstring mText = L"";
 	WORD mTextColor = FG_WHITE;
-	int mAlignH = TEXT_ALIGN_MIN;
-	int mAlignV = TEXT_ALIGN_MIN;
+	int mAlignH = TEXT_ALIGN_MID;
+	int mAlignV = TEXT_ALIGN_MID;
 	int mTextWrap = WRAP_CHAR;
 
 	int mTextLines = 1;
@@ -239,7 +239,7 @@ class Button : public Label {
 protected:
 	WORD mPressedTextColor = FG_WHITE;
 	WORD mPressedBackgroundColor = BG_WHITE;
-	Border* mPressedBorder = { 0 };
+	Border* mPressedBorder = nullptr;
 	bool mPressed = false;
 
 	std::function<void(int)> mPressAction;
@@ -274,11 +274,11 @@ public:
 class TextField : public Label {
 	friend class Window;
 protected:
-	WORD mEnabledTextColor = FG_WHITE;
-	WORD mEnabledBackgroundColor = BG_WHITE;
-	Border* mEnabledBorder = nullptr;
-	bool mEnabled = false;
-
+	WORD mDisabledTextColor = FG_WHITE;
+	WORD mDisabledBackgroundColor = BG_WHITE;
+	Border* mDisabledBorder = nullptr;
+	bool mDisabled = true;
+	
 	bool mCapitalize = false;
 	bool mDeleting = false;
 	int mNumDeleted = 0;
@@ -290,22 +290,22 @@ protected:
 	virtual void SetupHandlers() override;
 	void Backspace();
 public:
-	TextField(RECT b) : Label(b), mEnabledBorder(new Border(FG_WHITE, 0)) { SetupHandlers(); }
-	TextField(RECT b, std::wstring c) : Label(b), mCharset(c) { SetupHandlers(); }
-	TextField(const TextField& e) : Label(e), mEnabledBorder(e.mEnabledBorder->Clone()), mEnabledTextColor(e.mEnabledTextColor), mEnabledBackgroundColor(e.mEnabledBackgroundColor), mEnabled(e.mEnabled), mCharset(e.mCharset) { SetupHandlers(); }
-	virtual ~TextField() { if (mEnabledBorder) delete mEnabledBorder; }
+	TextField(RECT b) : Label(b), mDisabledBorder(new Border(FG_WHITE, 0)) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; SetupHandlers(); }
+	TextField(RECT b, std::wstring c) : Label(b), mCharset(c), mDisabledBorder(new Border(FG_WHITE, 0)) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; SetupHandlers(); }
+	TextField(const TextField& e) : Label(e), mDisabledBorder(e.mDisabledBorder->Clone()), mDisabledTextColor(e.mDisabledTextColor), mDisabledBackgroundColor(e.mDisabledBackgroundColor), mDisabled(e.mDisabled), mCharset(e.mCharset) { SetupHandlers(); }
+	virtual ~TextField() { if (mDisabledBorder) delete mDisabledBorder; }
 
-	const WORD& GetEnabledTextColor() const { return mEnabledTextColor; }
-	void SetEnabledTextColor(WORD c) { mEnabledTextColor = c; }
+	const WORD& GetDisabledTextColor() const { return mDisabledTextColor; }
+	void SetDisabledTextColor(WORD c) { mDisabledTextColor = c; }
 
-	const WORD& GetEnabledBackgroundColor() const { return mEnabledBackgroundColor; }
-	void SetEnabledBackgroundColor(WORD c) { mEnabledBackgroundColor = c; }
+	const WORD& GetDisabledBackgroundColor() const { return mDisabledBackgroundColor; }
+	void SetDisabledBackgroundColor(WORD c) { mDisabledBackgroundColor = c; }
 
-	Border* GetEnabledBorder() { return mEnabledBorder; }
-	void SetEnabledBorder(Border* b) { if (mEnabledBorder) delete mEnabledBorder; mEnabledBorder = b; }
+	Border* GetDisabledBorder() { return mDisabledBorder; }
+	void SetDisabledBorder(Border* b) { if (mDisabledBorder) delete mDisabledBorder; mDisabledBorder = b; }
 
-	const bool& GetEnabled() const { return mEnabled; }
-	void SetEnabled(bool b) { mEnabled = b; }
+	const bool& GetDisabled() const { return mDisabled; }
+	void SetDisabled(bool b) { mDisabled = b; }
 
 	virtual void Draw(Window* c) override;
 };

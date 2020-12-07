@@ -157,7 +157,7 @@ void Console::Run() {
 
 					if (m == 0 && mCurrentWindow->mMouseButtons[m].pressed) {
 						mCurrentWindow->mActiveKeyboardHandler = nullptr;
-						mCurrentWindow->ApplyToElements([](Element* e) { if (auto t = dynamic_cast<TextField*>(e)) t->SetEnabled(false); });
+						mCurrentWindow->ApplyToElements([](Element* e) { if (auto t = dynamic_cast<TextField*>(e)) t->SetDisabled(true); });
 					}
 					// Check click handlers only if state change
 					for (MouseHandler* h : mCurrentWindow->mMouseHandlers) {

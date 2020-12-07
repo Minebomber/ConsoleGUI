@@ -138,7 +138,7 @@ void TextField::SetupHandlers() {
 
 	mMouseHandler->SetPressAction([this](Window* c, int m) {
 		c->SetActiveKeyboardHandler(mKeyboardHandler);
-		mEnabled = true;
+		mDisabled = false;
 	});
 
 	mKeyboardHandler = new KeyboardHandler(L"\x08\x0D\x10" + mCharset);
@@ -175,19 +175,19 @@ void TextField::SetupHandlers() {
 }
 
 void TextField::Draw(Window* c) {
-	WORD bgC = mEnabled ? mEnabledBackgroundColor : mBackgroundColor;
-	WORD tC = mEnabled ? mEnabledTextColor : mTextColor;
+	WORD bgC = mDisabled ? mDisabledBackgroundColor : mBackgroundColor;
+	WORD tC = mDisabled ? mDisabledTextColor : mTextColor;
 
 	c->Rect(mBounds, L' ', bgC, true);
-	if (mEnabled) mEnabledBorder->Draw(c, mBounds);
+	if (mDisabled) mDisabledBorder->Draw(c, mBounds);
 	else mBorder->Draw(c, mBounds);
 
 	RenderText(c,
-		mBounds.left + (mEnabled ? mEnabledBorder->GetWidth() : mBorder->GetWidth()),
-		mBounds.right - (mEnabled ? mEnabledBorder->GetWidth() : mBorder->GetWidth()),
-		mBounds.top + (mEnabled ? mEnabledBorder->GetWidth() : mBorder->GetWidth()),
-		mBounds.bottom - (mEnabled ? mEnabledBorder->GetWidth() : mBorder->GetWidth()),
-		mText + (mEnabled ? L"_" : L""),
+		mBounds.left + (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
+		mBounds.right - (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
+		mBounds.top + (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
+		mBounds.bottom - (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
+		mText + (mDisabled ? L"" : L"_"),
 		tC
 	);
 }
