@@ -251,6 +251,8 @@ public:
 	const Border& GetPressedBorder() const { return mPressedBorder; }
 	void SetPressedBorder(Border b) { mPressedBorder = b; }
 
+	const bool& GetPressed() const { return mPressed; }
+
 	void SetPressAction(std::function<void(int)> f) { mPressAction = f; }
 	void SetReleaseAction(std::function<void(int)> f) { mReleaseAction = f; }
 	
