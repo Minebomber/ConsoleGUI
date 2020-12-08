@@ -6,7 +6,7 @@ WindowScheme* WindowScheme::Default() {
 	return new WindowScheme(
 		FG_WHITE, BG_BLACK, FG_WHITE,
 		FG_DARK_GREY, BG_BLACK, FG_DARK_GREY,
-		FG_GREY, BG_BLACK, FG_GREY, 
+		FG_DARK_GREY, BG_BLACK, FG_DARK_GREY,
 		true 
 	);
 }
@@ -52,7 +52,7 @@ void Window::Rect(RECT r, WCHAR chr, WORD clr, bool fill) {
 
 void Window::Write(int x, int y, std::wstring str, WORD clr) {
 	for (size_t i = 0; i < str.size(); i++) {
-		mBuffer[y * mWidth + x + i].Char.UnicodeChar = str[i] < 32 ? L' ' :  str[i];
+		mBuffer[y * mWidth + x + i].Char.UnicodeChar = std::max(str[i], L' ');
 		mBuffer[y * mWidth + x + i].Attributes = clr;
 	}
 }
@@ -71,27 +71,27 @@ void Window::AddElement(Element* e) {
 
 	if (e->mMouseHandler) AddMouseHandler(e->mMouseHandler);
 
-	if (mColorScheme) {
-		e->SetBackgroundColor(mColorScheme->GetBackgroundColor());
-		e->GetBorder()->SetColor(mColorScheme->GetBorderColor());
-		e->GetBorder()->SetWidth(mColorScheme->GetBorderWidth());
+	if (mScheme) {
+		e->SetBackgroundColor(mScheme->GetBackgroundColor());
+		e->GetBorder()->SetColor(mScheme->GetBorderColor());
+		e->GetBorder()->SetWidth(mScheme->GetBorderWidth());
 
 		if (auto lab = dynamic_cast<Label*>(e)) {
-			lab->SetTextColor(mColorScheme->GetTextColor());
+			lab->SetTextColor(mScheme->GetTextColor());
 		}
 
 		if (auto btn = dynamic_cast<Button*>(e)) {
-			btn->SetPressedTextColor(mColorScheme->GetPressedTextColor());
-			btn->SetPressedBackgroundColor(mColorScheme->GetPressedBackgroundColor());
-			btn->GetPressedBorder()->SetColor(mColorScheme->GetPressedBorderColor());
-			btn->GetPressedBorder()->SetWidth(mColorScheme->GetPressedBorderWidth());
+			btn->SetPressedTextColor(mScheme->GetPressedTextColor());
+			btn->SetPressedBackgroundColor(mScheme->GetPressedBackgroundColor());
+			btn->GetPressedBorder()->SetColor(mScheme->GetPressedBorderColor());
+			btn->GetPressedBorder()->SetWidth(mScheme->GetPressedBorderWidth());
 		}
 
 		if (auto tf = dynamic_cast<TextField*>(e)) {
-			tf->SetDisabledTextColor(mColorScheme->GetDisabledTextColor());
-			tf->SetDisabledBackgroundColor(mColorScheme->GetDisabledBackgroundColor());
-			tf->GetDisabledBorder()->SetColor(mColorScheme->GetDisabledBorderColor());
-			tf->GetDisabledBorder()->SetWidth(mColorScheme->GetDisabledBorderWidth());
+			tf->SetDisabledTextColor(mScheme->GetDisabledTextColor());
+			tf->SetDisabledBackgroundColor(mScheme->GetDisabledBackgroundColor());
+			tf->GetDisabledBorder()->SetColor(mScheme->GetDisabledBorderColor());
+			tf->GetDisabledBorder()->SetWidth(mScheme->GetDisabledBorderWidth());
 		}
 	}
 }

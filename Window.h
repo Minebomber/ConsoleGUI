@@ -91,7 +91,7 @@ protected:
 	std::function<void(void)> mOnHideCallback;
 	std::function<void(void)> mOnShowCallback;
 
-	WindowScheme* mColorScheme = nullptr;
+	WindowScheme* mScheme = nullptr;
 public:
 	Window(int w, int h) : mWidth(w), mHeight(h), mBuffer(new CHAR_INFO[w * h]) {}
 
@@ -107,8 +107,8 @@ public:
 	const WORD& GetBaseColor() const { return mBaseColor; }
 	void SetBaseColor(WORD c) { mBaseColor = c; }
 
-	WindowScheme* GetColorScheme() { return mColorScheme; }
-	void SetColorScheme(WindowScheme* cs) { if (mColorScheme) delete mColorScheme; mColorScheme = cs; }
+	WindowScheme* GetScheme() { return mScheme; }
+	void SetScheme(WindowScheme* cs) { if (mScheme) delete mScheme; mScheme = cs; }
 
 	void AddElement(Element* e);
 	Element* GetElement(int i);

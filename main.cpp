@@ -4,33 +4,60 @@ class Test : public gui::Console {
 private:
 	gui::TextField* tf;
 	gui::Label* lab;
-	gui::Button* btn;
+	gui::Button* btnHMin, * btnHMid, * btnHMax;
+	gui::Button* btnVMin, * btnVMid, * btnVMax;
 
 public:
 	bool Initialize() override {
 		gui::Window* w = new gui::Window(GetScreenWidth(), GetScreenHeight());
 		SetCurrentWindow(w);
-		
-		w->SetColorScheme(gui::WindowScheme::Red());
+
+		w->SetScheme(gui::WindowScheme::Default());
 
 		lab = new gui::Label({ 3, 3, 12, 5 });
 		lab->SetText(L"Test");
 
 		w->AddElement(lab);
 
-		tf = new gui::TextField({ 2, 10, 27, 20 }, gui::Charset::Alphanum());
+		tf = new gui::TextField({ 7, 10, 27, 20 }, gui::Charset::Alphanum());
 		tf->SetTextWrap(gui::WRAP_WORD);
 		w->AddElement(tf);
 
-		btn = new gui::Button({ 3, 7, 13, 9 });
-		btn->SetText(L"Button");
-		w->AddElement(btn);
+		btnVMin = new gui::Button({ 1, 11, 5, 13 });
+		btnVMin->SetText(L"MIN");
+		btnVMin->SetPressAction([this](int _) {tf->SetAlignVertical(gui::TEXT_ALIGN_MIN); });
+		w->AddElement(btnVMin);
+
+		btnVMid = new gui::Button({ 1, 14, 5, 16 });
+		btnVMid->SetText(L"MID");
+		btnVMid->SetPressAction([this](int _) {tf->SetAlignVertical(gui::TEXT_ALIGN_MID); });
+		w->AddElement(btnVMid);
+
+		btnVMax = new gui::Button({ 1, 17, 5, 19 });
+		btnVMax->SetText(L"MAX");
+		btnVMax->SetPressAction([this](int _) {tf->SetAlignVertical(gui::TEXT_ALIGN_MAX); });
+		w->AddElement(btnVMax);
+
+		btnHMin = new gui::Button({ 9, 7, 13, 9 });
+		btnHMin->SetText(L"MIN");
+		btnHMin->SetPressAction([this](int _) {tf->SetAlignHorizontal(gui::TEXT_ALIGN_MIN); });
+		w->AddElement(btnHMin);
+
+		btnHMid = new gui::Button({ 15, 7, 19, 9 });
+		btnHMid->SetText(L"MID");
+		btnHMid->SetPressAction([this](int _) {tf->SetAlignHorizontal(gui::TEXT_ALIGN_MID); });
+		w->AddElement(btnHMid);
+
+		btnHMax = new gui::Button({ 21, 7, 25, 9 });
+		btnHMax->SetText(L"MAX");
+		btnHMax->SetPressAction([this](int _) {tf->SetAlignHorizontal(gui::TEXT_ALIGN_MAX); });
+		w->AddElement(btnHMax);
 
 		return true;
 	}
 
 	~Test() {
-		delete btn;
+		//delete btn;
 		delete lab;
 		delete tf;
 		SetCurrentWindow(nullptr);
