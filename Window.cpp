@@ -20,6 +20,15 @@ WindowScheme* WindowScheme::Green() {
 	);
 }
 
+WindowScheme* WindowScheme::Red() {
+	return new WindowScheme(
+		FG_DARK_RED, BG_BLACK, FG_DARK_RED,
+		FG_RED, BG_BLACK, FG_RED,
+		FG_RED, BG_BLACK, FG_RED,
+		true
+	);
+}
+
 void Window::Set(int x, int y, WCHAR chr, WORD clr) {
 	mBuffer[y * mWidth + x].Char.UnicodeChar = chr;
 	mBuffer[y * mWidth + x].Attributes = clr;

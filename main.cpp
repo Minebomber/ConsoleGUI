@@ -11,14 +11,17 @@ public:
 		gui::Window* w = new gui::Window(GetScreenWidth(), GetScreenHeight());
 		SetCurrentWindow(w);
 		
-		w->SetColorScheme(gui::WindowScheme::Green());
+		w->SetColorScheme(gui::WindowScheme::Red());
 
-		lab = new gui::Label({ 3, 3, 13, 5 });
+		lab = new gui::Label({ 3, 3, 12, 5 });
 		lab->SetText(L"Test");
 
 		w->AddElement(lab);
 
-		tf = new gui::TextField({ 10, 10, 25, 12 }, gui::Charset::Alphanum());
+		tf = new gui::TextField({ 2, 10, 27, 20 }, gui::Charset::Alphanum());
+		tf->SetTextWrap(gui::WRAP_WORD);
+		tf->SetAlignVertical(gui::TEXT_ALIGN_MID);
+		tf->SetAlignHorizontal(gui::TEXT_ALIGN_MIN);
 		w->AddElement(tf);
 
 		btn = new gui::Button({ 3, 7, 13, 9 });
@@ -37,7 +40,7 @@ public:
 };
 
 int main() {
-	Test t;//       31
+	Test t;
 	t.CreateConsole(30, 30, 8, 16);
 	t.Run();
 	return 0;

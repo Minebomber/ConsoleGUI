@@ -208,6 +208,7 @@ protected:
 	virtual void UpdateTextOffsetY();
 
 	void RenderText(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl);
+	void RenderText2(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl);
 public:
 	Label(RECT b) : Element(b) {}
 	Label(const Label& e) : Element(e), mText(e.mText), mTextColor(e.mTextColor), mAlignH(e.mAlignH), mAlignV(e.mAlignV), mTextWrap(e.mTextWrap), mTextLines(e.mTextLines), mTextOffsetY(e.mTextOffsetY) {}

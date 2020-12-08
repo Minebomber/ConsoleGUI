@@ -56,6 +56,7 @@ public:
 
 	static WindowScheme* Default();
 	static WindowScheme* Green();
+	static WindowScheme* Red();
 };
 
 class Element;

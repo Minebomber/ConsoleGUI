@@ -41,20 +41,94 @@ void Element::Draw(Window* c) {
 }
 
 void Label::UpdateTextLines() {
-	mTextLines = 1;
+	/*mTextLines = 1;
 	for (int ci = 0, li = 0; ci < (int)mText.length(); ci++) {
 		if (mText[ci] == L'\n') { mTextLines++; li = ci; }
-		if (ci - li > mBounds.right - mBounds.left - 2 * mBorder->GetWidth()) { mTextLines++; li = ci; }
-	}
+		if (ci - li >= mBounds.right - mBounds.left - 2) { mTextLines++; li = ci; }
+	}*/
+	mTextLines = 1 + std::count(mText.begin(), mText.end(), L'\n') + mText.length() / (mBounds.right - mBounds.left - 2);
 }
 
 void Label::UpdateTextOffsetY() {
 	mTextOffsetY = 0;
-	if (mAlignV == TEXT_ALIGN_MID) mTextOffsetY = (mBounds.bottom - mBounds.top - 2 * mBorder->GetWidth() - mTextLines + 1) / 2;
+	if (mAlignV == TEXT_ALIGN_MID) mTextOffsetY = (mBounds.bottom - mBounds.top - 2 * mBorder->GetWidth() - mTextLines) / 2;
 	else if (mAlignV == TEXT_ALIGN_MAX) mTextOffsetY = mBounds.bottom - mBounds.top - 2 * mBorder->GetWidth() - mTextLines;
 }
 
 void Label::RenderText(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl) {
+	
+	int textWidth = maxX - minX + 1;
+	int y = minY + mTextOffsetY;
+	int lineBeginIdx = 0;
+	int currentIdx = 0;
+	while (currentIdx < s.length() && y <= maxY) {
+		int lineWidth = currentIdx - lineBeginIdx + 1;
+		// Adjust line spacing x
+		int xOffset = 0;
+		if (mAlignH == TEXT_ALIGN_MID) xOffset = (textWidth - lineWidth) / 2;
+		else if (mAlignH == TEXT_ALIGN_MAX)  xOffset = textWidth - lineWidth;
+
+		if (lineWidth >= textWidth) {
+			// line too long
+			if (mTextWrap == WRAP_WORD) {
+				// find space
+				auto iStart = s.rbegin() + (s.length() - currentIdx - 1);
+				auto iEnd = s.rbegin() + (s.length() - lineBeginIdx);
+				auto iSpace = std::find(iStart, iEnd, L' ');
+				
+				if (iSpace != iEnd) {
+					// if end of string, print line as is
+					// else print until space, newline there
+					if (currentIdx == s.length() - 1) {
+						c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
+					} else {
+						auto spaceIdx = std::distance(s.begin(), iSpace.base()) - 1;
+						lineWidth = spaceIdx - lineBeginIdx;
+						if (mAlignH == TEXT_ALIGN_MID) xOffset = (textWidth - lineWidth) / 2;
+						else if (mAlignH == TEXT_ALIGN_MAX)  xOffset = textWidth - lineWidth;
+
+						c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
+						y++;
+						lineBeginIdx = spaceIdx + 1;
+					}
+				} else {
+					// char wrap
+					// display line from linebegin->current
+					c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
+					// move to next line
+					y++;
+					lineBeginIdx = currentIdx + 1;
+				}
+			} else {
+				// char wrap
+					// display line from linebegin->current
+				c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
+				// move to next line
+				y++;
+				lineBeginIdx = currentIdx + 1;
+			}
+		} else if (s[currentIdx] == L'\n') {
+			// break on newline
+			// dont want to include \n, print linewidth - 1
+			lineWidth--;
+			if (mAlignH == TEXT_ALIGN_MID) xOffset = (textWidth - lineWidth) / 2;
+			else if (mAlignH == TEXT_ALIGN_MAX)  xOffset = textWidth - lineWidth;
+
+			c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
+			// move to next line
+			y++;
+			lineBeginIdx = currentIdx + 1;
+		} else if (currentIdx == s.length() - 1) {
+			// display to end
+			// same line, no wrapping
+			c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
+		}
+		currentIdx++;
+	}
+}
+
+
+void Label::RenderText2(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl) {
 	int spanX = maxX - minX;
 	int y = minY + mTextOffsetY;
 	size_t nlPos = s.find(L'\n');
@@ -126,9 +200,9 @@ void Button::Draw(Window* c) {
 
 void TextField::Backspace() {
 	while (mDeleting && mText.length() > 0) {
-		mText = mText.substr(0, mText.length() - 1);
-		mNumDeleted++;
 		std::this_thread::sleep_for(std::chrono::milliseconds(300 - std::min(250, mNumDeleted * 50)));
+		if (mDeleting && mText.length() > 0) SetText(mText.substr(0, mText.length() - 1));
+		mNumDeleted++;
 	}
 }
 
@@ -141,18 +215,21 @@ void TextField::SetupHandlers() {
 		mDisabled = false;
 	});
 
-	mKeyboardHandler = new KeyboardHandler(L"\x08\x0D\x10" + mCharset);
+	mKeyboardHandler = new KeyboardHandler(
+		L"\x08\x0D\x10\xBA\xBB\xBC\xBD\xBE\xBF\xC0\xDB\xDC\xDD\xDE" + mCharset
+	);
 
 	mKeyboardHandler->SetPressAction([this](Window* c, int k) {
 		if (k == VK_SHIFT) mCapitalize = true;
 		else if (k == VK_BACK) {
 			mDeleting = true;
+			SetText(mText.substr(0, mText.length() - 1));
 			// Have only 1 thread at a time, create new only when exit
 			if (!mDeleteFuture.valid() || mDeleteFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
 				mDeleteFuture = ExecuteAsync(std::bind(&TextField::Backspace, this));
 			}
 		} else if (k == VK_RETURN) {
-			mText += L'\n';
+			mText += L'\n'; UpdateTextLines(); UpdateTextOffsetY();
 		} else {
 			// Get text for vk
 			UINT sc = MapVirtualKey(k, MAPVK_VK_TO_VSC);
@@ -161,7 +238,7 @@ void TextField::SetupHandlers() {
 			if (mCapitalize) b[0x10] = 0x80;
 			WCHAR c;
 			int r = ToUnicode((UINT)k, sc, b, &c, 1, 0);
-			mText += c;
+			mText += c; UpdateTextLines(); UpdateTextOffsetY();
 		}
 	});
 
@@ -187,7 +264,7 @@ void TextField::Draw(Window* c) {
 		mBounds.right - (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
 		mBounds.top + (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
 		mBounds.bottom - (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
-		mText + (mDisabled ? L"" : L"_"),
+		mText,
 		tC
 	);
 }
