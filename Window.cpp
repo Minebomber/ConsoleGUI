@@ -52,7 +52,7 @@ void Window::Rect(RECT r, WCHAR chr, WORD clr, bool fill) {
 
 void Window::Write(int x, int y, std::wstring str, WORD clr) {
 	for (size_t i = 0; i < str.size(); i++) {
-		mBuffer[y * mWidth + x + i].Char.UnicodeChar = str[i];
+		mBuffer[y * mWidth + x + i].Char.UnicodeChar = str[i] < 32 ? L' ' :  str[i];
 		mBuffer[y * mWidth + x + i].Attributes = clr;
 	}
 }
