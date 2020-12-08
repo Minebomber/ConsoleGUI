@@ -3,7 +3,7 @@
 class Test : public gui::Console {
 private:
 	gui::TextField* tf;
-	gui::Label* lab;
+	gui::Element* el;
 	gui::Button* btnHMin, * btnHMid, * btnHMax;
 	gui::Button* btnVMin, * btnVMid, * btnVMax;
 
@@ -12,12 +12,13 @@ public:
 		gui::Window* w = new gui::Window(GetScreenWidth(), GetScreenHeight());
 		SetCurrentWindow(w);
 
-		w->SetScheme(gui::WindowScheme::Default());
+		w->SetScheme(gui::WindowScheme::Green());
 
-		lab = new gui::Label({ 3, 3, 12, 5 });
-		lab->SetText(L"Test");
+		el = new gui::Element({ 0, 5, 29,22 });
+		el->SetBorder(new gui::TitledBorder(L"Text Alignment"));
+		
 
-		w->AddElement(lab);
+		w->AddElement(el);
 
 		tf = new gui::TextField({ 7, 10, 27, 20 }, gui::Charset::Alphanum());
 		tf->SetTextWrap(gui::WRAP_WORD);
@@ -57,8 +58,9 @@ public:
 	}
 
 	~Test() {
-		//delete btn;
-		delete lab;
+		delete btnHMin; delete btnHMid; delete btnHMax;
+		delete btnVMin; delete btnVMid; delete btnVMax;
+		delete el;
 		delete tf;
 		SetCurrentWindow(nullptr);
 	}
