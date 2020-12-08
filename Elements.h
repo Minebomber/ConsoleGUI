@@ -201,20 +201,13 @@ protected:
 	int mAlignV = TEXT_ALIGN_MID;
 	int mTextWrap = WRAP_CHAR;
 
-	int mTextLines = 1;
-	virtual void UpdateTextLines();
-
-	int mTextOffsetY = 0;
-	virtual void UpdateTextOffsetY();
-
 	void RenderText(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl);
-	void RenderText2(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl);
 public:
 	Label(RECT b) : Element(b) {}
-	Label(const Label& e) : Element(e), mText(e.mText), mTextColor(e.mTextColor), mAlignH(e.mAlignH), mAlignV(e.mAlignV), mTextWrap(e.mTextWrap), mTextLines(e.mTextLines), mTextOffsetY(e.mTextOffsetY) {}
+	Label(const Label& e) : Element(e), mText(e.mText), mTextColor(e.mTextColor), mAlignH(e.mAlignH), mAlignV(e.mAlignV), mTextWrap(e.mTextWrap) {}
 
 	const std::wstring& GetText() const { return mText; }
-	void SetText(std::wstring t) { mText = t; UpdateTextLines(); UpdateTextOffsetY(); }
+	void SetText(std::wstring t) { mText = t; }
 
 	const WORD& GetTextColor() const { return mTextColor; }
 	void SetTextColor(WORD c) { mTextColor = c; }
@@ -223,14 +216,10 @@ public:
 	void SetAlignHorizontal(int h) { mAlignH = h; }
 
 	const int& GetAlignVertical() const { return mAlignV; }
-	void SetAlignVertical(int v) { mAlignV = v; UpdateTextOffsetY(); }
+	void SetAlignVertical(int v) { mAlignV = v; }
 
 	const int& GetTextWrap() const { return mTextWrap; }
 	void SetTextWrap(int w) { mTextWrap = w; }
-
-	void SetBorder(Border* b) override { Element::SetBorder(b); UpdateTextLines(); UpdateTextOffsetY(); }
-
-	virtual void SetBounds(RECT b) override { Element::SetBounds(b); UpdateTextLines(); UpdateTextOffsetY();}
 
 	virtual void Draw(Window* c) override;
 };

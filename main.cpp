@@ -20,8 +20,6 @@ public:
 
 		tf = new gui::TextField({ 2, 10, 27, 20 }, gui::Charset::Alphanum());
 		tf->SetTextWrap(gui::WRAP_WORD);
-		tf->SetAlignVertical(gui::TEXT_ALIGN_MID);
-		tf->SetAlignHorizontal(gui::TEXT_ALIGN_MIN);
 		w->AddElement(tf);
 
 		btn = new gui::Button({ 3, 7, 13, 9 });

@@ -40,28 +40,19 @@ void Element::Draw(Window* c) {
 	mBorder->Draw(c, mBounds);
 }
 
-void Label::UpdateTextLines() {
-	/*mTextLines = 1;
-	for (int ci = 0, li = 0; ci < (int)mText.length(); ci++) {
-		if (mText[ci] == L'\n') { mTextLines++; li = ci; }
-		if (ci - li >= mBounds.right - mBounds.left - 2) { mTextLines++; li = ci; }
-	}*/
-	mTextLines = 1 + std::count(mText.begin(), mText.end(), L'\n') + mText.length() / (mBounds.right - mBounds.left - 2);
-}
-
-void Label::UpdateTextOffsetY() {
-	mTextOffsetY = 0;
-	if (mAlignV == TEXT_ALIGN_MID) mTextOffsetY = (mBounds.bottom - mBounds.top - 2 * mBorder->GetWidth() - mTextLines) / 2;
-	else if (mAlignV == TEXT_ALIGN_MAX) mTextOffsetY = mBounds.bottom - mBounds.top - 2 * mBorder->GetWidth() - mTextLines;
-}
-
 void Label::RenderText(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl) {
-	
 	int textWidth = maxX - minX + 1;
-	int y = minY + mTextOffsetY;
+	int textHeight = maxY - minY + 1;
+	
+	struct LineInfo {
+		int dX, sI, lW;
+	};
+	LineInfo *lines = new LineInfo[textHeight];
+	int currentLine = 0;
+	
 	int lineBeginIdx = 0;
 	int currentIdx = 0;
-	while (currentIdx < s.length() && y <= maxY) {
+	while (currentIdx < s.length() && currentLine < textHeight) {
 		int lineWidth = currentIdx - lineBeginIdx + 1;
 		// Adjust line spacing x
 		int xOffset = 0;
@@ -80,31 +71,28 @@ void Label::RenderText(Window* c, int minX, int maxX, int minY, int maxY, std::w
 					// if end of string, print line as is
 					// else print until space, newline there
 					if (currentIdx == s.length() - 1) {
-						c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
+						lines[currentLine] = { xOffset, lineBeginIdx, lineWidth }; currentLine++;
 					} else {
 						auto spaceIdx = std::distance(s.begin(), iSpace.base()) - 1;
 						lineWidth = spaceIdx - lineBeginIdx;
 						if (mAlignH == TEXT_ALIGN_MID) xOffset = (textWidth - lineWidth) / 2;
 						else if (mAlignH == TEXT_ALIGN_MAX)  xOffset = textWidth - lineWidth;
 
-						c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
-						y++;
+						lines[currentLine] = { xOffset, lineBeginIdx, lineWidth }; currentLine++;
 						lineBeginIdx = spaceIdx + 1;
 					}
 				} else {
 					// char wrap
 					// display line from linebegin->current
-					c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
 					// move to next line
-					y++;
+					lines[currentLine] = { xOffset, lineBeginIdx, lineWidth }; currentLine++;
 					lineBeginIdx = currentIdx + 1;
 				}
 			} else {
 				// char wrap
 					// display line from linebegin->current
-				c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
 				// move to next line
-				y++;
+				lines[currentLine] = { xOffset, lineBeginIdx, lineWidth }; currentLine++;
 				lineBeginIdx = currentIdx + 1;
 			}
 		} else if (s[currentIdx] == L'\n') {
@@ -114,51 +102,25 @@ void Label::RenderText(Window* c, int minX, int maxX, int minY, int maxY, std::w
 			if (mAlignH == TEXT_ALIGN_MID) xOffset = (textWidth - lineWidth) / 2;
 			else if (mAlignH == TEXT_ALIGN_MAX)  xOffset = textWidth - lineWidth;
 
-			c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
+			lines[currentLine] = { xOffset, lineBeginIdx, lineWidth }; currentLine++;
 			// move to next line
-			y++;
 			lineBeginIdx = currentIdx + 1;
 		} else if (currentIdx == s.length() - 1) {
 			// display to end
 			// same line, no wrapping
-			c->Write(minX + xOffset, y, s.substr(lineBeginIdx, lineWidth), cl);
+			lines[currentLine] = { xOffset, lineBeginIdx, lineWidth }; currentLine++;
 		}
 		currentIdx++;
 	}
-}
 
+	int yOffset = 0;
+	if (mAlignV == TEXT_ALIGN_MID) yOffset = (textHeight - currentLine) / 2;
+	else if (mAlignV == TEXT_ALIGN_MAX) yOffset = textHeight - currentLine;
 
-void Label::RenderText2(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl) {
-	int spanX = maxX - minX;
-	int y = minY + mTextOffsetY;
-	size_t nlPos = s.find(L'\n');
-	size_t cIdx = 0;
-	while (cIdx < s.length() && y <= maxY) {
-		int elIdx = (nlPos == std::string::npos) ? s.length() : nlPos;
-		int lineLen = elIdx - cIdx;
-		// Stay within bounds
-		if (lineLen > spanX) {
-			if (mTextWrap == WRAP_WORD) {
-				// Last char is idx of space
-				elIdx = s.rfind(L' ', cIdx + spanX);
-				lineLen = elIdx - cIdx;
-			} else if (mTextWrap == WRAP_CHAR || lineLen > spanX) { 
-				// def to char wrap if no spac
-				elIdx -= (lineLen - spanX);
-				lineLen = spanX + 1;
-			}
-		}
-		// Adjust line spacing x
-		int xOffset = 0;
-		if (mAlignH == TEXT_ALIGN_MID) xOffset = (spanX - lineLen + 1) / 2;
-		else if (mAlignH == TEXT_ALIGN_MAX)  xOffset = spanX - lineLen + 1;
-
-		c->Write(minX + xOffset, y, s.substr(cIdx, lineLen), cl);
-
-		y++;
-		cIdx = elIdx + 1;
-		nlPos = s.find(L'\n', cIdx);
-	}
+	for (int i = 0, y = minY + yOffset; i < currentLine; i++, y++)
+		c->Write(minX + lines[i].dX, y, s.substr(lines[i].sI, lines[i].lW), cl);
+	
+	delete[] lines;
 }
 
 void Label::Draw(Window* c) {
@@ -229,7 +191,7 @@ void TextField::SetupHandlers() {
 				mDeleteFuture = ExecuteAsync(std::bind(&TextField::Backspace, this));
 			}
 		} else if (k == VK_RETURN) {
-			mText += L'\n'; UpdateTextLines(); UpdateTextOffsetY();
+			mText += L'\n';
 		} else {
 			// Get text for vk
 			UINT sc = MapVirtualKey(k, MAPVK_VK_TO_VSC);
@@ -238,7 +200,7 @@ void TextField::SetupHandlers() {
 			if (mCapitalize) b[0x10] = 0x80;
 			WCHAR c;
 			int r = ToUnicode((UINT)k, sc, b, &c, 1, 0);
-			mText += c; UpdateTextLines(); UpdateTextOffsetY();
+			mText += c;
 		}
 	});
 

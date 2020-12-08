@@ -93,11 +93,6 @@ void Window::AddElement(Element* e) {
 			tf->GetDisabledBorder()->SetColor(mColorScheme->GetDisabledBorderColor());
 			tf->GetDisabledBorder()->SetWidth(mColorScheme->GetDisabledBorderWidth());
 		}
-
-		if (auto lab = dynamic_cast<Label*>(e)) {
-			lab->UpdateTextLines();
-			lab->UpdateTextOffsetY();
-		}
 	}
 }
 
