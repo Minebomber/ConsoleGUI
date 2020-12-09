@@ -152,7 +152,9 @@ void Window::Display() {
 }
 
 Window::~Window() {
-	for (Element* e : mElements) RemoveElement(e);
+	for (Element* e : mElements) delete e;
+	delete[] mBuffer;
+	if (mScheme) delete mScheme;
 }
 
 }
