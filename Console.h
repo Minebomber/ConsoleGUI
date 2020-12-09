@@ -41,6 +41,8 @@ private:
 	bool mInitialized = false;
 	bool mRunning = false;
 
+	bool mFocused = true;
+
 	Window* mCurrentWindow = nullptr;
 public:
 	Console();

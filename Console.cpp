@@ -94,9 +94,10 @@ void Console::Run() {
 			for (DWORD i = 0; i < events; i++) {
 				switch (inputBuffer[i].EventType) {
 				case FOCUS_EVENT:
-					//isFocused = inputBuffer[i].Event.FocusEvent.bSetFocus;
+					mFocused = inputBuffer[i].Event.FocusEvent.bSetFocus;
 					break;
 				case KEY_EVENT:
+					if (!mFocused) break;
 					{
 						// Keyboard
 						int k = inputBuffer[i].Event.KeyEvent.wVirtualKeyCode;
@@ -113,6 +114,7 @@ void Console::Run() {
 					}
 					break;
 				case MOUSE_EVENT:
+					if (!mFocused) break;
 					switch (inputBuffer[i].Event.MouseEvent.dwEventFlags) {
 					case MOUSE_MOVED:
 						mCurrentWindow->mMousePosition = {
@@ -143,16 +145,19 @@ void Console::Run() {
 				}
 			}
 
-			mCurrentWindow->Display();
+			if (mFocused) {
+				mCurrentWindow->Display();
 
-			// Display
-			WCHAR title[256];
-			swprintf(title, 256, L"FPS: %3.0f", 1 / elapsedTime);
-			SetConsoleTitle(title);
-			WriteConsoleOutput(mConsole, mCurrentWindow->mBuffer, { (SHORT)mScreenWidth, (SHORT)mScreenHeight }, { 0, 0 }, &mWindowRect);
+				// Display
+				WCHAR title[256];
+				swprintf(title, 256, L"FPS: %3.0f", 1 / elapsedTime);
+				SetConsoleTitle(title);
+				WriteConsoleOutput(mConsole, mCurrentWindow->mBuffer, { (SHORT)mScreenWidth, (SHORT)mScreenHeight }, { 0, 0 }, &mWindowRect);
 
-			// Check exit
-			if (mCurrentWindow->mKeyboard[VK_ESCAPE] && mCurrentWindow->mKeyboard['Q']) Stop();
+				// Check exit
+				if (mCurrentWindow->mKeyboard[VK_ESCAPE] && mCurrentWindow->mKeyboard['Q']) Stop();
+
+			}
 		}
 	}
 }
