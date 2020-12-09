@@ -75,11 +75,8 @@ protected:
 
 	KeyboardHandler* mActiveKeyboardHandler = nullptr;
 
-	struct KeyState {
-		bool pressed;
-		bool released;
-		bool held;
-	} mKeyboard[256] = { 0 }, mMouseButtons[3] = { 0 };
+	bool mKeyboard[256] = { 0 };
+	bool mMouseButtons[3] = { 0 };
 
 	COORD mMousePosition{ 0 };
 

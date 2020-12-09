@@ -61,7 +61,7 @@ void Label::RenderText(Window* c, int minX, int maxX, int minY, int maxY, std::w
 
 		if (lineWidth >= textWidth) {
 			// line too long
-			if (mTextWrap == WRAP_WORD) {
+			if (mTextWrap == TEXT_WRAP_WORD) {
 				// find space
 				auto iStart = s.rbegin() + (s.length() - currentIdx - 1);
 				auto iEnd = s.rbegin() + (s.length() - lineBeginIdx);
@@ -160,14 +160,6 @@ void Button::Draw(Window* c) {
 	);
 }
 
-void TextField::Backspace() {
-	while (mDeleting && mText.length() > 0) {
-		std::this_thread::sleep_for(std::chrono::milliseconds(300 - std::min(250, mNumDeleted * 50)));
-		if (mDeleting && mText.length() > 0) SetText(mText.substr(0, mText.length() - 1));
-		mNumDeleted++;
-	}
-}
-
 void TextField::SetupHandlers() {
 
 	mMouseHandler = new MouseHandler(mBounds, MOUSE_LEFT_BUTTON);
@@ -184,12 +176,7 @@ void TextField::SetupHandlers() {
 	mKeyboardHandler->SetPressAction([this](Window* c, int k) {
 		if (k == VK_SHIFT) mCapitalize = true;
 		else if (k == VK_BACK) {
-			mDeleting = true;
-			SetText(mText.substr(0, mText.length() - 1));
-			// Have only 1 thread at a time, create new only when exit
-			if (!mDeleteFuture.valid() || mDeleteFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
-				mDeleteFuture = ExecuteAsync(std::bind(&TextField::Backspace, this));
-			}
+			if (mText.length() > 0) mText = mText.substr(0, mText.length() - 1);
 		} else if (k == VK_RETURN) {
 			mText += L'\n';
 		} else {
@@ -206,10 +193,6 @@ void TextField::SetupHandlers() {
 
 	mKeyboardHandler->SetReleaseAction([this](Window* c, int k) {
 		if (k == VK_SHIFT) mCapitalize = false;
-		else if (k == VK_BACK) {
-			mDeleting = false;
-			mNumDeleted = 0;
-		}
 	});
 }
 

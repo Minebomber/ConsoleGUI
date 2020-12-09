@@ -21,7 +21,7 @@ public:
 		w->AddElement(el);
 
 		tf = new gui::TextField({ 7, 10, 27, 20 }, gui::Charset::Alphanum());
-		tf->SetTextWrap(gui::WRAP_WORD);
+		tf->SetTextWrap(gui::TEXT_WRAP_WORD);
 		w->AddElement(tf);
 
 		btnVMin = new gui::Button({ 1, 11, 5, 13 });

@@ -73,11 +73,6 @@ void Console::Run() {
 	auto timePoint1 = std::chrono::system_clock::now();
 	auto timePoint2 = std::chrono::system_clock::now();
 
-	SHORT oldKeyStates[256] = { 0 };
-	SHORT newKeyStates[256] = { 0 };
-	bool oldMouseStates[3] = { 0 };
-	bool newMouseStates[3] = { 0 };
-
 	float elapsedTime = 1;
 
 	mRunning = true;
@@ -89,29 +84,8 @@ void Console::Run() {
 		timePoint1 = timePoint2;
 		elapsedTime = timeDelta.count();
 		if (mCurrentWindow) {
-			for (int k = 0; k < 256; k++) {
-				newKeyStates[k] = GetAsyncKeyState(k);
-				mCurrentWindow->mKeyboard[k].pressed = false;
-				mCurrentWindow->mKeyboard[k].released = false;
-				if (newKeyStates[k] != oldKeyStates[k]) {
-					if (newKeyStates[k] & 0x8000) {
-						mCurrentWindow->mKeyboard[k].pressed = !mCurrentWindow->mKeyboard[k].held;
-						mCurrentWindow->mKeyboard[k].held = true;
-					} else {
-						mCurrentWindow->mKeyboard[k].released = true;
-						mCurrentWindow->mKeyboard[k].held = false;
-					}
-					if (mCurrentWindow->mActiveKeyboardHandler) {
-						if (mCurrentWindow->mActiveKeyboardHandler->mKeys.find(k) != std::wstring::npos) {
-							if (mCurrentWindow->mKeyboard[k].pressed && mCurrentWindow->mActiveKeyboardHandler->mPressAction) mCurrentWindow->mActiveKeyboardHandler->mPressAction(mCurrentWindow, k);
-							if (mCurrentWindow->mKeyboard[k].released && mCurrentWindow->mActiveKeyboardHandler->mReleaseAction) mCurrentWindow->mActiveKeyboardHandler->mReleaseAction(mCurrentWindow, k);
-						}
-					}
 
-				}
-				oldKeyStates[k] = newKeyStates[k];
-			}
-
+			// Events
 			INPUT_RECORD inputBuffer[32];
 			DWORD events = 0;
 			GetNumberOfConsoleInputEvents(mConsoleIn, &events);
@@ -122,6 +96,22 @@ void Console::Run() {
 				case FOCUS_EVENT:
 					//isFocused = inputBuffer[i].Event.FocusEvent.bSetFocus;
 					break;
+				case KEY_EVENT:
+					{
+						// Keyboard
+						int k = inputBuffer[i].Event.KeyEvent.wVirtualKeyCode;
+						mCurrentWindow->mKeyboard[k] = inputBuffer[i].Event.KeyEvent.bKeyDown;
+						// Notify keyboard handler
+						if (mCurrentWindow->mActiveKeyboardHandler) {
+							if (mCurrentWindow->mActiveKeyboardHandler->mKeys.find(k) != std::wstring::npos) {
+								if (mCurrentWindow->mKeyboard[k] && mCurrentWindow->mActiveKeyboardHandler->mPressAction)
+									mCurrentWindow->mActiveKeyboardHandler->mPressAction(mCurrentWindow, k);
+								if (!mCurrentWindow->mKeyboard[k] && mCurrentWindow->mActiveKeyboardHandler->mReleaseAction)
+									mCurrentWindow->mActiveKeyboardHandler->mReleaseAction(mCurrentWindow, k);
+							}
+						}
+					}
+					break;
 				case MOUSE_EVENT:
 					switch (inputBuffer[i].Event.MouseEvent.dwEventFlags) {
 					case MOUSE_MOVED:
@@ -129,8 +119,20 @@ void Console::Run() {
 						break;
 					case 0:
 					case DOUBLE_CLICK:
+						// Mouse
 						for (int m = 0; m < 3; m++) {
-							newMouseStates[m] = (inputBuffer[i].Event.MouseEvent.dwButtonState & (1 << m)) > 0;
+							mCurrentWindow->mMouseButtons[m] = inputBuffer[i].Event.MouseEvent.dwButtonState & (1 << m);
+							// Notify mouse handlers
+							for (MouseHandler* h : mCurrentWindow->mMouseHandlers) {
+								if (h->mButtons & (1 << m) &&
+									mCurrentWindow->mMousePosition.X >= h->mBounds.left &&
+									mCurrentWindow->mMousePosition.X <= h->mBounds.right &&
+									mCurrentWindow->mMousePosition.Y >= h->mBounds.top &&
+									mCurrentWindow->mMousePosition.Y <= h->mBounds.bottom) {
+									if (mCurrentWindow->mMouseButtons[m] && h->mPressAction) h->mPressAction(mCurrentWindow, 1 << m);
+									if (!mCurrentWindow->mMouseButtons[m] && h->mReleaseAction) h->mReleaseAction(mCurrentWindow, 1 << m);
+								}
+							}
 						}
 						break;
 					default:
@@ -142,38 +144,6 @@ void Console::Run() {
 				}
 			}
 
-			// Mouse
-			for (int m = 0; m < 3; m++) {
-				mCurrentWindow->mMouseButtons[m].pressed = false;
-				mCurrentWindow->mMouseButtons[m].released = false;
-				if (newMouseStates[m] != oldMouseStates[m]) {
-					if (newMouseStates[m]) {
-						mCurrentWindow->mMouseButtons[m].pressed = true;
-						mCurrentWindow->mMouseButtons[m].held = true;
-					} else {
-						mCurrentWindow->mMouseButtons[m].released = true;
-						mCurrentWindow->mMouseButtons[m].held = false;
-					}
-
-					if (m == 0 && mCurrentWindow->mMouseButtons[m].pressed) {
-						mCurrentWindow->mActiveKeyboardHandler = nullptr;
-						mCurrentWindow->ApplyToElements([](Element* e) { if (auto t = dynamic_cast<TextField*>(e)) t->SetDisabled(true); });
-					}
-					// Check click handlers only if state change
-					for (MouseHandler* h : mCurrentWindow->mMouseHandlers) {
-						if (h->mButtons & (1 << m) &&
-							mCurrentWindow->mMousePosition.X >= h->mBounds.left &&
-							mCurrentWindow->mMousePosition.X <= h->mBounds.right &&
-							mCurrentWindow->mMousePosition.Y >= h->mBounds.top &&
-							mCurrentWindow->mMousePosition.Y <= h->mBounds.bottom) {
-							if (mCurrentWindow->mMouseButtons[m].pressed && h->mPressAction) h->mPressAction(mCurrentWindow, 1 << m);
-							if (mCurrentWindow->mMouseButtons[m].released && h->mReleaseAction) h->mReleaseAction(mCurrentWindow, 1 << m);
-						}
-					}
-				}
-				oldMouseStates[m] = newMouseStates[m];
-			}
-
 			mCurrentWindow->Display();
 
 			// Display
@@ -183,7 +153,7 @@ void Console::Run() {
 			WriteConsoleOutput(mConsole, mCurrentWindow->mBuffer, { (SHORT)mScreenWidth, (SHORT)mScreenHeight }, { 0, 0 }, &mWindowRect);
 
 			// Check exit
-			if (mCurrentWindow->mKeyboard[VK_ESCAPE].held && mCurrentWindow->mKeyboard['Q'].held) Stop();
+			if (mCurrentWindow->mKeyboard[VK_ESCAPE] && mCurrentWindow->mKeyboard['Q']) Stop();
 		}
 	}
 }

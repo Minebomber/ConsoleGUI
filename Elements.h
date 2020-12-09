@@ -39,6 +39,10 @@ enum Colors {
 	BG_WHITE = 0x00F0,
 };
 
+struct Bounds {
+	int x, y, w, h;
+};
+
 enum MouseButtons {
 	MOUSE_LEFT_BUTTON = 0b001,
 	MOUSE_RIGHT_BUTTON = 0b010,
@@ -52,8 +56,8 @@ enum TextAlignment {
 };
 
 enum TextWrap {
-	WRAP_CHAR,
-	WRAP_WORD,
+	TEXT_WRAP_CHAR,
+	TEXT_WRAP_WORD,
 };
 
 class Charset {
@@ -199,7 +203,7 @@ protected:
 	WORD mTextColor = FG_WHITE;
 	int mAlignH = TEXT_ALIGN_MID;
 	int mAlignV = TEXT_ALIGN_MID;
-	int mTextWrap = WRAP_CHAR;
+	int mTextWrap = TEXT_WRAP_CHAR;
 
 	void RenderText(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl);
 public:
@@ -270,15 +274,10 @@ protected:
 	bool mDisabled = true;
 	
 	bool mCapitalize = false;
-	bool mDeleting = false;
-	int mNumDeleted = 0;
-
-	std::future<void> mDeleteFuture;
 
 	std::wstring mCharset = Charset::Numeric();
 
 	virtual void SetupHandlers() override;
-	void Backspace();
 public:
 	TextField(RECT b) : Label(b), mDisabledBorder(new Border(FG_WHITE, 0)) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; SetupHandlers(); }
 	TextField(RECT b, std::wstring c) : Label(b), mCharset(c), mDisabledBorder(new Border(FG_WHITE, 0)) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; SetupHandlers(); }
