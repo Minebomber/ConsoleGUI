@@ -5,22 +5,22 @@ namespace gui {
 void Border::Draw(Window* c, Bounds b) {
 
 	for (int wi = 0; wi < mWidth; wi++) {
-		int x0 = b.origin.x + wi; int x1 = b.origin.x + b.size.width - wi - 1;
-		int y0 = b.origin.y + wi; int y1 = b.origin.y + b.size.height - wi - 1;
+		int x0 = b.Left() + wi; int x1 = b.Right() - wi;
+		int y0 = b.Top() + wi; int y1 = b.Bottom() - wi;
 
-		c->Set(x0, y0, L'\x250F', mColor);
-		c->Set(x1, y0, L'\x2513', mColor);
-		c->Set(x0, y1, L'\x2517', mColor);
-		c->Set(x1, y1, L'\x251B', mColor);
+		c->SetChar(x0, y0, L'\x250F', mColor);
+		c->SetChar(x1, y0, L'\x2513', mColor);
+		c->SetChar(x0, y1, L'\x2517', mColor);
+		c->SetChar(x1, y1, L'\x251B', mColor);
 
 		for (int x = x0 + 1; x < x1; x++) {
-			c->Set(x, y0, L'\x2501', mColor);
-			c->Set(x, y1, L'\x2501', mColor);
+			c->SetChar(x, y0, L'\x2501', mColor);
+			c->SetChar(x, y1, L'\x2501', mColor);
 		}
 
 		for (int y = y0 + 1; y < y1; y++) {
-			c->Set(x0, y, L'\x2503', mColor);
-			c->Set(x1, y, L'\x2503', mColor);
+			c->SetChar(x0, y, L'\x2503', mColor);
+			c->SetChar(x1, y, L'\x2503', mColor);
 		}
 	}
 }
@@ -29,13 +29,13 @@ void TitledBorder::Draw(Window* c, Bounds b) {
 	Border::Draw(c, b);
 	int tW = mTitle.length();
 	int x0 = b.origin.x + ((b.size.width - tW) / 2) + 1;
-	c->Set(x0 - 1, b.origin.y, L'\x252B', mColor);
-	c->Write(x0, b.origin.y, mTitle, mColor);
-	c->Set(x0 + tW, b.origin.y, L'\x2523', mColor);
+	c->SetChar(x0 - 1, b.origin.y, L'\x252B', mColor);
+	c->WriteString(x0, b.origin.y, mTitle, mColor);
+	c->SetChar(x0 + tW, b.origin.y, L'\x2523', mColor);
 }
 
 void Element::Draw(Window* c) {
-	c->Rect(mBounds, L' ', mBackgroundColor, true);
+	c->DrawRect(mBounds, L' ', mBackgroundColor, true);
 	mBorder->Draw(c, mBounds);
 }
 
@@ -115,9 +115,9 @@ void Label::RenderText(Window* c, Bounds b, const std::wstring& s, WORD cl) {
 	int yOffset = 0;
 	if (mAlignV == TEXT_ALIGN_MID) yOffset = (textHeight - currentLine) / 2;
 	else if (mAlignV == TEXT_ALIGN_MAX) yOffset = textHeight - currentLine;
-
+	//c->WriteString(b.origin.x + lines[i].dX, y, s.substr(lines[i].sI, lines[i].lW), cl);
 	for (int i = 0, y = b.origin.y + yOffset; i < currentLine; i++, y++)
-		c->Write(b.origin.x + lines[i].dX, y, s.substr(lines[i].sI, lines[i].lW), cl);
+		c->WriteString(b.origin.x + lines[i].dX, y, s, cl, lines[i].sI, lines[i].lW);
 
 	delete[] lines;
 }
@@ -143,7 +143,7 @@ void Button::Draw(Window* c) {
 	WORD bgC = mPressed ? mPressedBackgroundColor : mBackgroundColor;
 	WORD tC = mPressed ? mPressedTextColor : mTextColor;
 
-	c->Rect(mBounds, L' ', bgC, true);
+	c->DrawRect(mBounds, L' ', bgC, true);
 	if (mPressed) mPressedBorder->Draw(c, mBounds);
 	else mBorder->Draw(c, mBounds);
 	int borderWidth = (mPressed ? mPressedBorder->GetWidth() : mBorder->GetWidth());
@@ -195,7 +195,7 @@ void TextField::Draw(Window* c) {
 	WORD bgC = mDisabled ? mDisabledBackgroundColor : mBackgroundColor;
 	WORD tC = mDisabled ? mDisabledTextColor : mTextColor;
 
-	c->Rect(mBounds, L' ', bgC, true);
+	c->DrawRect(mBounds, L' ', bgC, true);
 	if (mDisabled) mDisabledBorder->Draw(c, mBounds);
 	else mBorder->Draw(c, mBounds);
 
@@ -206,15 +206,6 @@ void TextField::Draw(Window* c) {
 		mBounds.size.width - 2 * borderWidth,
 		mBounds.size.height - 2 * borderWidth,
 	}, mText, tC);
-
-	/*RenderText(c,
-		mBounds.origin.x + (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
-		mBounds.origin.x + mBounds.size.width - (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
-		mBounds.origin.y + (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
-		mBounds.origin.y + mBounds.size.height - (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth()),
-		mText,
-		tC
-	);*/
 }
 
 void Panel::Draw(Window* c) {

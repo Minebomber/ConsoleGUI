@@ -93,10 +93,11 @@ protected:
 public:
 	Window(int w, int h) : mWidth(w), mHeight(h), mBuffer(new CHAR_INFO[w * h]) {}
 
-	void Set(int x, int y, WCHAR chr, WORD clr);
-	void Fill(WCHAR chr, WORD clr);
-	void Rect(Bounds b, WCHAR chr, WORD clr, bool fill = false);
-	void Write(int x, int y, std::wstring str, WORD clr);
+	void SetChar(int x, int y, WCHAR chr, WORD clr);
+	void FillScreen(WCHAR chr, WORD clr);
+	void DrawRect(Bounds b, WCHAR chr, WORD clr, bool fill = false);
+	void WriteString(int x, int y, const std::wstring& str, WORD clr);
+	void WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w);
 
 	const Point& GetMousePosition() const;
 

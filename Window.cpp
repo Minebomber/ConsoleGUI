@@ -29,31 +29,38 @@ WindowScheme* WindowScheme::Red() {
 	);
 }
 
-void Window::Set(int x, int y, WCHAR chr, WORD clr) {
+void Window::SetChar(int x, int y, WCHAR chr, WORD clr) {
 	mBuffer[y * mWidth + x].Char.UnicodeChar = chr;
 	mBuffer[y * mWidth + x].Attributes = clr;
 }
 
-void Window::Fill(WCHAR chr, WORD clr) {
+void Window::FillScreen(WCHAR chr, WORD clr) {
 	for (int i = 0; i < mWidth * mHeight; i++) {
 		mBuffer[i].Char.UnicodeChar = chr;
 		mBuffer[i].Attributes = clr;
 	}
 }
 
-void Window::Rect(Bounds b, WCHAR chr, WORD clr, bool fill) {
+void Window::DrawRect(Bounds b, WCHAR chr, WORD clr, bool fill) {
 	for (int i = 0; i < b.size.height; i++) {
 		for (int j = 0; j < b.size.width; j++) {
-			if (fill) Set(j + b.origin.x, i + b.origin.y, chr, clr);
+			if (fill) SetChar(j + b.origin.x, i + b.origin.y, chr, clr);
 			else if (i == 0 || i == b.size.height - 1 || j == 0 || j == b.size.width - 1) 
-				Set(j + b.origin.x, i + b.origin.y, chr, clr);
+				SetChar(j + b.origin.x, i + b.origin.y, chr, clr);
 		}
 	}
 }
 
-void Window::Write(int x, int y, std::wstring str, WORD clr) {
-	for (size_t i = 0; i < str.size(); i++) {
+void Window::WriteString(int x, int y, const std::wstring& str, WORD clr) {
+	for (int i = 0; i < str.size(); i++) {
 		mBuffer[y * mWidth + x + i].Char.UnicodeChar = std::max(str[i], L' ');
+		mBuffer[y * mWidth + x + i].Attributes = clr;
+	}
+}
+
+void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w) {
+	for (int i = 0; i < w; i++) {
+		mBuffer[y * mWidth + x + i].Char.UnicodeChar = std::max(str[st + i], L' ');
 		mBuffer[y * mWidth + x + i].Attributes = clr;
 	}
 }
@@ -143,7 +150,7 @@ void Window::RemoveMouseHandler(int i) {
 void Window::RemoveMouseHandler(MouseHandler* h) { RemoveMouseHandler(h->mId); }
 
 void Window::Display() {
-	Fill(mBaseChar, mBaseColor);
+	FillScreen(mBaseChar, mBaseColor);
 	for (Element* e : mElements) {
 		e->Draw(this);
 	}
