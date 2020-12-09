@@ -14,42 +14,40 @@ public:
 
 		w->SetScheme(gui::WindowScheme::Green());
 
-		el = new gui::Element({ 0, 5, 29,22 });
+		el = new gui::Element({ 0, 5, 29, 17 });
 		el->SetBorder(new gui::TitledBorder(L"Text Alignment"));
-		
-
 		w->AddElement(el);
 
-		tf = new gui::TextField({ 7, 10, 27, 20 }, gui::Charset::Alphanum());
+		tf = new gui::TextField({ 7, 10, 20, 11 }, gui::Charset::Alphanum());
 		tf->SetTextWrap(gui::TEXT_WRAP_WORD);
 		w->AddElement(tf);
 
-		btnVMin = new gui::Button({ 1, 11, 5, 13 });
+		btnVMin = new gui::Button({ 1, 11, 5, 3 });
 		btnVMin->SetText(L"MIN");
 		btnVMin->SetPressAction([this](int _) {tf->SetAlignVertical(gui::TEXT_ALIGN_MIN); });
 		w->AddElement(btnVMin);
 
-		btnVMid = new gui::Button({ 1, 14, 5, 16 });
+		btnVMid = new gui::Button({ 1, 14, 5, 3 });
 		btnVMid->SetText(L"MID");
 		btnVMid->SetPressAction([this](int _) {tf->SetAlignVertical(gui::TEXT_ALIGN_MID); });
 		w->AddElement(btnVMid);
 
-		btnVMax = new gui::Button({ 1, 17, 5, 19 });
+		btnVMax = new gui::Button({ 1, 17, 5, 3 });
 		btnVMax->SetText(L"MAX");
 		btnVMax->SetPressAction([this](int _) {tf->SetAlignVertical(gui::TEXT_ALIGN_MAX); });
 		w->AddElement(btnVMax);
 
-		btnHMin = new gui::Button({ 9, 7, 13, 9 });
+		btnHMin = new gui::Button({ 9, 7, 5, 3 });
 		btnHMin->SetText(L"MIN");
 		btnHMin->SetPressAction([this](int _) {tf->SetAlignHorizontal(gui::TEXT_ALIGN_MIN); });
 		w->AddElement(btnHMin);
 
-		btnHMid = new gui::Button({ 15, 7, 19, 9 });
+		btnHMid = new gui::Button({ 15, 7, 5, 3 });
 		btnHMid->SetText(L"MID");
 		btnHMid->SetPressAction([this](int _) {tf->SetAlignHorizontal(gui::TEXT_ALIGN_MID); });
 		w->AddElement(btnHMid);
 
-		btnHMax = new gui::Button({ 21, 7, 25, 9 });
+		btnHMax = new gui::Button({ 21, 7, 5, 3 });
 		btnHMax->SetText(L"MAX");
 		btnHMax->SetPressAction([this](int _) {tf->SetAlignHorizontal(gui::TEXT_ALIGN_MAX); });
 		w->AddElement(btnHMax);

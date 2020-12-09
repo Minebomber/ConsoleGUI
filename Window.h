@@ -2,6 +2,7 @@
 
 #include <vector>
 #include "Elements.h"
+#include "Bounds.h"
 
 namespace gui {
 
@@ -78,7 +79,7 @@ protected:
 	bool mKeyboard[256] = { 0 };
 	bool mMouseButtons[3] = { 0 };
 
-	COORD mMousePosition{ 0 };
+	Point mMousePosition{ 0 };
 
 	WCHAR mBaseChar = L' ';
 	WORD mBaseColor = 0;
@@ -94,10 +95,10 @@ public:
 
 	void Set(int x, int y, WCHAR chr, WORD clr);
 	void Fill(WCHAR chr, WORD clr);
-	void Rect(RECT r, WCHAR chr, WORD clr, bool fill = false);
+	void Rect(Bounds b, WCHAR chr, WORD clr, bool fill = false);
 	void Write(int x, int y, std::wstring str, WORD clr);
 
-	const COORD& GetMousePosition() const { return mMousePosition; }
+	const Point& GetMousePosition() const;
 
 	const WCHAR& GetBaseChar() const { return mBaseChar; }
 	void SetBaseChar(WCHAR c) { mBaseChar = c; }

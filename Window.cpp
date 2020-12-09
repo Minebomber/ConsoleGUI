@@ -41,11 +41,12 @@ void Window::Fill(WCHAR chr, WORD clr) {
 	}
 }
 
-void Window::Rect(RECT r, WCHAR chr, WORD clr, bool fill) {
-	for (int i = r.top; i <= r.bottom; i++) {
-		for (int j = r.left; j <= r.right; j++) {
-			if (fill) Set(j, i, chr, clr);
-			else if (i == r.top || i == r.bottom || j == r.left || j == r.right) Set(j, i, chr, clr);
+void Window::Rect(Bounds b, WCHAR chr, WORD clr, bool fill) {
+	for (int i = 0; i < b.size.height; i++) {
+		for (int j = 0; j < b.size.width; j++) {
+			if (fill) Set(j + b.origin.x, i + b.origin.y, chr, clr);
+			else if (i == 0 || i == b.size.height - 1 || j == 0 || j == b.size.width - 1) 
+				Set(j + b.origin.x, i + b.origin.y, chr, clr);
 		}
 	}
 }
@@ -56,6 +57,8 @@ void Window::Write(int x, int y, std::wstring str, WORD clr) {
 		mBuffer[y * mWidth + x + i].Attributes = clr;
 	}
 }
+
+const Point& Window::GetMousePosition() const { return mMousePosition; }
 
 void Window::AddElement(Element* e) {
 	if (e->GetId() != -1) return;

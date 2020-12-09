@@ -115,7 +115,10 @@ void Console::Run() {
 				case MOUSE_EVENT:
 					switch (inputBuffer[i].Event.MouseEvent.dwEventFlags) {
 					case MOUSE_MOVED:
-						mCurrentWindow->mMousePosition = inputBuffer[i].Event.MouseEvent.dwMousePosition;
+						mCurrentWindow->mMousePosition = {
+							inputBuffer[i].Event.MouseEvent.dwMousePosition.X,
+							inputBuffer[i].Event.MouseEvent.dwMousePosition.Y
+						};
 						break;
 					case 0:
 					case DOUBLE_CLICK:
@@ -124,11 +127,7 @@ void Console::Run() {
 							mCurrentWindow->mMouseButtons[m] = inputBuffer[i].Event.MouseEvent.dwButtonState & (1 << m);
 							// Notify mouse handlers
 							for (MouseHandler* h : mCurrentWindow->mMouseHandlers) {
-								if (h->mButtons & (1 << m) &&
-									mCurrentWindow->mMousePosition.X >= h->mBounds.left &&
-									mCurrentWindow->mMousePosition.X <= h->mBounds.right &&
-									mCurrentWindow->mMousePosition.Y >= h->mBounds.top &&
-									mCurrentWindow->mMousePosition.Y <= h->mBounds.bottom) {
+								if (h->mButtons & (1 << m) && h->mBounds.Contains(mCurrentWindow->GetMousePosition())) {
 									if (mCurrentWindow->mMouseButtons[m] && h->mPressAction) h->mPressAction(mCurrentWindow, 1 << m);
 									if (!mCurrentWindow->mMouseButtons[m] && h->mReleaseAction) h->mReleaseAction(mCurrentWindow, 1 << m);
 								}

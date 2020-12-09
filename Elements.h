@@ -1,6 +1,7 @@
 #pragma once
 #include "Console.h"
 #include "Window.h"
+#include "Bounds.h"
 
 namespace gui {
 
@@ -37,10 +38,6 @@ enum Colors {
 	BG_MAGENTA = 0x00D0,
 	BG_YELLOW = 0x00E0,
 	BG_WHITE = 0x00F0,
-};
-
-struct Bounds {
-	int x, y, w, h;
 };
 
 enum MouseButtons {
@@ -96,16 +93,16 @@ class MouseHandler : public EventHandler {
 	friend class Window;
 	friend class Console;
 protected:
-	RECT mBounds = { 0, 0, 0, 0 };
+	Bounds mBounds = { 0, 0, 0, 0 };
 	int mButtons = 0;
 public:
 	MouseHandler() : EventHandler() {}
-	MouseHandler(RECT b) : EventHandler(), mBounds(b) {}
-	MouseHandler(RECT b, int bt) : EventHandler(), mBounds(b), mButtons(bt) {}
+	MouseHandler(Bounds b) : EventHandler(), mBounds(b) {}
+	MouseHandler(Bounds b, int bt) : EventHandler(), mBounds(b), mButtons(bt) {}
 	MouseHandler(const MouseHandler& h) : EventHandler(h), mBounds(h.mBounds), mButtons(h.mButtons) {}
 
-	const RECT& GetBounds() { return mBounds; }
-	void SetBounds(RECT b) { mBounds = b; }
+	const Bounds& GetBounds() { return mBounds; }
+	void SetBounds(Bounds b) { mBounds = b; }
 
 	const int& GetButtons() { return mButtons; }
 	void SetButtons(int b) { mButtons = b; }
@@ -145,7 +142,7 @@ public:
 
 	operator bool() const { return mWidth != 0; }
 
-	virtual void Draw(Window* c, RECT b);
+	virtual void Draw(Window* c, Bounds b);
 };
 
 class TitledBorder : public Border {
@@ -162,14 +159,14 @@ public:
 	const std::wstring& GetTitle() const { return mTitle; }
 	void SetTitle(std::wstring s) { mTitle = s; }
 	
-	virtual void Draw(Window* c, RECT b) override;
+	virtual void Draw(Window* c, Bounds b) override;
 };
 
 class Element {
 	friend class Window;
 protected:
 	int mId = -1;
-	RECT mBounds = { 0, 0, 0, 0 };
+	Bounds mBounds = { 0, 0, 0, 0 };
 	WORD mBackgroundColor = BG_WHITE;
 	Border* mBorder = nullptr;
 	MouseHandler* mMouseHandler = nullptr;
@@ -177,15 +174,15 @@ protected:
 
 	virtual void SetupHandlers() {}
 public:
-	Element(RECT b) : mBounds(b), mBorder(new Border(FG_WHITE, 0)), mMouseHandler(nullptr), mKeyboardHandler(nullptr) {}
+	Element(Bounds b) : mBounds(b), mBorder(new Border(FG_WHITE, 0)), mMouseHandler(nullptr), mKeyboardHandler(nullptr) {}
 	Element(const Element& e) : mBounds(e.mBounds), mBackgroundColor(e.mBackgroundColor), mBorder(e.mBorder->Clone()), mMouseHandler(e.mMouseHandler), mKeyboardHandler(e.mKeyboardHandler) {}
 	virtual ~Element() { if (mBorder) delete mBorder;  if (mMouseHandler) delete mMouseHandler; if (mKeyboardHandler) delete mKeyboardHandler; }
 
 	const int& GetId() const { return mId; }
 	void SetId(int i) { mId = i; }
 
-	const RECT& GetBounds() const { return mBounds; }
-	virtual void SetBounds(RECT b) { mBounds = b; if (mMouseHandler) mMouseHandler->SetBounds(b); }
+	const Bounds& GetBounds() const { return mBounds; }
+	virtual void SetBounds(Bounds b) { mBounds = b; if (mMouseHandler) mMouseHandler->SetBounds(b); }
 
 	const WORD& GetBackgroundColor() const { return mBackgroundColor; }
 	void SetBackgroundColor(WORD c) { mBackgroundColor = c; }
@@ -204,10 +201,10 @@ protected:
 	int mAlignH = TEXT_ALIGN_MID;
 	int mAlignV = TEXT_ALIGN_MID;
 	int mTextWrap = TEXT_WRAP_CHAR;
-
-	void RenderText(Window* c, int minX, int maxX, int minY, int maxY, std::wstring s, WORD cl);
+	
+	void RenderText(Window* c, Bounds b, const std::wstring& s, WORD cl);
 public:
-	Label(RECT b) : Element(b) {}
+	Label(Bounds b) : Element(b) {}
 	Label(const Label& e) : Element(e), mText(e.mText), mTextColor(e.mTextColor), mAlignH(e.mAlignH), mAlignV(e.mAlignV), mTextWrap(e.mTextWrap) {}
 
 	const std::wstring& GetText() const { return mText; }
@@ -241,7 +238,7 @@ protected:
 
 	virtual void SetupHandlers() override;
 public:
-	Button(RECT b) : Label(b), mPressedBorder(new Border(FG_WHITE, 0)), mPressAction(), mReleaseAction() { SetupHandlers(); }
+	Button(Bounds b) : Label(b), mPressedBorder(new Border(FG_WHITE, 0)), mPressAction(), mReleaseAction() { SetupHandlers(); }
 	Button(const Button& e) : Label(e), mPressedBorder(e.mPressedBorder->Clone()), mPressedTextColor(e.mPressedTextColor), mPressedBackgroundColor(e.mPressedBackgroundColor), mPressed(e.mPressed), mPressAction(e.mPressAction), mReleaseAction(e.mReleaseAction) { SetupHandlers();  }
 	virtual ~Button() { if (mPressedBorder) delete mPressedBorder; }
 
@@ -279,8 +276,8 @@ protected:
 
 	virtual void SetupHandlers() override;
 public:
-	TextField(RECT b) : Label(b), mDisabledBorder(new Border(FG_WHITE, 0)) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; SetupHandlers(); }
-	TextField(RECT b, std::wstring c) : Label(b), mCharset(c), mDisabledBorder(new Border(FG_WHITE, 0)) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; SetupHandlers(); }
+	TextField(Bounds b) : Label(b), mDisabledBorder(new Border(FG_WHITE, 0)) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; SetupHandlers(); }
+	TextField(Bounds b, std::wstring c) : Label(b), mCharset(c), mDisabledBorder(new Border(FG_WHITE, 0)) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; SetupHandlers(); }
 	TextField(const TextField& e) : Label(e), mDisabledBorder(e.mDisabledBorder->Clone()), mDisabledTextColor(e.mDisabledTextColor), mDisabledBackgroundColor(e.mDisabledBackgroundColor), mDisabled(e.mDisabled), mCharset(e.mCharset) { SetupHandlers(); }
 	virtual ~TextField() { if (mDisabledBorder) delete mDisabledBorder; }
 
@@ -305,11 +302,11 @@ protected:
 	int mTitleHeight = 3;
 	Label mTitleLabel;
 public:
-	Panel(RECT b) : Element(b), mTitleLabel({ b.left, b.top, b.right, b.top + mTitleHeight - 1 }) {
+	Panel(Bounds b) : Element(b), mTitleLabel({ b.origin.x, b.origin.y, b.size.width, mTitleHeight }) {
 		mTitleLabel.SetAlignHorizontal(TEXT_ALIGN_MID);
 		mTitleLabel.SetAlignVertical(TEXT_ALIGN_MID);
 	}
-	Panel(RECT b, int h) : Element(b), mTitleHeight(h), mTitleLabel({ b.left, b.top, b.right, b.top + mTitleHeight - 1 }) {
+	Panel(Bounds b, int h) : Element(b), mTitleHeight(h), mTitleLabel({ b.origin.x, b.origin.y, b.size.width, mTitleHeight }) {
 		mTitleLabel.SetAlignHorizontal(TEXT_ALIGN_MID);
 		mTitleLabel.SetAlignVertical(TEXT_ALIGN_MID);
 	}
@@ -320,7 +317,7 @@ public:
 	const int& GetTitleHeight() const { return mTitleHeight; }
 	void SetTitleHeight(int h) { mTitleHeight = h; SetBounds(mBounds); }
 
-	virtual void SetBounds(RECT b) override { Element::SetBounds(b); mTitleLabel.SetBounds({ b.left, b.top, b.right, b.top + mTitleHeight - 1 }); }
+	virtual void SetBounds(Bounds b) override { Element::SetBounds(b); mTitleLabel.SetBounds({ b.origin.x, b.origin.y, b.size.width, mTitleHeight }); }
 
 	virtual void Draw(Window* c) override;
 };
@@ -330,15 +327,15 @@ class ContentPanel : public Panel {
 protected:
 	Element* mContent = nullptr;
 public:
-	ContentPanel(RECT b) : Panel(b) {}
-	ContentPanel(RECT b, Element* c) : Panel(b), mContent(c) {}
+	ContentPanel(Bounds b) : Panel(b) {}
+	ContentPanel(Bounds b, Element* c) : Panel(b), mContent(c) {}
 	ContentPanel(const ContentPanel& e) : Panel(e), mContent(e.mContent) {}
 	virtual ~ContentPanel() { if (mContent) delete mContent; }
 
 	Element& GetContent() { return *mContent; }
 	void SetContent(Element* c) { mContent = c; SetBounds(mBounds); }
 
-	virtual void SetBounds(RECT b) override { Panel::SetBounds(b); if (mContent) mContent->SetBounds({ b.left, b.top + mTitleHeight, b.right, b.bottom }); }
+	virtual void SetBounds(Bounds b) override { Panel::SetBounds(b); if (mContent) mContent->SetBounds({ b.origin.x, b.origin.y + mTitleHeight, b.size.width, b.size.height - mTitleHeight }); }
 
 	virtual void Draw(Window* c) override;
 };
