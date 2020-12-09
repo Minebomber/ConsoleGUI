@@ -1,8 +1,6 @@
 #include "Console.h"
 
 class Test : public gui::Console {
-private:
-
 public:
 	bool Initialize() override {
 		gui::Window* w = new gui::Window(GetScreenWidth(), GetScreenHeight());
@@ -10,14 +8,12 @@ public:
 
 		w->SetScheme(gui::WindowScheme::Default());
 
-		gui::Element* e = new gui::Element({0, 0, 10, 10});
+		gui::Element* e = new gui::Label({0, 0, 10, 10});
 		w->AddElement(e);
 
-		return true;
-	}
 
-	~Test() {
-		SetCurrentWindow(nullptr);
+
+		return true;
 	}
 };
 

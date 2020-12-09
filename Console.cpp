@@ -16,6 +16,7 @@ Console::Console() {
 }
 
 Console::~Console() {
+	SetCurrentWindow(nullptr);
 	// Set console to default
 	SetCurrentConsoleFontEx(mConsole, false, &mOriginalConsoleFontInfo);
 	SetConsoleScreenBufferSize(mConsole, mOriginalConsoleScreenBufferInfo.dwSize);
@@ -62,7 +63,7 @@ void Console::CreateConsole(int sW, int sH, int cW, int cH) {
 void Console::SetCurrentWindow(Window* w) { 
 	if (mCurrentWindow) mCurrentWindow->OnHide(); 
 	if (w) w->OnShow();
-	else delete mCurrentWindow;
+	else if (mCurrentWindow) delete mCurrentWindow;
 	mCurrentWindow = w; 
 }
 
