@@ -110,22 +110,18 @@ Element* Window::GetElement(int i) {
 	return mElements.at(i);
 }
 
-Element* Window::GetElement(Element* e) {
-	return GetElement(e->mId);
-}
-
 void Window::RemoveElement(int i) {
+	if (!mElements.at(i)) return;
 	if (mElements.at(i)->mMouseHandler) RemoveMouseHandler(mElements.at(i)->mMouseHandler);
 
 	mElements.at(i)->mId = -1;
 	mElements.at(i) = nullptr;
 }
 
-void Window::RemoveElement(Element* e) {
-	RemoveElement(e->mId);
-}
+void Window::RemoveElement(Element* e) { if (e) RemoveElement(e->mId); }
 
 void Window::AddMouseHandler(MouseHandler* h) {
+	if (!h) return;
 	if (h->GetId() != -1) return;
 	for (size_t i = 0; i < mMouseHandlers.size(); i++) {
 		if (mMouseHandlers.at(i) == nullptr) {
@@ -140,20 +136,23 @@ void Window::AddMouseHandler(MouseHandler* h) {
 
 MouseHandler* Window::GetMouseHandler(int i) { return mMouseHandlers.at(i); }
 
-MouseHandler* Window::GetMouseHandler(MouseHandler* h) { return GetMouseHandler(h->mId); }
-
 void Window::RemoveMouseHandler(int i) {
+	if (!mMouseHandlers.at(i)) return;
 	mMouseHandlers.at(i)->mId = -1;
 	mMouseHandlers.at(i) = nullptr;
 }
 
-void Window::RemoveMouseHandler(MouseHandler* h) { RemoveMouseHandler(h->mId); }
+void Window::RemoveMouseHandler(MouseHandler* h) { if (h) RemoveMouseHandler(h->mId); }
 
 void Window::Display() {
 	FillScreen(mBaseChar, mBaseColor);
 	for (Element* e : mElements) {
 		e->Draw(this);
 	}
+}
+
+Window::~Window() {
+	for (Element* e : mElements) RemoveElement(e);
 }
 
 }

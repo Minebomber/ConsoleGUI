@@ -92,6 +92,7 @@ protected:
 	WindowScheme* mScheme = nullptr;
 public:
 	Window(int w, int h) : mWidth(w), mHeight(h), mBuffer(new CHAR_INFO[w * h]) {}
+	virtual ~Window();
 
 	void SetChar(int x, int y, WCHAR chr, WORD clr);
 	void FillScreen(WCHAR chr, WORD clr);
@@ -111,13 +112,11 @@ public:
 
 	void AddElement(Element* e);
 	Element* GetElement(int i);
-	Element* GetElement(Element* e);
 	void RemoveElement(int i);
 	void RemoveElement(Element* e);
 
 	void AddMouseHandler(MouseHandler* h);
 	MouseHandler* GetMouseHandler(int i);
-	MouseHandler* GetMouseHandler(MouseHandler* h);
 	void RemoveMouseHandler(int i);
 	void RemoveMouseHandler(MouseHandler* h);
 
