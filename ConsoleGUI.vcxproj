@@ -145,7 +145,7 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Bounds.h" />
+    <ClInclude Include="Rect.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Elements.h" />
     <ClInclude Include="Window.h" />

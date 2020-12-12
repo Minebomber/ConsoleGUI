@@ -1,5 +1,7 @@
 #pragma once
 
+namespace gui {
+
 struct Point {
 	int x, y;
 };
@@ -8,7 +10,7 @@ struct Size {
 	int width, height;
 };
 
-struct Bounds {
+struct Rect {
 	Point origin;
 	Size size;
 
@@ -26,6 +28,8 @@ struct Bounds {
 			p.x < origin.x + size.width &&
 			p.y >= origin.y &&
 			p.y < origin.y + size.height
-		);
+			);
 	}
 };
+
+}

@@ -13,7 +13,7 @@
 #include <atomic>
 #include "Elements.h"
 #include "Window.h"
-#include "Bounds.h"
+#include "Rect.h"
 
 namespace gui {
 

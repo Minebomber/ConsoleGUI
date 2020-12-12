@@ -2,46 +2,46 @@
 
 namespace gui {
 
-void Border::Draw(Window* c, Bounds b) {
+void Border::Draw(Window* w, Rect b) {
 
 	for (int wi = 0; wi < mWidth; wi++) {
 		int x0 = b.Left() + wi; int x1 = b.Right() - wi;
 		int y0 = b.Top() + wi; int y1 = b.Bottom() - wi;
 
-		c->SetChar(x0, y0, L'\x250F', mColor);
-		c->SetChar(x1, y0, L'\x2513', mColor);
-		c->SetChar(x0, y1, L'\x2517', mColor);
-		c->SetChar(x1, y1, L'\x251B', mColor);
+		w->SetChar(x0, y0, L'\x250F', mColor);
+		w->SetChar(x1, y0, L'\x2513', mColor);
+		w->SetChar(x0, y1, L'\x2517', mColor);
+		w->SetChar(x1, y1, L'\x251B', mColor);
 
 		for (int x = x0 + 1; x < x1; x++) {
-			c->SetChar(x, y0, L'\x2501', mColor);
-			c->SetChar(x, y1, L'\x2501', mColor);
+			w->SetChar(x, y0, L'\x2501', mColor);
+			w->SetChar(x, y1, L'\x2501', mColor);
 		}
 
 		for (int y = y0 + 1; y < y1; y++) {
-			c->SetChar(x0, y, L'\x2503', mColor);
-			c->SetChar(x1, y, L'\x2503', mColor);
+			w->SetChar(x0, y, L'\x2503', mColor);
+			w->SetChar(x1, y, L'\x2503', mColor);
 		}
 	}
 }
 
-void TitledBorder::Draw(Window* c, Bounds b) {
-	Border::Draw(c, b);
+void TitledBorder::Draw(Window* w, Rect b) {
+	Border::Draw(w, b);
 	int tW = mTitle.length();
 	int x0 = b.origin.x + ((b.size.width - tW) / 2) + 1;
-	c->SetChar(x0 - 1, b.origin.y, L'\x252B', mColor);
-	c->WriteString(x0, b.origin.y, mTitle, mColor);
-	c->SetChar(x0 + tW, b.origin.y, L'\x2523', mColor);
+	w->SetChar(x0 - 1, b.origin.y, L'\x252B', mColor);
+	w->WriteString(x0, b.origin.y, mTitle, mColor);
+	w->SetChar(x0 + tW, b.origin.y, L'\x2523', mColor);
 }
 
-void Element::Draw(Window* c) {
-	c->DrawRect(mBounds, L' ', mBackgroundColor, true);
-	mBorder->Draw(c, mBounds);
+void Element::Draw(Window* w) {
+	w->DrawRect(mBounds, L' ', mBackgroundColor, true);
+	mBorder->Draw(w, mBounds);
 }
 
-void Label::RenderText(Window* c, Bounds b, const std::wstring& s, WORD cl) {
-	int textWidth = b.size.width;
-	int textHeight = b.size.height;
+void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
+	int textWidth = r.size.width;
+	int textHeight = r.size.height;
 
 	struct LineInfo {
 		int dX, sI, lW;
@@ -115,17 +115,16 @@ void Label::RenderText(Window* c, Bounds b, const std::wstring& s, WORD cl) {
 	int yOffset = 0;
 	if (mAlignV == TEXT_ALIGN_MID) yOffset = (textHeight - currentLine) / 2;
 	else if (mAlignV == TEXT_ALIGN_MAX) yOffset = textHeight - currentLine;
-	//c->WriteString(b.origin.x + lines[i].dX, y, s.substr(lines[i].sI, lines[i].lW), cl);
-	for (int i = 0, y = b.origin.y + yOffset; i < currentLine; i++, y++)
-		c->WriteString(b.origin.x + lines[i].dX, y, s, cl, lines[i].sI, lines[i].lW);
+	for (int i = 0; i < currentLine; i++)
+		c->WriteString(r.origin.x + lines[i].dX, r.origin.y + yOffset + i, s, cl, lines[i].sI, lines[i].lW);
 
 	delete[] lines;
 }
 
-void Label::Draw(Window* c) {
-	Element::Draw(c);
+void Label::Draw(Window* w) {
+	Element::Draw(w);
 	int borderWidth = mBorder->GetWidth();
-	RenderText(c, {
+	RenderText(w, {
 		mBounds.origin.x + borderWidth,
 		mBounds.origin.y + borderWidth,
 		mBounds.size.width - 2 * borderWidth,
@@ -134,20 +133,20 @@ void Label::Draw(Window* c) {
 }
 
 void Button::SetupHandlers() {
-	mMouseHandler = new MouseHandler(mBounds, MOUSE_LEFT_BUTTON);
+	mMouseHandler = new MouseHandler(mBounds, MOUSE_BUTTON_LEFT);
 	mMouseHandler->SetPressAction([this](Window* c, int m) { mPressed = true; if (mPressAction) mPressAction(m); });
 	mMouseHandler->SetReleaseAction([this](Window* c, int m) { mPressed = false; if (mReleaseAction) mReleaseAction(m); });
 }
 
-void Button::Draw(Window* c) {
+void Button::Draw(Window* w) {
 	WORD bgC = mPressed ? mPressedBackgroundColor : mBackgroundColor;
 	WORD tC = mPressed ? mPressedTextColor : mTextColor;
 
-	c->DrawRect(mBounds, L' ', bgC, true);
-	if (mPressed) mPressedBorder->Draw(c, mBounds);
-	else mBorder->Draw(c, mBounds);
+	w->DrawRect(mBounds, L' ', bgC, true);
+	if (mPressed) mPressedBorder->Draw(w, mBounds);
+	else mBorder->Draw(w, mBounds);
 	int borderWidth = (mPressed ? mPressedBorder->GetWidth() : mBorder->GetWidth());
-	RenderText(c, {
+	RenderText(w, {
 		mBounds.origin.x + borderWidth,
 		mBounds.origin.y + borderWidth,
 		mBounds.size.width - 2 * borderWidth,
@@ -157,7 +156,7 @@ void Button::Draw(Window* c) {
 
 void TextField::SetupHandlers() {
 
-	mMouseHandler = new MouseHandler(mBounds, MOUSE_LEFT_BUTTON);
+	mMouseHandler = new MouseHandler(mBounds, MOUSE_BUTTON_LEFT);
 
 	mMouseHandler->SetPressAction([this](Window* c, int m) {
 		c->SetActiveKeyboardHandler(mKeyboardHandler);
@@ -191,16 +190,16 @@ void TextField::SetupHandlers() {
 	});
 }
 
-void TextField::Draw(Window* c) {
+void TextField::Draw(Window* w) {
 	WORD bgC = mDisabled ? mDisabledBackgroundColor : mBackgroundColor;
 	WORD tC = mDisabled ? mDisabledTextColor : mTextColor;
-
-	c->DrawRect(mBounds, L' ', bgC, true);
-	if (mDisabled) mDisabledBorder->Draw(c, mBounds);
-	else mBorder->Draw(c, mBounds);
+	
+	w->DrawRect(mBounds, L' ', bgC, true);
+	if (mDisabled) mDisabledBorder->Draw(w, mBounds);
+	else mBorder->Draw(w, mBounds);
 
 	int borderWidth = (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth());
-	RenderText(c, {
+	RenderText(w, {
 		mBounds.origin.x + borderWidth,
 		mBounds.origin.y + borderWidth,
 		mBounds.size.width - 2 * borderWidth,
@@ -208,14 +207,26 @@ void TextField::Draw(Window* c) {
 	}, mText, tC);
 }
 
-void Panel::Draw(Window* c) {
-	Element::Draw(c);
-	mTitleLabel.Draw(c);
+void Checkbox::SetupHandlers() {
+	mMouseHandler = new MouseHandler(mBounds, MOUSE_BUTTON_LEFT);
+	mMouseHandler->SetPressAction([this](Window* _, int __) { mChecked = !mChecked; });
 }
 
-void ContentPanel::Draw(Window* c) {
-	Panel::Draw(c);
-	if (mContent) mContent->Draw(c);
+void Checkbox::Draw(Window* w) {
+	Element::Draw(w);
+	int borderWidth = mBorder->GetWidth();
+	RenderText(w, {
+		mBounds.origin.x + borderWidth,
+		mBounds.origin.y + borderWidth,
+		3,
+		1,
+		}, mChecked ? L"[\x25CF]" : L"[ ]", mTextColor);
+	RenderText(w, {
+		mBounds.origin.x + borderWidth + 4,
+		mBounds.origin.y + borderWidth,
+		mBounds.size.width - 2 * borderWidth - 4,
+		mBounds.size.height - 2 * borderWidth,
+		}, mText, mTextColor);
 }
 
 }

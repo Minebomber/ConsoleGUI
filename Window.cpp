@@ -41,12 +41,12 @@ void Window::FillScreen(WCHAR chr, WORD clr) {
 	}
 }
 
-void Window::DrawRect(Bounds b, WCHAR chr, WORD clr, bool fill) {
-	for (int i = 0; i < b.size.height; i++) {
-		for (int j = 0; j < b.size.width; j++) {
-			if (fill) SetChar(j + b.origin.x, i + b.origin.y, chr, clr);
-			else if (i == 0 || i == b.size.height - 1 || j == 0 || j == b.size.width - 1) 
-				SetChar(j + b.origin.x, i + b.origin.y, chr, clr);
+void Window::DrawRect(Rect r, WCHAR chr, WORD clr, bool fill) {
+	for (int i = 0; i < r.size.height; i++) {
+		for (int j = 0; j < r.size.width; j++) {
+			if (fill) SetChar(j + r.origin.x, i + r.origin.y, chr, clr);
+			else if (i == 0 || i == r.size.height - 1 || j == 0 || j == r.size.width - 1) 
+				SetChar(j + r.origin.x, i + r.origin.y, chr, clr);
 		}
 	}
 }

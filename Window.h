@@ -2,7 +2,7 @@
 
 #include <vector>
 #include "Elements.h"
-#include "Bounds.h"
+#include "Rect.h"
 
 namespace gui {
 
@@ -96,7 +96,7 @@ public:
 
 	void SetChar(int x, int y, WCHAR chr, WORD clr);
 	void FillScreen(WCHAR chr, WORD clr);
-	void DrawRect(Bounds b, WCHAR chr, WORD clr, bool fill = false);
+	void DrawRect(Rect r, WCHAR chr, WORD clr, bool fill = false);
 	void WriteString(int x, int y, const std::wstring& str, WORD clr);
 	void WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w);
 
