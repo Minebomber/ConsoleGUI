@@ -64,32 +64,42 @@ public:
 	static std::wstring Alphanum() { return L" ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; }
 };
 
-class EventHandler {
-public:
-	virtual void OnMouseDown(int m) {}
-	virtual void OnMouseUp(int m) {}
-	virtual void OnKeyDown(int k) {}
-	virtual void OnKeyUp(int k) {}
-	virtual void OnMouseMove(Point p) {}
-
-};
-
 class Window;
 
-class MouseHandler {
+class EventHandler {
 	friend class Window;
 	friend class Console;
 protected:
 	int mId = -1;
 	std::function<void(Window*, int)> mPressAction;
 	std::function<void(Window*, int)> mReleaseAction;
+public:
+	EventHandler() : mPressAction(), mReleaseAction() {}
+	EventHandler(const EventHandler& h) : mPressAction(h.mPressAction), mReleaseAction(h.mReleaseAction) {}
+
+	const int& GetId() const { return mId; }
+	void SetId(int i) { mId = i; }
+
+	bool PressActionExists() const { return (bool)mPressAction; }
+	void InvokePressAction(Window* c, int i) { mPressAction(c, i); }
+	void SetPressAction(std::function<void(Window*, int)> f) { mPressAction = f; }
+
+	bool ReleaseActionExists() const { return (bool)mReleaseAction; }
+	void InvokeReleaseAction(Window* c, int i) { mReleaseAction(c, i); }
+	void SetReleaseAction(std::function<void(Window*, int)> f) { mReleaseAction = f; }
+};
+
+class MouseHandler : public EventHandler {
+	friend class Window;
+	friend class Console;
+protected:
 	Rect mBounds = { 0, 0, 0, 0 };
 	int mButtons = 0;
 public:
-	MouseHandler() : mPressAction(), mReleaseAction() {}
-	MouseHandler(Rect b) : mPressAction(), mReleaseAction(), mBounds(b) {}
-	MouseHandler(Rect b, int bt) : mPressAction(), mReleaseAction(), mBounds(b), mButtons(bt) {}
-	MouseHandler(const MouseHandler& h) : mPressAction(h.mPressAction), mReleaseAction(h.mReleaseAction), mBounds(h.mBounds), mButtons(h.mButtons) {}
+	MouseHandler() : EventHandler() {}
+	MouseHandler(Rect b) : EventHandler(), mBounds(b) {}
+	MouseHandler(Rect b, int bt) : EventHandler(), mBounds(b), mButtons(bt) {}
+	MouseHandler(const MouseHandler& h) : EventHandler(h), mBounds(h.mBounds), mButtons(h.mButtons) {}
 
 	const Rect& GetBounds() { return mBounds; }
 	void SetBounds(Rect b) { mBounds = b; }
@@ -98,18 +108,15 @@ public:
 	void SetButtons(int b) { mButtons = b; }
 };
 
-class KeyboardHandler {
+class KeyboardHandler : public EventHandler {
 	friend class Window;
 	friend class Console;
 protected:
-	int mId = -1;
-	std::function<void(Window*, int)> mPressAction;
-	std::function<void(Window*, int)> mReleaseAction;
 	std::wstring mKeys = L"";
 public:
-	KeyboardHandler() : mPressAction(), mReleaseAction() {}
-	KeyboardHandler(std::wstring k) : mPressAction(), mReleaseAction(), mKeys(k) {}
-	KeyboardHandler(const KeyboardHandler& h) : mPressAction(h.mPressAction), mReleaseAction(h.mReleaseAction), mKeys(h.mKeys) {}
+	KeyboardHandler() : EventHandler() {}
+	KeyboardHandler(std::wstring k) : EventHandler(), mKeys(k) {}
+	KeyboardHandler(const KeyboardHandler& h) : EventHandler(h), mKeys(h.mKeys) {}
 
 	const std::wstring& GetKeys() const { return mKeys; }
 	void SetKeys(std::wstring k) { mKeys = k; }
