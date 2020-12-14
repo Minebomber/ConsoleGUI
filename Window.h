@@ -72,9 +72,7 @@ protected:
 
 	std::vector<Element*> mElements;
 
-	std::vector<MouseHandler*> mMouseHandlers;
-
-	KeyboardHandler* mActiveKeyboardHandler = nullptr;
+	Element* mFocusedElement = nullptr;
 
 	bool mKeyboard[256] = { 0 };
 	bool mMouseButtons[3] = { 0 };
@@ -110,20 +108,15 @@ public:
 	WindowScheme* GetScheme() { return mScheme; }
 	void SetScheme(WindowScheme* cs) { if (mScheme) delete mScheme; mScheme = cs; }
 
+	Element* GetFocusedElement() const { return mFocusedElement; }
+	void SetFocusedElement(Element* e) { mFocusedElement = e; }
+
 	void AddElement(Element* e);
-	Element* GetElement(int i);
-	void RemoveElement(int i);
 	void RemoveElement(Element* e);
 
-	void AddMouseHandler(MouseHandler* h);
-	MouseHandler* GetMouseHandler(int i);
-	void RemoveMouseHandler(int i);
-	void RemoveMouseHandler(MouseHandler* h);
-
-	KeyboardHandler* GetActiveKeyboardHandler() const { return mActiveKeyboardHandler; }
-	void SetActiveKeyboardHandler(KeyboardHandler* h) { mActiveKeyboardHandler = h; }
-
 	void ApplyToElements(std::function<void(Element*)> f) { for (Element* e : mElements) f(e); }
+
+	Element* GetElementAtPoint(const Point& p);
 
 	void Display();
 

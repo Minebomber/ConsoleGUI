@@ -105,14 +105,23 @@ void Console::Run() {
 						int k = inputBuffer[i].Event.KeyEvent.wVirtualKeyCode;
 						mCurrentWindow->mKeyboard[k] = inputBuffer[i].Event.KeyEvent.bKeyDown;
 						// Notify keyboard handler
-						if (mCurrentWindow->mActiveKeyboardHandler) {
+						/*if (mCurrentWindow->mActiveKeyboardHandler) {
 							if (mCurrentWindow->mActiveKeyboardHandler->mKeys.find(k) != std::wstring::npos) {
 								if (mCurrentWindow->mKeyboard[k] && mCurrentWindow->mActiveKeyboardHandler->mPressAction)
 									mCurrentWindow->mActiveKeyboardHandler->mPressAction(mCurrentWindow, k);
 								if (!mCurrentWindow->mKeyboard[k] && mCurrentWindow->mActiveKeyboardHandler->mReleaseAction)
 									mCurrentWindow->mActiveKeyboardHandler->mReleaseAction(mCurrentWindow, k);
 							}
+						}*/
+
+						// Send keyboard events to focused element
+						if (mCurrentWindow->mFocusedElement) {
+							for (EventHandler* h : mCurrentWindow->mFocusedElement->mEventHandlers) {
+								if (mCurrentWindow->mKeyboard[k] && h->KeyDownActionExists()) h->InvokeKeyDownAction(mCurrentWindow, k);
+								if (!mCurrentWindow->mKeyboard[k] && h->KeyUpActionExists()) h->InvokeKeyUpAction(mCurrentWindow, k);
+							}
 						}
+
 					}
 					break;
 				case MOUSE_EVENT:
@@ -131,14 +140,16 @@ void Console::Run() {
 							mCurrentWindow->mMouseButtons[m] = inputBuffer[i].Event.MouseEvent.dwButtonState & (1 << m);
 							// Clear focused at start, handlers will set if needed
 							if (mCurrentWindow->mMouseButtons[m]) {
-								mCurrentWindow->SetActiveKeyboardHandler(nullptr);
+								//mCurrentWindow->SetActiveKeyboardHandler(nullptr);
+								mCurrentWindow->mFocusedElement = nullptr;
+
 								mCurrentWindow->ApplyToElements([](Element* e) { if (auto t = dynamic_cast<TextField*>(e)) t->SetDisabled(true); });
 							}
-							// Notify mouse handlers
-							for (MouseHandler* h : mCurrentWindow->mMouseHandlers) {
-								if (h->mButtons & (1 << m) && h->mBounds.Contains(mCurrentWindow->GetMousePosition())) {
-									if (mCurrentWindow->mMouseButtons[m] && h->mPressAction) h->mPressAction(mCurrentWindow, 1 << m);
-									if (!mCurrentWindow->mMouseButtons[m] && h->mReleaseAction) h->mReleaseAction(mCurrentWindow, 1 << m);
+							
+							if (Element* e = mCurrentWindow->GetElementAtPoint(mCurrentWindow->mMousePosition)) {
+								for (EventHandler* h : e->mEventHandlers) {
+									if (mCurrentWindow->mMouseButtons[m] && h->MouseDownActionExists()) h->InvokeMouseDownAction(mCurrentWindow, 1 << m);
+									if (!mCurrentWindow->mMouseButtons[m] && h->MouseUpActionExists()) h->InvokeMouseUpAction(mCurrentWindow, 1 << m);
 								}
 							}
 						}

@@ -3,12 +3,18 @@
 class Test : public gui::Console {
 public:
 	bool Initialize() override {
-		gui::Window* w = new gui::Window(GetScreenWidth(), GetScreenHeight());
+		auto w = new gui::Window(GetScreenWidth(), GetScreenHeight());
 		SetCurrentWindow(w);
 
 		w->SetScheme(gui::WindowScheme::Default());
 
-		gui::TextField* e = new gui::TextField({ 3, 3, 15, 5 });
+		auto e = new gui::Button({ 3, 3, 10, 3 });
+		e->SetText(L"Button");
+		e->AddEventHandler(new gui::EventHandler(
+			[e](gui::Window* w, int m) {
+				e->SetTextColor(rand() % 16);
+			}
+		));
 		w->AddElement(e);
 
 		return true;

@@ -14,12 +14,10 @@
 #include "Elements.h"
 #include "Window.h"
 #include "Rect.h"
+#include "Events.h"
 
 namespace gui {
 
-class MouseHandler;
-class KeyboardHandler;
-class Element;
 class Window;
 
 class Console {

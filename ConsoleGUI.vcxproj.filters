@@ -41,5 +41,8 @@
     <ClInclude Include="Rect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Events.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

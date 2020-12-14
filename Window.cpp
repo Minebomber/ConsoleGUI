@@ -68,18 +68,7 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st
 const Point& Window::GetMousePosition() const { return mMousePosition; }
 
 void Window::AddElement(Element* e) {
-	if (e->GetId() != -1) return;
-	for (size_t i = 0; i < mElements.size(); i++) {
-		if (mElements.at(i) == nullptr) {
-			e->mId = i;
-			mElements.at(i) = e;
-			return;
-		}
-	}
 	mElements.push_back(e);
-	e->mId = mElements.size() - 1;
-
-	if (e->mMouseHandler) AddMouseHandler(e->mMouseHandler);
 
 	if (mScheme) {
 		e->SetBackgroundColor(mScheme->GetBackgroundColor());
@@ -106,43 +95,16 @@ void Window::AddElement(Element* e) {
 	}
 }
 
-Element* Window::GetElement(int i) {
-	return mElements.at(i);
+void Window::RemoveElement(Element* e) { 
+	if (mFocusedElement == e) mFocusedElement = nullptr; 
+	std::remove(mElements.begin(), mElements.end(), e); 
 }
 
-void Window::RemoveElement(int i) {
-	if (!mElements.at(i)) return;
-	if (mElements.at(i)->mMouseHandler) RemoveMouseHandler(mElements.at(i)->mMouseHandler);
-
-	mElements.at(i)->mId = -1;
-	mElements.at(i) = nullptr;
+Element* Window::GetElementAtPoint(const Point& p) {
+	Element* r = nullptr;
+	for (Element* e : mElements) if (e->mBounds.Contains(p)) r = e;
+	return r;
 }
-
-void Window::RemoveElement(Element* e) { if (e) RemoveElement(e->mId); }
-
-void Window::AddMouseHandler(MouseHandler* h) {
-	if (!h) return;
-	if (h->GetId() != -1) return;
-	for (size_t i = 0; i < mMouseHandlers.size(); i++) {
-		if (mMouseHandlers.at(i) == nullptr) {
-			h->mId = i;
-			mMouseHandlers.at(i) = h;
-			return;
-		}
-	}
-	mMouseHandlers.push_back(h);
-	h->mId = mMouseHandlers.size() - 1;
-}
-
-MouseHandler* Window::GetMouseHandler(int i) { return mMouseHandlers.at(i); }
-
-void Window::RemoveMouseHandler(int i) {
-	if (!mMouseHandlers.at(i)) return;
-	mMouseHandlers.at(i)->mId = -1;
-	mMouseHandlers.at(i) = nullptr;
-}
-
-void Window::RemoveMouseHandler(MouseHandler* h) { if (h) RemoveMouseHandler(h->mId); }
 
 void Window::Display() {
 	FillScreen(mBaseChar, mBaseColor);

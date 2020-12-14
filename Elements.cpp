@@ -132,10 +132,12 @@ void Label::Draw(Window* w) {
 		}, mText, mTextColor);
 }
 
-void Button::SetupHandlers() {
-	mMouseHandler = new MouseHandler(mBounds, MOUSE_BUTTON_LEFT);
-	mMouseHandler->SetPressAction([this](Window* c, int m) { mPressed = true; if (mPressAction) mPressAction(m); });
-	mMouseHandler->SetReleaseAction([this](Window* c, int m) { mPressed = false; if (mReleaseAction) mReleaseAction(m); });
+void Button::Init() {
+	AddEventHandler(new EventHandler(
+		[this](Window* w, int m) { if (m & mButtons) mPressed = true; },
+		[this](Window* w, int m) { if (m & mButtons) mPressed = false; },
+		nullptr, nullptr, nullptr
+	));
 }
 
 void Button::Draw(Window* w) {
@@ -154,39 +156,31 @@ void Button::Draw(Window* w) {
 		}, mText, tC);
 }
 
-void TextField::SetupHandlers() {
-
-	mMouseHandler = new MouseHandler(mBounds, MOUSE_BUTTON_LEFT);
-
-	mMouseHandler->SetPressAction([this](Window* c, int m) {
-		c->SetActiveKeyboardHandler(mKeyboardHandler);
-		mDisabled = false;
-	});
-	mKeyboardHandler = new KeyboardHandler(
-		L"\x08\x0D\x10"  // back return shift
-		+ mCharset
-	);
-
-	mKeyboardHandler->SetPressAction([this](Window* c, int k) {
-		if (k == VK_SHIFT) mCapitalize = true;
-		else if (k == VK_BACK) {
-			if (mText.length() > 0) mText = mText.substr(0, mText.length() - 1);
-		} else if (k == VK_RETURN) {
-			mText += L'\n';
-		} else {
-			// Get text for vk
-			UINT sc = MapVirtualKey(k, MAPVK_VK_TO_VSC);
-			static byte b[256];
-			GetKeyboardState(b);
-			if (mCapitalize) b[0x10] = 0x80;
-			WCHAR c;
-			if (ToUnicode((UINT)k, sc, b, &c, 1, 0)) mText += c;
+void TextField::Init() {
+	AddEventHandler(new EventHandler(
+		[this](Window* w, int m) {
+			w->SetFocusedElement(this);
+			mDisabled = false;
+		},
+		nullptr, nullptr,
+		[this](Window* w, int k) {
+			if (k == VK_SHIFT) mCapitalize = true;
+			else if (k == VK_BACK) {
+				if (mText.length() > 0) mText = mText.substr(0, mText.length() - 1);
+			} else if (k == VK_RETURN) mText += L'\n';
+			else {
+				UINT sc = MapVirtualKey(k, MAPVK_VK_TO_VSC);
+				static byte b[256];
+				GetKeyboardState(b);
+				if (mCapitalize) b[0x10] = 0x80;
+				WCHAR c;
+				if (ToUnicode((UINT)k, sc, b, &c, 1, 0)) mText += c;
+			}
+		},
+		[this](Window* w, int k) {
+			if (k == VK_SHIFT) mCapitalize = false;
 		}
-	});
-
-	mKeyboardHandler->SetReleaseAction([this](Window* c, int k) {
-		if (k == VK_SHIFT) mCapitalize = false;
-	});
+	));
 }
 
 void TextField::Draw(Window* w) {
@@ -206,9 +200,14 @@ void TextField::Draw(Window* w) {
 	}, mText, tC);
 }
 
-void Checkbox::SetupHandlers() {
-	mMouseHandler = new MouseHandler(mBounds, MOUSE_BUTTON_LEFT);
-	mMouseHandler->SetPressAction([this](Window* _, int __) { mChecked = !mChecked; });
+void Checkbox::Init() {
+	/*mMouseHandler = new MouseHandler(mBounds, MOUSE_BUTTON_LEFT);
+	mMouseHandler->SetPressAction([this](Window* _, int __) { mChecked = !mChecked; });*/
+
+	AddEventHandler(new EventHandler(
+		[this](Window* w, int m) { mChecked = !mChecked; },
+		nullptr, nullptr, nullptr, nullptr
+	));
 }
 
 void Checkbox::Draw(Window* w) {
