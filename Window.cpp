@@ -4,27 +4,27 @@ namespace gui {
 
 WindowScheme* WindowScheme::Default() {
 	return new WindowScheme(
-		FG_WHITE, BG_BLACK, FG_WHITE,
-		FG_DARK_GREY, BG_BLACK, FG_DARK_GREY,
-		FG_DARK_GREY, BG_BLACK, FG_DARK_GREY,
+		FG_GREY, BG_BLACK,
+		FG_WHITE, BG_BLACK,
+		FG_DARK_GREY, BG_BLACK,
 		true 
 	);
 }
 
 WindowScheme* WindowScheme::Green() {
 	return new WindowScheme(
-		FG_DARK_GREEN, BG_BLACK, FG_DARK_GREEN,
-		FG_GREEN, BG_BLACK, FG_GREEN,
-		FG_GREEN, BG_BLACK, FG_GREEN,
+		FG_DARK_GREEN, BG_BLACK,
+		FG_GREEN, BG_BLACK,
+		FG_DARK_GREEN, BG_BLACK,
 		true 
 	);
 }
 
 WindowScheme* WindowScheme::Red() {
 	return new WindowScheme(
-		FG_DARK_RED, BG_BLACK, FG_DARK_RED,
-		FG_RED, BG_BLACK, FG_RED,
-		FG_RED, BG_BLACK, FG_RED,
+		FG_DARK_RED, BG_BLACK,
+		FG_RED, BG_BLACK,
+		FG_DARK_RED, BG_BLACK,
 		true
 	);
 }
@@ -71,27 +71,14 @@ void Window::AddElement(Element* e) {
 	mElements.push_back(e);
 
 	if (mScheme) {
-		e->SetBackgroundColor(mScheme->GetBackgroundColor());
-		e->GetBorder()->SetColor(mScheme->GetBorderColor());
-		e->GetBorder()->SetEnabled(mScheme->GetBordersEnabled());
+		e->SetDefaultForegroundColor(mScheme->GetDefaultForeground());
+		e->SetDefaultBackgroundColor(mScheme->GetDefaultBackground());
 
-		if (auto lab = dynamic_cast<Label*>(e)) {
-			lab->SetTextColor(mScheme->GetTextColor());
-		}
+		e->SetFocusedForegroundColor(mScheme->GetFocusedForeground());
+		e->SetFocusedBackgroundColor(mScheme->GetFocusedBackground());
 
-		if (auto btn = dynamic_cast<Button*>(e)) {
-			btn->SetPressedTextColor(mScheme->GetPressedTextColor());
-			btn->SetPressedBackgroundColor(mScheme->GetPressedBackgroundColor());
-			btn->GetPressedBorder()->SetColor(mScheme->GetPressedBorderColor());
-			btn->GetPressedBorder()->SetEnabled(mScheme->GetBordersEnabled());
-		}
-
-		if (auto tf = dynamic_cast<TextField*>(e)) {
-			tf->SetDisabledTextColor(mScheme->GetDisabledTextColor());
-			tf->SetDisabledBackgroundColor(mScheme->GetDisabledBackgroundColor());
-			tf->GetDisabledBorder()->SetColor(mScheme->GetDisabledBorderColor());
-			tf->GetDisabledBorder()->SetEnabled(mScheme->GetBordersEnabled());
-		}
+		e->SetDisabledForegroundColor(mScheme->GetDisabledForeground());
+		e->SetDisabledBackgroundColor(mScheme->GetDisabledBackground());
 	}
 }
 

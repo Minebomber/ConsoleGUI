@@ -14,13 +14,13 @@ struct Rect {
 	Point origin;
 	Size size;
 
-	int Left() { return origin.x; }
-	int Right() { return origin.x + size.width - 1; }
-	int Top() { return origin.y; }
-	int Bottom() { return origin.y + size.height - 1; }
+	int Left() const { return origin.x; }
+	int Right() const { return origin.x + size.width - 1; }
+	int Top() const { return origin.y; }
+	int Bottom() const { return origin.y + size.height - 1; }
 
-	Point Center() { return { origin.x + size.width / 2, origin.y + size.height / 2 }; }
-	Point Max() { return { Right(), Bottom() }; }
+	Point Center() const { return { origin.x + size.width / 2, origin.y + size.height / 2 }; }
+	Point Max() const { return { Right(), Bottom() }; }
 
 	bool Contains(const Point& p) const {
 		return (

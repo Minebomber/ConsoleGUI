@@ -8,52 +8,44 @@ namespace gui {
 
 class WindowScheme {
 protected:
-	WORD mText;
-	WORD mBackground;
-	WORD mBorder;
+	WORD mDefaultForeground;
+	WORD mDefaultBackground;
+
+	WORD mFocusedForeground;
+	WORD mFocusedBackground;
 	
-	WORD mPressedText;
-	WORD mPressedBackground;
-	WORD mPressedBorder;
-
-	WORD mDisabledText;
+	WORD mDisabledForeground;
 	WORD mDisabledBackground;
-	WORD mDisabledBorder;
 
-	bool mBorders;
+	bool mBorderEnabled;
 public:
 	WindowScheme(
-		WORD t, WORD bg, WORD bd, 
-		WORD pt, WORD pbg, WORD pbd, 
-		WORD dt, WORD dbg, WORD dbd, 
-		bool bds
-	) : mText(t), mBackground(bg), mBorder(bd), mPressedText(pt), mPressedBackground(pbg),
-		mPressedBorder(pbd), mDisabledText(dt), mDisabledBackground(dbg), mDisabledBorder(dbd),
-		mBorders(bds) {}
+		WORD fg, WORD bg,
+		WORD ffg, WORD fbg,
+		WORD dfg, WORD dbg,
+		bool bd
+	) : mDefaultForeground(fg), mDefaultBackground(bg),
+		mFocusedForeground(ffg), mFocusedBackground(fbg),
+		mDisabledForeground(dfg), mDisabledBackground(dbg),
+		mBorderEnabled(bd) {}
 
-	const bool& GetBordersEnabled() const { return mBorders; }
-	void SetBordersEnabled(bool e) { mBorders = e; }
+	const bool& GetBorderEnabled() const { return mBorderEnabled; }
+	void SetBorderEnabled(bool e) { mBorderEnabled = e; }
 
-	const WORD& GetTextColor() const { return mText; }
-	void SetTextColor(WORD c) { mText = c; }
-	const WORD& GetBackgroundColor() const { return mBackground; }
-	void SetBackgroundColor(WORD c) { mBackground = c; }
-	const WORD& GetBorderColor() const { return mBorder; }
-	void SetBorderColor(WORD c) { mBorder = c; }
+	const WORD& GetDefaultForeground() const { return mDefaultForeground; }
+	void SetDefaultForeground(WORD c) { mDefaultForeground = c; }
+	const WORD& GetDefaultBackground() const { return mDefaultBackground; }
+	void SetDefaultBackground(WORD c) { mDefaultBackground = c; }
 
-	const WORD& GetPressedTextColor() const { return mPressedText; }
-	void SetPressedTextColor(WORD c) { mPressedText = c; }
-	const WORD& GetPressedBackgroundColor() const { return mPressedBackground; }
-	void SetPressedBackgroundColor(WORD c) { mPressedBackground = c; }
-	const WORD& GetPressedBorderColor() const { return mPressedBorder; }
-	void SetPressedBorderColor(WORD c) { mPressedBorder = c; }
+	const WORD& GetFocusedForeground() const { return mFocusedForeground; }
+	void SetFocusedForeground(WORD c) { mFocusedForeground = c; }
+	const WORD& GetFocusedBackground() const { return mFocusedBackground; }
+	void SetFocusedBackground(WORD c) { mFocusedBackground = c; }
 
-	const WORD& GetDisabledTextColor() const { return mDisabledText; }
-	void SetDisabledTextColor(WORD c) { mDisabledText = c; }
-	const WORD& GetDisabledBackgroundColor() const { return mDisabledBackground; }
-	void SetDisabledBackgroundColor(WORD c) { mDisabledBackground = c; }
-	const WORD& GetDisabledBorderColor() const { return mDisabledBorder; }
-	void SetDisabledBorderColor(WORD c) { mDisabledBorder = c; }
+	const WORD& GetDisabledForeground() const { return mDisabledForeground; }
+	void SetDisabledForeground(WORD c) { mDisabledForeground = c; }
+	const WORD& GetDisabledBackground() const { return mDisabledBackground; }
+	void SetDisabledBackground(WORD c) { mDisabledBackground = c; }
 
 	static WindowScheme* Default();
 	static WindowScheme* Green();

@@ -2,38 +2,60 @@
 
 namespace gui {
 
-void Border::Draw(Window* w, Rect b) {
-	int x0 = b.Left(); int x1 = b.Right();
-	int y0 = b.Top(); int y1 = b.Bottom();
-
-	w->SetChar(x0, y0, L'\x250F', mColor);
-	w->SetChar(x1, y0, L'\x2513', mColor);
-	w->SetChar(x0, y1, L'\x2517', mColor);
-	w->SetChar(x1, y1, L'\x251B', mColor);
-
-	for (int x = x0 + 1; x < x1; x++) {
-		w->SetChar(x, y0, L'\x2501', mColor);
-		w->SetChar(x, y1, L'\x2501', mColor);
-	}
-
-	for (int y = y0 + 1; y < y1; y++) {
-		w->SetChar(x0, y, L'\x2503', mColor);
-		w->SetChar(x1, y, L'\x2503', mColor);
+WORD Element::GetCurrentForegroundColor() const {
+	switch (mState) {
+	case ELEMENT_FOCUSED:
+		return mFocusedForegroundColor;
+	case ELEMENT_DISABLED:
+		return mDisabledForegroundColor;
+	default:
+		return mDefaultForegroundColor;
 	}
 }
 
-void TitledBorder::Draw(Window* w, Rect b) {
-	Border::Draw(w, b);
-	int tW = mTitle.length();
-	int x0 = b.origin.x + ((b.size.width - tW) / 2) + 1;
-	w->SetChar(x0 - 1, b.origin.y, L'\x252B', mColor);
-	w->WriteString(x0, b.origin.y, mTitle, mColor);
-	w->SetChar(x0 + tW, b.origin.y, L'\x2523', mColor);
+WORD Element::GetCurrentBackgroundColor() const {
+	switch (mState) {
+	case ELEMENT_FOCUSED:
+		return mFocusedBackgroundColor;
+	case ELEMENT_DISABLED:
+		return mDisabledBackgroundColor;
+	default:
+		return mDefaultBackgroundColor;
+	}
+}
+
+Rect Element::GetInnerBounds() const {
+	return {
+		mBounds.origin.x + mDisplayBorders,
+		mBounds.origin.y + mDisplayBorders,
+		mBounds.size.width - (2 * mDisplayBorders),
+		mBounds.size.height - (2 * mDisplayBorders)
+	};
 }
 
 void Element::Draw(Window* w) {
-	w->DrawRect(mBounds, L' ', mBackgroundColor, true);
-	mBorder->Draw(w, mBounds);
+	w->DrawRect(mBounds, L' ', GetCurrentBackgroundColor(), true);
+	
+	if (mDisplayBorders) {
+		int x0 = mBounds.Left(); int x1 = mBounds.Right();
+		int y0 = mBounds.Top(); int y1 = mBounds.Bottom();
+		WORD cl = GetCurrentForegroundColor();
+
+		w->SetChar(x0, y0, L'\x250F', cl);
+		w->SetChar(x1, y0, L'\x2513', cl);
+		w->SetChar(x0, y1, L'\x2517', cl);
+		w->SetChar(x1, y1, L'\x251B', cl);
+
+		for (int x = x0 + 1; x < x1; x++) {
+			w->SetChar(x, y0, L'\x2501', cl);
+			w->SetChar(x, y1, L'\x2501', cl);
+		}
+
+		for (int y = y0 + 1; y < y1; y++) {
+			w->SetChar(x0, y, L'\x2503', cl);
+			w->SetChar(x1, y, L'\x2503', cl);
+		}
+	}
 }
 
 void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
@@ -120,44 +142,26 @@ void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
 
 void Label::Draw(Window* w) {
 	Element::Draw(w);
-	int borderWidth = mBorder->GetEnabled();
-	RenderText(w, {
-		mBounds.origin.x + borderWidth,
-		mBounds.origin.y + borderWidth,
-		mBounds.size.width - 2 * borderWidth,
-		mBounds.size.height - 2 * borderWidth,
-		}, mText, mTextColor);
+	RenderText(w, GetInnerBounds(), mText, GetCurrentForegroundColor());
 }
 
 void Button::Init() {
 	AddEventHandler(new EventHandler(
-		[this](Window* w, int m) { if (m & mButtons) mPressed = true; },
-		[this](Window* w, int m) { if (m & mButtons) mPressed = false; },
+		[this](Window* w, int m) { if (m & mButtons) mState = ELEMENT_FOCUSED; },
+		[this](Window* w, int m) { if (m & mButtons) mState = ELEMENT_DEFAULT; },
 		nullptr, nullptr, nullptr
 	));
 }
 
 void Button::Draw(Window* w) {
-	WORD bgC = mPressed ? mPressedBackgroundColor : mBackgroundColor;
-	WORD tC = mPressed ? mPressedTextColor : mTextColor;
-
-	w->DrawRect(mBounds, L' ', bgC, true);
-	if (mPressed) mPressedBorder->Draw(w, mBounds);
-	else mBorder->Draw(w, mBounds);
-	int borderWidth = (mPressed ? mPressedBorder->GetEnabled() : mBorder->GetEnabled());
-	RenderText(w, {
-		mBounds.origin.x + borderWidth,
-		mBounds.origin.y + borderWidth,
-		mBounds.size.width - 2 * borderWidth,
-		mBounds.size.height - 2 * borderWidth,
-		}, mText, tC);
+	Label::Draw(w);
 }
 
 void TextField::Init() {
 	AddEventHandler(new EventHandler(
 		[this](Window* w, int m) {
 			w->SetFocusedElement(this);
-			mDisabled = false;
+			mState = ELEMENT_FOCUSED;
 		},
 		nullptr, nullptr,
 		[this](Window* w, int k) {
@@ -181,44 +185,27 @@ void TextField::Init() {
 }
 
 void TextField::Draw(Window* w) {
-	WORD bgC = mDisabled ? mDisabledBackgroundColor : mBackgroundColor;
-	WORD tC = mDisabled ? mDisabledTextColor : mTextColor;
-	
-	w->DrawRect(mBounds, L' ', bgC, true);
-	if (mDisabled) mDisabledBorder->Draw(w, mBounds);
-	else mBorder->Draw(w, mBounds);
-
-	int borderWidth = (mDisabled ? mDisabledBorder->GetEnabled() : mBorder->GetEnabled());
-	RenderText(w, {
-		mBounds.origin.x + borderWidth,
-		mBounds.origin.y + borderWidth,
-		mBounds.size.width - 2 * borderWidth,
-		mBounds.size.height - 2 * borderWidth,
-	}, mText, tC);
+	Label::Draw(w);
 }
 
 void Checkbox::Init() {
 	AddEventHandler(new EventHandler(
-		[this](Window* w, int m) { mChecked = !mChecked; },
-		nullptr, nullptr, nullptr, nullptr
+		[this](Window* w, int m) { mState = ELEMENT_FOCUSED; },
+		[this](Window* w, int m) { mState = ELEMENT_DEFAULT; mChecked = !mChecked; },
+		nullptr, nullptr, nullptr
 	));
 }
 
 void Checkbox::Draw(Window* w) {
 	Element::Draw(w);
-	int borderWidth = mBorder->GetEnabled();
-	RenderText(w, {
-		mBounds.origin.x + borderWidth,
-		mBounds.origin.y + borderWidth,
-		3,
-		1,
-		}, mChecked ? L"[\x25CF]" : L"[ ]", mTextColor);
-	RenderText(w, {
-		mBounds.origin.x + borderWidth + 4,
-		mBounds.origin.y + borderWidth,
-		mBounds.size.width - 2 * borderWidth - 4,
-		mBounds.size.height - 2 * borderWidth,
-		}, mText, mTextColor);
+
+	Rect textBounds = GetInnerBounds();
+	WORD cl = GetCurrentForegroundColor();
+	w->WriteString(textBounds.origin.x, textBounds.origin.y, mChecked ? L"[\x25CF]" : L"[ ]", cl);
+
+	textBounds.origin.x += 4;
+	textBounds.size.width -= 4;
+	RenderText(w, textBounds, mText, cl);
 }
 
 }

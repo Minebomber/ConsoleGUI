@@ -137,19 +137,21 @@ void Console::Run() {
 					case DOUBLE_CLICK:
 						// Mouse
 						for (int m = 0; m < 3; m++) {
-							mCurrentWindow->mMouseButtons[m] = inputBuffer[i].Event.MouseEvent.dwButtonState & (1 << m);
-							// Clear focused at start, handlers will set if needed
-							if (mCurrentWindow->mMouseButtons[m]) {
-								//mCurrentWindow->SetActiveKeyboardHandler(nullptr);
-								mCurrentWindow->mFocusedElement = nullptr;
+							bool pressed = inputBuffer[i].Event.MouseEvent.dwButtonState & (1 << m);
 
-								mCurrentWindow->ApplyToElements([](Element* e) { if (auto t = dynamic_cast<TextField*>(e)) t->SetDisabled(true); });
+							if (!mCurrentWindow->mMouseButtons[m] && pressed) {
+								// Clear focused at start, handlers will set if needed
+								mCurrentWindow->mFocusedElement = nullptr;
+								mCurrentWindow->ApplyToElements([](Element* e) { e->mState = ELEMENT_DEFAULT; });
 							}
-							
-							if (Element* e = mCurrentWindow->GetElementAtPoint(mCurrentWindow->mMousePosition)) {
-								for (EventHandler* h : e->mEventHandlers) {
-									if (mCurrentWindow->mMouseButtons[m] && h->MouseDownActionExists()) h->InvokeMouseDownAction(mCurrentWindow, 1 << m);
-									if (!mCurrentWindow->mMouseButtons[m] && h->MouseUpActionExists()) h->InvokeMouseUpAction(mCurrentWindow, 1 << m);
+
+							if (pressed != mCurrentWindow->mMouseButtons[m]) {
+								mCurrentWindow->mMouseButtons[m] = pressed;
+								if (Element* e = mCurrentWindow->GetElementAtPoint(mCurrentWindow->mMousePosition)) {
+									for (EventHandler* h : e->mEventHandlers) {
+										if (pressed && h->MouseDownActionExists()) h->InvokeMouseDownAction(mCurrentWindow, 1 << m);
+										if (!pressed && h->MouseUpActionExists()) h->InvokeMouseUpAction(mCurrentWindow, 1 << m);
+									}
 								}
 							}
 						}

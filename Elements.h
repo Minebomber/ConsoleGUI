@@ -73,42 +73,10 @@ public:
 
 class Window;
 
-class Border {
-	friend class Window;
-protected:
-	WORD mColor = FG_WHITE;
-	bool mEnabled = true;
-public:
-	Border() {}
-	Border(bool e) : mEnabled(e) {}
-	Border(WORD cl, bool e) : mColor(cl), mEnabled(e) {}
-
-	virtual Border* Clone() { return new Border(mColor, mEnabled); }
-
-	const WORD& GetColor() const { return mColor; }
-	void SetColor(WORD c) { mColor = c; }
-
-	const bool& GetEnabled() const { return mEnabled; }
-	void SetEnabled(bool e) { mEnabled = e; }
-
-	virtual void Draw(Window* w, Rect b);
-};
-
-class TitledBorder : public Border {
-	friend class Window;
-protected:
-	std::wstring mTitle = L"";
-public:
-	TitledBorder(std::wstring t) : Border(), mTitle(t) {}
-	TitledBorder(std::wstring t, WORD cl) : Border(cl, true), mTitle(t) {}
-	TitledBorder(std::wstring t, WORD cl, bool e) : Border(cl, e), mTitle(t) {}
-
-	virtual Border* Clone() override { return new TitledBorder(mTitle, mColor, mEnabled); }
-
-	const std::wstring& GetTitle() const { return mTitle; }
-	void SetTitle(std::wstring s) { mTitle = s; }
-	
-	virtual void Draw(Window* w, Rect b) override;
+enum ElementState {
+	ELEMENT_DEFAULT,
+	ELEMENT_FOCUSED,
+	ELEMENT_DISABLED,
 };
 
 class Element {
@@ -116,26 +84,50 @@ class Element {
 	friend class Console;
 protected:
 	Rect mBounds = { 0, 0, 0, 0 };
-	WORD mBackgroundColor = BG_WHITE;
-	Border* mBorder = nullptr;
+
+	int mState = ELEMENT_DEFAULT;
+
+	WORD mDefaultForegroundColor = FG_WHITE;
+	WORD mDefaultBackgroundColor = BG_BLACK;
+
+	WORD mFocusedForegroundColor = FG_WHITE;
+	WORD mFocusedBackgroundColor = FG_WHITE;
+
+	WORD mDisabledForegroundColor = FG_WHITE;
+	WORD mDisabledBackgroundColor = FG_WHITE;
+
+	bool mDisplayBorders = true;
 
 	std::vector<EventHandler*> mEventHandlers;
 public:
-	Element(Rect b) : mBounds(b), mBorder(new Border(FG_WHITE, 0)) {}
-	Element(const Element& e) : mBounds(e.mBounds), mBackgroundColor(e.mBackgroundColor), mBorder(e.mBorder->Clone()) {}
-	virtual ~Element() { if (mBorder) delete mBorder; }
+	Element(Rect b) : mBounds(b) {}
+	Element(const Element& e) : mBounds(e.mBounds) {}
+	virtual ~Element() {}
 
 	const Rect& GetBounds() const { return mBounds; }
 	virtual void SetBounds(Rect b) { mBounds = b; }
 
-	const WORD& GetBackgroundColor() const { return mBackgroundColor; }
-	void SetBackgroundColor(WORD c) { mBackgroundColor = c; }
+	const WORD& GetDefaultForegroundColor() const { return mDefaultForegroundColor; }
+	void SetDefaultForegroundColor(WORD c) { mDefaultForegroundColor = c; }
+	const WORD& GetDefaultBackgroundColor() const { return mDefaultBackgroundColor; }
+	void SetDefaultBackgroundColor(WORD c) { mDefaultBackgroundColor = c; }
 
-	Border* GetBorder() { return mBorder; }
-	virtual void SetBorder(Border* b) { if (mBorder) delete mBorder; mBorder = b; }
+	const WORD& GetFocusedForegroundColor() const { return mFocusedForegroundColor; }
+	void SetFocusedForegroundColor(WORD c) { mFocusedForegroundColor = c; }
+	const WORD& GetFocusedBackgroundColor() const { return mFocusedBackgroundColor; }
+	void SetFocusedBackgroundColor(WORD c) { mFocusedBackgroundColor = c; }
+
+	const WORD& GetDisabledForegroundColor() const { return mDisabledBackgroundColor; }
+	void SetDisabledForegroundColor(WORD c) { mDisabledBackgroundColor = c; }
+	const WORD& GetDisabledBackgroundColor() const { return mDisabledBackgroundColor; }
+	void SetDisabledBackgroundColor(WORD c) { mDisabledBackgroundColor = c; }
 
 	void AddEventHandler(EventHandler* e) { mEventHandlers.push_back(e); }
 	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
+
+	WORD GetCurrentForegroundColor() const;
+	WORD GetCurrentBackgroundColor() const;
+	Rect GetInnerBounds() const;
 
 	virtual void Draw(Window* w);
 };
@@ -144,7 +136,7 @@ class Label : public Element {
 	friend class Window;
 protected:
 	std::wstring mText = L"";
-	WORD mTextColor = FG_WHITE;
+
 	int mAlignH = TEXT_ALIGN_MID;
 	int mAlignV = TEXT_ALIGN_MID;
 	int mTextWrap = TEXT_WRAP_WORD;
@@ -152,13 +144,10 @@ protected:
 	void RenderText(Window* w, Rect r, const std::wstring& s, WORD cl);
 public:
 	Label(Rect b) : Element(b) {}
-	Label(const Label& e) : Element(e), mText(e.mText), mTextColor(e.mTextColor), mAlignH(e.mAlignH), mAlignV(e.mAlignV), mTextWrap(e.mTextWrap) {}
+	Label(const Label& e) : Element(e), mText(e.mText), mAlignH(e.mAlignH), mAlignV(e.mAlignV), mTextWrap(e.mTextWrap) {}
 
 	const std::wstring& GetText() const { return mText; }
 	void SetText(std::wstring t) { mText = t; }
-
-	const WORD& GetTextColor() const { return mTextColor; }
-	void SetTextColor(WORD c) { mTextColor = c; }
 
 	const int& GetAlignHorizontal() const { return mAlignH; }
 	void SetAlignHorizontal(int h) { mAlignH = h; }
@@ -175,29 +164,12 @@ public:
 class Button : public Label {
 	friend class Window;
 protected:
-	WORD mPressedTextColor = FG_WHITE;
-	WORD mPressedBackgroundColor = BG_WHITE;
-	Border* mPressedBorder = nullptr;
-	bool mPressed = false;
-
 	int mButtons = MOUSE_BUTTON_LEFT;
 
 	void Init();
 public:
-	Button(Rect b) : Label(b), mPressedBorder(new Border(FG_WHITE, 0)) { Init(); }
-	Button(const Button& e) : Label(e), mPressedBorder(e.mPressedBorder->Clone()), mPressedTextColor(e.mPressedTextColor), mPressedBackgroundColor(e.mPressedBackgroundColor), mPressed(e.mPressed) { Init();  }
-	virtual ~Button() { if (mPressedBorder) delete mPressedBorder; }
-
-	const WORD& GetPressedTextColor() const { return mPressedTextColor; }
-	void SetPressedTextColor(WORD c) { mPressedTextColor = c; }
-
-	const WORD& GetPressedBackgroundColor() const { return mPressedBackgroundColor; }
-	void SetPressedBackgroundColor(WORD c) { mPressedBackgroundColor = c; }
-
-	Border* GetPressedBorder() { return mPressedBorder; }
-	void SetPressedBorder(Border* b) { if (mPressedBorder) delete mPressedBorder; mPressedBorder = b; }
-
-	const bool& GetPressed() const { return mPressed; }
+	Button(Rect b) : Label(b) { Init(); }
+	Button(const Button& e) : Label(e) { Init();  }
 
 	const int& GetButtons() const { return mButtons; }
 	void SetButtons(int b) { mButtons = b; }
@@ -208,33 +180,15 @@ public:
 class TextField : public Label {
 	friend class Window;
 protected:
-	WORD mDisabledTextColor = FG_WHITE;
-	WORD mDisabledBackgroundColor = BG_WHITE;
-	Border* mDisabledBorder = nullptr;
-	bool mDisabled = true;
-	
 	bool mCapitalize = false;
 
 	std::wstring mCharset = Charset::All();
 
 	void Init();
 public:
-	TextField(Rect b) : Label(b), mDisabledBorder(new Border(FG_WHITE, 0)) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; Init(); }
-	TextField(Rect b, std::wstring c) : Label(b), mCharset(c), mDisabledBorder(new Border(FG_WHITE, 0)) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; Init(); }
-	TextField(const TextField& e) : Label(e), mDisabledBorder(e.mDisabledBorder->Clone()), mDisabledTextColor(e.mDisabledTextColor), mDisabledBackgroundColor(e.mDisabledBackgroundColor), mDisabled(e.mDisabled), mCharset(e.mCharset) { Init(); }
-	virtual ~TextField() { if (mDisabledBorder) delete mDisabledBorder; }
-
-	const WORD& GetDisabledTextColor() const { return mDisabledTextColor; }
-	void SetDisabledTextColor(WORD c) { mDisabledTextColor = c; }
-
-	const WORD& GetDisabledBackgroundColor() const { return mDisabledBackgroundColor; }
-	void SetDisabledBackgroundColor(WORD c) { mDisabledBackgroundColor = c; }
-
-	Border* GetDisabledBorder() { return mDisabledBorder; }
-	void SetDisabledBorder(Border* b) { if (mDisabledBorder) delete mDisabledBorder; mDisabledBorder = b; }
-
-	const bool& GetDisabled() const { return mDisabled; }
-	void SetDisabled(bool b) { mDisabled = b; }
+	TextField(Rect b) : Label(b) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; Init(); }
+	TextField(Rect b, std::wstring c) : Label(b), mCharset(c) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; Init(); }
+	TextField(const TextField& e) : Label(e), mCharset(e.mCharset) { Init(); }
 
 	virtual void Draw(Window* w) override;
 };
