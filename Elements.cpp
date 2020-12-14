@@ -162,9 +162,9 @@ void TextField::SetupHandlers() {
 		c->SetActiveKeyboardHandler(mKeyboardHandler);
 		mDisabled = false;
 	});
-
 	mKeyboardHandler = new KeyboardHandler(
-		L"\x08\x0D\x10\xBA\xBB\xBC\xBD\xBE\xBF\xC0\xDB\xDC\xDD\xDE" + mCharset
+		L"\x08\x0D\x10"  // back return shift
+		+ mCharset
 	);
 
 	mKeyboardHandler->SetPressAction([this](Window* c, int k) {
@@ -180,8 +180,7 @@ void TextField::SetupHandlers() {
 			GetKeyboardState(b);
 			if (mCapitalize) b[0x10] = 0x80;
 			WCHAR c;
-			int r = ToUnicode((UINT)k, sc, b, &c, 1, 0);
-			mText += c;
+			if (ToUnicode((UINT)k, sc, b, &c, 1, 0)) mText += c;
 		}
 	});
 

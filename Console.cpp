@@ -129,6 +129,11 @@ void Console::Run() {
 						// Mouse
 						for (int m = 0; m < 3; m++) {
 							mCurrentWindow->mMouseButtons[m] = inputBuffer[i].Event.MouseEvent.dwButtonState & (1 << m);
+							// Clear focused at start, handlers will set if needed
+							if (mCurrentWindow->mMouseButtons[m]) {
+								mCurrentWindow->SetActiveKeyboardHandler(nullptr);
+								mCurrentWindow->ApplyToElements([](Element* e) { if (auto t = dynamic_cast<TextField*>(e)) t->SetDisabled(true); });
+							}
 							// Notify mouse handlers
 							for (MouseHandler* h : mCurrentWindow->mMouseHandlers) {
 								if (h->mButtons & (1 << m) && h->mBounds.Contains(mCurrentWindow->GetMousePosition())) {

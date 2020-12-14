@@ -8,8 +8,7 @@ public:
 
 		w->SetScheme(gui::WindowScheme::Default());
 
-		gui::Checkbox* e = new gui::Checkbox({ 3, 3, 15, 3 });
-		e->SetText(L"Checkbox");
+		gui::TextField* e = new gui::TextField({ 3, 3, 15, 5 });
 		w->AddElement(e);
 
 		return true;

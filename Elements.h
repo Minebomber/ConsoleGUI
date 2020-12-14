@@ -62,7 +62,14 @@ public:
 	static std::wstring Numeric() { return L"0123456789"; }
 	static std::wstring Alphabet() { return L" ABCDEFGHIJKLMNOPQRSTUVWXYZ"; }
 	static std::wstring Alphanum() { return L" ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; }
+	static std::wstring All() { 
+		return 
+			L" ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+			"0123456789"
+			"\xBA\xBB\xBC\xBD\xBE\xBF\xC0\xDB\xDC\xDD\xDE";
+	}
 };
+
 
 class Window;
 
@@ -200,7 +207,7 @@ protected:
 	WORD mTextColor = FG_WHITE;
 	int mAlignH = TEXT_ALIGN_MID;
 	int mAlignV = TEXT_ALIGN_MID;
-	int mTextWrap = TEXT_WRAP_CHAR;
+	int mTextWrap = TEXT_WRAP_WORD;
 	
 	void RenderText(Window* w, Rect r, const std::wstring& s, WORD cl);
 public:
@@ -272,7 +279,7 @@ protected:
 	
 	bool mCapitalize = false;
 
-	std::wstring mCharset = Charset::Numeric();
+	std::wstring mCharset = Charset::All();
 
 	virtual void SetupHandlers() override;
 public:
