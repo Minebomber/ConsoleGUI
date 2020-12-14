@@ -77,21 +77,19 @@ class Border {
 	friend class Window;
 protected:
 	WORD mColor = FG_WHITE;
-	int mWidth = 1;
+	bool mEnabled = true;
 public:
 	Border() {}
-	Border(WORD cl, int w) : mColor(cl), mWidth(w) {}
-	Border(int w) : mWidth(w) {}
+	Border(bool e) : mEnabled(e) {}
+	Border(WORD cl, bool e) : mColor(cl), mEnabled(e) {}
 
-	virtual Border* Clone() { return new Border(mColor, mWidth); }
+	virtual Border* Clone() { return new Border(mColor, mEnabled); }
 
 	const WORD& GetColor() const { return mColor; }
 	void SetColor(WORD c) { mColor = c; }
 
-	const int& GetWidth() const { return mWidth; }
-	void SetWidth(int w) { mWidth = w; }
-
-	operator bool() const { return mWidth != 0; }
+	const bool& GetEnabled() const { return mEnabled; }
+	void SetEnabled(bool e) { mEnabled = e; }
 
 	virtual void Draw(Window* w, Rect b);
 };
@@ -102,10 +100,10 @@ protected:
 	std::wstring mTitle = L"";
 public:
 	TitledBorder(std::wstring t) : Border(), mTitle(t) {}
-	TitledBorder(std::wstring t, WORD cl) : Border(cl, 1), mTitle(t) {}
-	TitledBorder(std::wstring t, WORD cl, int w) : Border(cl, w), mTitle(t) {}
+	TitledBorder(std::wstring t, WORD cl) : Border(cl, true), mTitle(t) {}
+	TitledBorder(std::wstring t, WORD cl, bool e) : Border(cl, e), mTitle(t) {}
 
-	virtual Border* Clone() override { return new TitledBorder(mTitle, mColor, mWidth); }
+	virtual Border* Clone() override { return new TitledBorder(mTitle, mColor, mEnabled); }
 
 	const std::wstring& GetTitle() const { return mTitle; }
 	void SetTitle(std::wstring s) { mTitle = s; }
@@ -137,7 +135,7 @@ public:
 	virtual void SetBorder(Border* b) { if (mBorder) delete mBorder; mBorder = b; }
 
 	void AddEventHandler(EventHandler* e) { mEventHandlers.push_back(e); }
-	void RemoveEventHandler(EventHandler* e) { std::remove(mEventHandlers.begin(), mEventHandlers.end(), e); }
+	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
 
 	virtual void Draw(Window* w);
 };

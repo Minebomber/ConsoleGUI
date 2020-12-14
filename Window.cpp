@@ -73,7 +73,7 @@ void Window::AddElement(Element* e) {
 	if (mScheme) {
 		e->SetBackgroundColor(mScheme->GetBackgroundColor());
 		e->GetBorder()->SetColor(mScheme->GetBorderColor());
-		e->GetBorder()->SetWidth(mScheme->GetBorderWidth());
+		e->GetBorder()->SetEnabled(mScheme->GetBordersEnabled());
 
 		if (auto lab = dynamic_cast<Label*>(e)) {
 			lab->SetTextColor(mScheme->GetTextColor());
@@ -83,21 +83,21 @@ void Window::AddElement(Element* e) {
 			btn->SetPressedTextColor(mScheme->GetPressedTextColor());
 			btn->SetPressedBackgroundColor(mScheme->GetPressedBackgroundColor());
 			btn->GetPressedBorder()->SetColor(mScheme->GetPressedBorderColor());
-			btn->GetPressedBorder()->SetWidth(mScheme->GetPressedBorderWidth());
+			btn->GetPressedBorder()->SetEnabled(mScheme->GetBordersEnabled());
 		}
 
 		if (auto tf = dynamic_cast<TextField*>(e)) {
 			tf->SetDisabledTextColor(mScheme->GetDisabledTextColor());
 			tf->SetDisabledBackgroundColor(mScheme->GetDisabledBackgroundColor());
 			tf->GetDisabledBorder()->SetColor(mScheme->GetDisabledBorderColor());
-			tf->GetDisabledBorder()->SetWidth(mScheme->GetDisabledBorderWidth());
+			tf->GetDisabledBorder()->SetEnabled(mScheme->GetBordersEnabled());
 		}
 	}
 }
 
 void Window::RemoveElement(Element* e) { 
 	if (mFocusedElement == e) mFocusedElement = nullptr; 
-	std::remove(mElements.begin(), mElements.end(), e); 
+	mElements.erase(std::remove(mElements.begin(), mElements.end(), e), mElements.end()); 
 }
 
 Element* Window::GetElementAtPoint(const Point& p) {

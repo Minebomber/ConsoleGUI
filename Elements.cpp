@@ -3,25 +3,22 @@
 namespace gui {
 
 void Border::Draw(Window* w, Rect b) {
+	int x0 = b.Left(); int x1 = b.Right();
+	int y0 = b.Top(); int y1 = b.Bottom();
 
-	for (int wi = 0; wi < mWidth; wi++) {
-		int x0 = b.Left() + wi; int x1 = b.Right() - wi;
-		int y0 = b.Top() + wi; int y1 = b.Bottom() - wi;
+	w->SetChar(x0, y0, L'\x250F', mColor);
+	w->SetChar(x1, y0, L'\x2513', mColor);
+	w->SetChar(x0, y1, L'\x2517', mColor);
+	w->SetChar(x1, y1, L'\x251B', mColor);
 
-		w->SetChar(x0, y0, L'\x250F', mColor);
-		w->SetChar(x1, y0, L'\x2513', mColor);
-		w->SetChar(x0, y1, L'\x2517', mColor);
-		w->SetChar(x1, y1, L'\x251B', mColor);
+	for (int x = x0 + 1; x < x1; x++) {
+		w->SetChar(x, y0, L'\x2501', mColor);
+		w->SetChar(x, y1, L'\x2501', mColor);
+	}
 
-		for (int x = x0 + 1; x < x1; x++) {
-			w->SetChar(x, y0, L'\x2501', mColor);
-			w->SetChar(x, y1, L'\x2501', mColor);
-		}
-
-		for (int y = y0 + 1; y < y1; y++) {
-			w->SetChar(x0, y, L'\x2503', mColor);
-			w->SetChar(x1, y, L'\x2503', mColor);
-		}
+	for (int y = y0 + 1; y < y1; y++) {
+		w->SetChar(x0, y, L'\x2503', mColor);
+		w->SetChar(x1, y, L'\x2503', mColor);
 	}
 }
 
@@ -72,7 +69,7 @@ void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
 					if (currentIdx == s.length() - 1) {
 						lines[currentLine] = { xOffset, lineBeginIdx, lineWidth }; currentLine++;
 					} else {
-						auto spaceIdx = std::distance(s.begin(), iSpace.base()) - 1;
+						int spaceIdx = std::distance(s.begin(), iSpace.base()) - 1;
 						lineWidth = spaceIdx - lineBeginIdx;
 						if (mAlignH == TEXT_ALIGN_MID) xOffset = (textWidth - lineWidth) / 2;
 						else if (mAlignH == TEXT_ALIGN_MAX)  xOffset = textWidth - lineWidth;
@@ -123,7 +120,7 @@ void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
 
 void Label::Draw(Window* w) {
 	Element::Draw(w);
-	int borderWidth = mBorder->GetWidth();
+	int borderWidth = mBorder->GetEnabled();
 	RenderText(w, {
 		mBounds.origin.x + borderWidth,
 		mBounds.origin.y + borderWidth,
@@ -147,7 +144,7 @@ void Button::Draw(Window* w) {
 	w->DrawRect(mBounds, L' ', bgC, true);
 	if (mPressed) mPressedBorder->Draw(w, mBounds);
 	else mBorder->Draw(w, mBounds);
-	int borderWidth = (mPressed ? mPressedBorder->GetWidth() : mBorder->GetWidth());
+	int borderWidth = (mPressed ? mPressedBorder->GetEnabled() : mBorder->GetEnabled());
 	RenderText(w, {
 		mBounds.origin.x + borderWidth,
 		mBounds.origin.y + borderWidth,
@@ -191,7 +188,7 @@ void TextField::Draw(Window* w) {
 	if (mDisabled) mDisabledBorder->Draw(w, mBounds);
 	else mBorder->Draw(w, mBounds);
 
-	int borderWidth = (mDisabled ? mDisabledBorder->GetWidth() : mBorder->GetWidth());
+	int borderWidth = (mDisabled ? mDisabledBorder->GetEnabled() : mBorder->GetEnabled());
 	RenderText(w, {
 		mBounds.origin.x + borderWidth,
 		mBounds.origin.y + borderWidth,
@@ -201,9 +198,6 @@ void TextField::Draw(Window* w) {
 }
 
 void Checkbox::Init() {
-	/*mMouseHandler = new MouseHandler(mBounds, MOUSE_BUTTON_LEFT);
-	mMouseHandler->SetPressAction([this](Window* _, int __) { mChecked = !mChecked; });*/
-
 	AddEventHandler(new EventHandler(
 		[this](Window* w, int m) { mChecked = !mChecked; },
 		nullptr, nullptr, nullptr, nullptr
@@ -212,7 +206,7 @@ void Checkbox::Init() {
 
 void Checkbox::Draw(Window* w) {
 	Element::Draw(w);
-	int borderWidth = mBorder->GetWidth();
+	int borderWidth = mBorder->GetEnabled();
 	RenderText(w, {
 		mBounds.origin.x + borderWidth,
 		mBounds.origin.y + borderWidth,

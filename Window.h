@@ -31,13 +31,15 @@ public:
 		mPressedBorder(pbd), mDisabledText(dt), mDisabledBackground(dbg), mDisabledBorder(dbd),
 		mBorders(bds) {}
 
+	const bool& GetBordersEnabled() const { return mBorders; }
+	void SetBordersEnabled(bool e) { mBorders = e; }
+
 	const WORD& GetTextColor() const { return mText; }
 	void SetTextColor(WORD c) { mText = c; }
 	const WORD& GetBackgroundColor() const { return mBackground; }
 	void SetBackgroundColor(WORD c) { mBackground = c; }
 	const WORD& GetBorderColor() const { return mBorder; }
 	void SetBorderColor(WORD c) { mBorder = c; }
-	const int GetBorderWidth() const { return mBorders; }
 
 	const WORD& GetPressedTextColor() const { return mPressedText; }
 	void SetPressedTextColor(WORD c) { mPressedText = c; }
@@ -45,7 +47,6 @@ public:
 	void SetPressedBackgroundColor(WORD c) { mPressedBackground = c; }
 	const WORD& GetPressedBorderColor() const { return mPressedBorder; }
 	void SetPressedBorderColor(WORD c) { mPressedBorder = c; }
-	const int GetPressedBorderWidth() const { return mBorders; }
 
 	const WORD& GetDisabledTextColor() const { return mDisabledText; }
 	void SetDisabledTextColor(WORD c) { mDisabledText = c; }
@@ -53,7 +54,6 @@ public:
 	void SetDisabledBackgroundColor(WORD c) { mDisabledBackground = c; }
 	const WORD& GetDisabledBorderColor() const { return mDisabledBorder; }
 	void SetDisabledBorderColor(WORD c) { mDisabledBorder = c; }
-	const int GetDisabledBorderWidth() const { return mBorders; }
 
 	static WindowScheme* Default();
 	static WindowScheme* Green();

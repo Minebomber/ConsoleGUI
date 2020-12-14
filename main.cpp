@@ -10,6 +10,7 @@ public:
 
 		auto e = new gui::Button({ 3, 3, 10, 3 });
 		e->SetText(L"Button");
+
 		e->AddEventHandler(new gui::EventHandler(
 			[e](gui::Window* w, int m) {
 				e->SetTextColor(rand() % 16);
