@@ -58,19 +58,6 @@ enum TextWrap {
 	TEXT_WRAP_WORD,
 };
 
-class Charset {
-public:
-	static std::wstring Numeric() { return L"0123456789"; }
-	static std::wstring Alphabet() { return L" ABCDEFGHIJKLMNOPQRSTUVWXYZ"; }
-	static std::wstring Alphanum() { return L" ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"; }
-	static std::wstring All() { 
-		return 
-			L" ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-			"0123456789"
-			"\xBA\xBB\xBC\xBD\xBE\xBF\xC0\xDB\xDC\xDD\xDE";
-	}
-};
-
 class Window;
 
 enum ElementState {
@@ -180,6 +167,16 @@ public:
 	virtual void Draw(Window* w) override;
 };
 
+enum TextMode {
+	TEXT_MODE_NUMBERS	= 0x1,
+	TEXT_MODE_ALPHABET	= 0x2,
+	TEXT_MODE_SPECIAL	= 0x4,
+	TEXT_MODE_SECURE	= 0x8,
+
+	TEXT_MODE_ALPHANUM	= 0x3,
+	TEXT_MODE_ALL		= 0x7,
+};
+
 class TextField : public Label {
 	friend class Window;
 protected:
@@ -187,8 +184,25 @@ protected:
 
 	bool mShowCursor = false;
 
-	std::wstring mCharset = Charset::All();
+	int mMode = TEXT_MODE_ALL;
 	
+	bool ValidKeyForMode(int k) {
+		if (mMode == TEXT_MODE_ALL) return true;
+
+		if (k == 0x08) return true;
+
+		if (mMode & TEXT_MODE_NUMBERS)
+			if (k >= '0' && k <= '9') return true;
+		
+		if (mMode & TEXT_MODE_ALPHABET)
+			if ((k >= 'A' && k <= 'Z') || k == ' ' || k == 0x10 || k == 0x0D) return true;
+		
+		if (mMode & TEXT_MODE_SPECIAL)
+			if (!(k >= 'A' && k <= 'Z') && !(k >= '0' && k <= '9')) return true;
+
+		return false;
+	}
+
 	void Init();
 
 	std::future<void> mCursorFlashFuture;
@@ -196,8 +210,11 @@ protected:
 	void FlashCursor();
 public:
 	TextField(Rect b) : Label(b) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; Init(); }
-	TextField(Rect b, std::wstring c) : Label(b), mCharset(c) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; Init(); }
-	TextField(const TextField& e) : Label(e), mCharset(e.mCharset) { Init(); }
+	TextField(Rect b, int m) : Label(b), mMode(m) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; Init(); }
+	TextField(const TextField& e) : Label(e), mMode(e.mMode) { Init(); }
+
+	const int& GetMode() const { return mMode; }
+	void SetMode(int m) { mMode = m; }
 
 	virtual void Draw(Window* w) override;
 };

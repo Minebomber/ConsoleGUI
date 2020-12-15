@@ -146,11 +146,10 @@ void Label::Draw(Window* w) {
 }
 
 void Button::Init() {
-	AddEventHandler(new EventHandler(
-		[this](Window* w, int m) { if (m & mButtons) mState = ELEMENT_FOCUSED; },
-		[this](Window* w, int m) { if (m & mButtons) mState = ELEMENT_DEFAULT; },
-		nullptr, nullptr, nullptr
-	));
+	EventHandler* h = new EventHandler();
+	h->SetMouseDownAction([this](Window* w, int m) { if (m & mButtons) mState = ELEMENT_FOCUSED; });
+	h->SetMouseUpAction([this](Window* w, int m) { if (m & mButtons) mState = ELEMENT_DEFAULT; });
+	AddEventHandler(h);
 }
 
 void Button::Draw(Window* w) {
@@ -158,17 +157,18 @@ void Button::Draw(Window* w) {
 }
 
 void TextField::Init() {
-	AddEventHandler(new EventHandler(
-		[this](Window* w, int m) {
-			w->SetFocusedElement(this);
-			mState = ELEMENT_FOCUSED;
+	EventHandler* h = new EventHandler();
+	h->SetMouseDownAction([this](Window* w, int m) {
+		w->SetFocusedElement(this);
+		mState = ELEMENT_FOCUSED;
 
-			if (!mCursorFlashFuture.valid() || mCursorFlashFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
-				mCursorFlashFuture = ExecuteAsync(std::bind(&TextField::FlashCursor, this));
-			}
-		},
-		nullptr, nullptr,
-		[this](Window* w, int k) {
+		if (!mCursorFlashFuture.valid() || mCursorFlashFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
+			mCursorFlashFuture = ExecuteAsync(std::bind(&TextField::FlashCursor, this));
+		}
+	});
+
+	h->SetKeyDownAction([this](Window* w, int k) {
+		if (ValidKeyForMode(k)) {
 			if (k == VK_SHIFT) mCapitalize = true;
 			else if (k == VK_BACK) {
 				if (mText.length() > 0) mText = mText.substr(0, mText.length() - 1);
@@ -181,11 +181,16 @@ void TextField::Init() {
 				WCHAR c;
 				if (ToUnicode((UINT)k, sc, b, &c, 1, 0)) mText += c;
 			}
-		},
-		[this](Window* w, int k) {
+		}
+	});
+
+	h->SetKeyUpAction([this](Window* w, int k) {
+		if (ValidKeyForMode(k)) {
 			if (k == VK_SHIFT) mCapitalize = false;
 		}
-	));
+	});
+
+	AddEventHandler(h);
 }
 
 void TextField::FlashCursor() {
@@ -198,20 +203,28 @@ void TextField::FlashCursor() {
 
 void TextField::Draw(Window* w) {
 	Element::Draw(w);
-	RenderText(
-		w, 
-		GetInnerBounds(), 
-		mText + (mState == ELEMENT_FOCUSED && mShowCursor ? L"_" : L""), 
-		GetCurrentForegroundColor()
-	);
+	if (mMode & TEXT_MODE_SECURE) {
+		std::wstring text = std::wstring(mText.length(), L'*');
+		RenderText(
+			w,
+			GetInnerBounds(),
+			text + (mState == ELEMENT_FOCUSED && mShowCursor ? L"_" : L""),
+			GetCurrentForegroundColor()
+		);
+	} else
+		RenderText(
+			w,
+			GetInnerBounds(),
+			mText + (mState == ELEMENT_FOCUSED && mShowCursor ? L"_" : L""),
+			GetCurrentForegroundColor()
+		);
 }
 
 void Checkbox::Init() {
-	AddEventHandler(new EventHandler(
-		[this](Window* w, int m) { mState = ELEMENT_FOCUSED; },
-		[this](Window* w, int m) { mState = ELEMENT_DEFAULT; mChecked = !mChecked; },
-		nullptr, nullptr, nullptr
-	));
+	EventHandler* h = new EventHandler();
+	h->SetMouseDownAction([this](Window* w, int m) { mState = ELEMENT_FOCUSED; });
+	h->SetMouseUpAction([this](Window* w, int m) { mState = ELEMENT_DEFAULT; mChecked = !mChecked; });
+	AddEventHandler(h);
 }
 
 void Checkbox::Draw(Window* w) {
