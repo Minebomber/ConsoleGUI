@@ -149,6 +149,7 @@
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="Elements.h" />
+    <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

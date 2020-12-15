@@ -94,7 +94,7 @@ void Console::Run() {
 			for (DWORD i = 0; i < events; i++) {
 				switch (inputBuffer[i].EventType) {
 				case FOCUS_EVENT:
-					mFocused = inputBuffer[i].Event.FocusEvent.bSetFocus;
+					//mFocused = inputBuffer[i].Event.FocusEvent.bSetFocus;
 					break;
 				case KEY_EVENT:
 					if (!mFocused) break;

@@ -96,7 +96,7 @@ protected:
 	WORD mDisabledForegroundColor = FG_WHITE;
 	WORD mDisabledBackgroundColor = FG_WHITE;
 
-	bool mDisplayBorders = true;
+	bool mBorders = true;
 
 	std::vector<EventHandler*> mEventHandlers;
 public:
@@ -124,6 +124,9 @@ public:
 
 	void AddEventHandler(EventHandler* e) { mEventHandlers.push_back(e); }
 	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
+
+	const bool& GetBorders() const { return mBorders; }
+	void SetBorders(bool b) { mBorders = b; }
 
 	WORD GetCurrentForegroundColor() const;
 	WORD GetCurrentBackgroundColor() const;
@@ -210,6 +213,21 @@ public:
 
 	const bool& GetChecked() const { return mChecked; }
 	void SetChecked(bool c) { mChecked = c; }
+
+	virtual void Draw(Window* w) override;
+};
+
+class ProgressBar : public Element {
+protected:
+	float mProgress = 0;
+public:
+	ProgressBar(Rect b) : Element(b) {}
+	ProgressBar(Rect b, float p) : Element(b), mProgress(p) {}
+	ProgressBar(const ProgressBar& e) : Element(e), mProgress(e.mProgress) {}
+
+	const float& GetProgress() const { return mProgress; }
+	void SetProgress(float p) { if (p < 0) p = 0; if (p > 1) p = 1; mProgress = p; }
+	void IncrementProgress(float p) { SetProgress(mProgress + p); }
 
 	virtual void Draw(Window* w) override;
 };

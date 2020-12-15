@@ -15,6 +15,7 @@
 #include "Window.h"
 #include "Rect.h"
 #include "Events.h"
+#include "Timer.h"
 
 namespace gui {
 

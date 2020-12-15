@@ -26,17 +26,17 @@ WORD Element::GetCurrentBackgroundColor() const {
 
 Rect Element::GetInnerBounds() const {
 	return {
-		mBounds.origin.x + mDisplayBorders,
-		mBounds.origin.y + mDisplayBorders,
-		mBounds.size.width - (2 * mDisplayBorders),
-		mBounds.size.height - (2 * mDisplayBorders)
+		mBounds.origin.x + mBorders,
+		mBounds.origin.y + mBorders,
+		mBounds.size.width - (2 * mBorders),
+		mBounds.size.height - (2 * mBorders)
 	};
 }
 
 void Element::Draw(Window* w) {
 	w->DrawRect(mBounds, L' ', GetCurrentBackgroundColor(), true);
 	
-	if (mDisplayBorders) {
+	if (mBorders) {
 		int x0 = mBounds.Left(); int x1 = mBounds.Right();
 		int y0 = mBounds.Top(); int y1 = mBounds.Bottom();
 		WORD cl = GetCurrentForegroundColor();
@@ -224,6 +224,15 @@ void Checkbox::Draw(Window* w) {
 	textBounds.origin.x += 4;
 	textBounds.size.width -= 4;
 	RenderText(w, textBounds, mText, cl);
+}
+
+void ProgressBar::Draw(Window* w) {
+	Element::Draw(w);
+
+	Rect displayArea = GetInnerBounds();
+	displayArea.size.width *= mProgress;
+
+	w->DrawRect(displayArea, L'\x2588', GetCurrentForegroundColor(), true);
 }
 
 }

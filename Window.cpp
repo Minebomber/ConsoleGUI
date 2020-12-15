@@ -80,7 +80,7 @@ void Window::AddElement(Element* e) {
 		e->SetDisabledForegroundColor(mScheme->GetDisabledForeground());
 		e->SetDisabledBackgroundColor(mScheme->GetDisabledBackground());
 
-		e->mDisplayBorders = mScheme->GetBorderEnabled();
+		e->mBorders = mScheme->GetBorderEnabled();
 	}
 }
 
