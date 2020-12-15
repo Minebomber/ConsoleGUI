@@ -91,6 +91,41 @@ public:
 	Element(const Element& e) : mBounds(e.mBounds) {}
 	virtual ~Element() {}
 
+	void HandleMouseDownEvent(Window* w, int i) { 
+		for (EventHandler* h : mEventHandlers) 
+			if (h->MouseDownActionExists()) h->InvokeMouseDownAction(w, i); 
+	}
+
+	void HandleMouseUpEvent(Window* w, int i) {
+		for (EventHandler* h : mEventHandlers)
+			if (h->MouseUpActionExists()) h->InvokeMouseUpAction(w, i);
+	}
+
+	void HandleMouseDragEvent(Window* w, int i) {
+		for (EventHandler* h : mEventHandlers)
+			if (h->MouseDragActionExists()) h->InvokeMouseDragAction(w, i);
+	}
+
+	void HandleMouseWheelDownEvent(Window* w, int i) {
+		for (EventHandler* h : mEventHandlers)
+			if (h->MouseWheelDownActionExists()) h->InvokeMouseWheelDownAction(w, i);
+	}
+
+	void HandleMouseWheelUpEvent(Window* w, int i) {
+		for (EventHandler* h : mEventHandlers)
+			if (h->MouseWheelUpActionExists()) h->InvokeMouseWheelUpAction(w, i);
+	}
+
+	void HandleKeyDownEvent(Window* w, int i) {
+		for (EventHandler* h : mEventHandlers)
+			if (h->KeyDownActionExists()) h->InvokeKeyDownAction(w, i);
+	}
+
+	void HandleKeyUpEvent(Window* w, int i) {
+		for (EventHandler* h : mEventHandlers)
+			if (h->KeyUpActionExists()) h->InvokeKeyUpAction(w, i);
+	}
+
 	const Rect& GetBounds() const { return mBounds; }
 	virtual void SetBounds(Rect b) { mBounds = b; }
 

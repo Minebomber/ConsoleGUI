@@ -105,12 +105,11 @@ void Console::Run() {
 
 						// Send keyboard events to focused element
 						if (mCurrentWindow->mFocusedElement) {
-							for (EventHandler* h : mCurrentWindow->mFocusedElement->mEventHandlers) {
-								if (mCurrentWindow->mKeyboard[k] && h->KeyDownActionExists()) h->InvokeKeyDownAction(mCurrentWindow, k);
-								if (!mCurrentWindow->mKeyboard[k] && h->KeyUpActionExists()) h->InvokeKeyUpAction(mCurrentWindow, k);
-							}
+							if (mCurrentWindow->mKeyboard[k]) 
+								mCurrentWindow->mFocusedElement->HandleKeyDownEvent(mCurrentWindow, k);
+							else 
+								mCurrentWindow->mFocusedElement->HandleKeyUpEvent(mCurrentWindow, k);
 						}
-
 					}
 					break;
 				case MOUSE_EVENT:
@@ -125,9 +124,7 @@ void Console::Run() {
 									if (auto e = mCurrentWindow->GetElementAtPoint(p))
 										for (int m = 0; m < 3; m++)
 											if (((1 << m) & btnState))
-												for (EventHandler* h : e->mEventHandlers)
-													if (h->MouseDragActionExists())
-														h->InvokeMouseDragAction(mCurrentWindow, 1 << m);
+												e->HandleMouseDragEvent(mCurrentWindow, 1 << m);
 							}
 						}
 						break;
@@ -146,21 +143,19 @@ void Console::Run() {
 							if (pressed != mCurrentWindow->mMouseButtons[m]) {
 								mCurrentWindow->mMouseButtons[m] = pressed;
 								if (Element* e = mCurrentWindow->GetElementAtPoint(mCurrentWindow->mMousePosition)) {
-									for (EventHandler* h : e->mEventHandlers) {
-										if (pressed && h->MouseDownActionExists()) h->InvokeMouseDownAction(mCurrentWindow, 1 << m);
-										if (!pressed && h->MouseUpActionExists()) h->InvokeMouseUpAction(mCurrentWindow, 1 << m);
-									}
+									if (pressed) e->HandleMouseDownEvent(mCurrentWindow, 1 << m);
+									else e->HandleMouseUpEvent(mCurrentWindow, 1 << m);
 								}
 							}
 						}
 						break;
 					case MOUSE_WHEELED:
 						if (mCurrentWindow->mFocusedElement) {
-							for (EventHandler* h : mCurrentWindow->mFocusedElement->mEventHandlers) {
-								int d = inputBuffer[i].Event.MouseEvent.dwButtonState;
-								if (d < 0 && h->MouseWheelDownActionExists()) h->InvokeMouseWheelDownAction(mCurrentWindow, d);
-								if (d > 0 && h->MouseWheelUpActionExists()) h->InvokeMouseWheelUpAction(mCurrentWindow, d);
-							}
+							int d = inputBuffer[i].Event.MouseEvent.dwButtonState;
+							if (d < 0)
+								mCurrentWindow->mFocusedElement->HandleMouseWheelDownEvent(mCurrentWindow, d);
+							else if (d > 0)
+								mCurrentWindow->mFocusedElement->HandleMouseWheelUpEvent(mCurrentWindow, d);
 						}
 						break;
 					default:
