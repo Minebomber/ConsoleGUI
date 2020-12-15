@@ -119,10 +119,19 @@ void Console::Run() {
 					if (!mFocused) break;
 					switch (inputBuffer[i].Event.MouseEvent.dwEventFlags) {
 					case MOUSE_MOVED:
-						mCurrentWindow->mMousePosition = {
-							inputBuffer[i].Event.MouseEvent.dwMousePosition.X,
-							inputBuffer[i].Event.MouseEvent.dwMousePosition.Y
-						};
+						{
+							Point p = { inputBuffer[i].Event.MouseEvent.dwMousePosition.X, inputBuffer[i].Event.MouseEvent.dwMousePosition.Y };
+							if (p != mCurrentWindow->mMousePosition) {
+								mCurrentWindow->mMousePosition = p;
+								if (int btnState = inputBuffer[i].Event.MouseEvent.dwButtonState)
+									if (auto e = mCurrentWindow->GetElementAtPoint(p))
+										for (int m = 0; m < 3; m++)
+											if (((1 << m) & btnState))
+												for (EventHandler* h : e->mEventHandlers)
+													if (h->MouseDragActionExists())
+														h->InvokeMouseDragAction(mCurrentWindow, 1 << m);
+							}
+						}
 						break;
 					case 0:
 					case DOUBLE_CLICK:

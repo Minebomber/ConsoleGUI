@@ -4,6 +4,9 @@ namespace gui {
 
 struct Point {
 	int x, y;
+
+	bool operator==(const Point& p) const { return x == p.x && y == p.y; }
+	bool operator!=(const Point& p) const { return !(*this == p); }
 };
 
 struct Size {
