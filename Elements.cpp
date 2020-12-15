@@ -162,6 +162,10 @@ void TextField::Init() {
 		[this](Window* w, int m) {
 			w->SetFocusedElement(this);
 			mState = ELEMENT_FOCUSED;
+
+			if (!mCursorFlashFuture.valid() || mCursorFlashFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
+				mCursorFlashFuture = ExecuteAsync(std::bind(&TextField::FlashCursor, this));
+			}
 		},
 		nullptr, nullptr,
 		[this](Window* w, int k) {
@@ -184,8 +188,22 @@ void TextField::Init() {
 	));
 }
 
+void TextField::FlashCursor() {
+	mShowCursor = false;
+	while (mState == ELEMENT_FOCUSED) {
+		mShowCursor = !mShowCursor;
+		std::this_thread::sleep_for(std::chrono::milliseconds(350));
+	}
+}
+
 void TextField::Draw(Window* w) {
-	Label::Draw(w);
+	Element::Draw(w);
+	RenderText(
+		w, 
+		GetInnerBounds(), 
+		mText + (mState == ELEMENT_FOCUSED && mShowCursor ? L"_" : L""), 
+		GetCurrentForegroundColor()
+	);
 }
 
 void Checkbox::Init() {

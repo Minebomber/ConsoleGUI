@@ -16,7 +16,7 @@ WindowScheme* WindowScheme::Green() {
 		FG_DARK_GREEN, BG_BLACK,
 		FG_GREEN, BG_BLACK,
 		FG_DARK_GREEN, BG_BLACK,
-		true 
+		true
 	);
 }
 
@@ -79,6 +79,8 @@ void Window::AddElement(Element* e) {
 
 		e->SetDisabledForegroundColor(mScheme->GetDisabledForeground());
 		e->SetDisabledBackgroundColor(mScheme->GetDisabledBackground());
+
+		e->mDisplayBorders = mScheme->GetBorderEnabled();
 	}
 }
 

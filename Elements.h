@@ -182,9 +182,15 @@ class TextField : public Label {
 protected:
 	bool mCapitalize = false;
 
-	std::wstring mCharset = Charset::All();
+	bool mShowCursor = false;
 
+	std::wstring mCharset = Charset::All();
+	
 	void Init();
+
+	std::future<void> mCursorFlashFuture;
+
+	void FlashCursor();
 public:
 	TextField(Rect b) : Label(b) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; Init(); }
 	TextField(Rect b, std::wstring c) : Label(b), mCharset(c) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; Init(); }

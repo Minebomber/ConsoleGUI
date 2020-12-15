@@ -23,7 +23,7 @@ public:
 		w->AddElement(e4);
 
 		auto e5 = new gui::Checkbox({ 1, 21, 28, 3 });
-		e5->SetText(L"Text Checkbox");
+		e5->SetText(L"Test Checkbox");
 		w->AddElement(e5);
 
 		return true;

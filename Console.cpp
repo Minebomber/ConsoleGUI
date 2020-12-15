@@ -104,15 +104,6 @@ void Console::Run() {
 						// Keyboard
 						int k = inputBuffer[i].Event.KeyEvent.wVirtualKeyCode;
 						mCurrentWindow->mKeyboard[k] = inputBuffer[i].Event.KeyEvent.bKeyDown;
-						// Notify keyboard handler
-						/*if (mCurrentWindow->mActiveKeyboardHandler) {
-							if (mCurrentWindow->mActiveKeyboardHandler->mKeys.find(k) != std::wstring::npos) {
-								if (mCurrentWindow->mKeyboard[k] && mCurrentWindow->mActiveKeyboardHandler->mPressAction)
-									mCurrentWindow->mActiveKeyboardHandler->mPressAction(mCurrentWindow, k);
-								if (!mCurrentWindow->mKeyboard[k] && mCurrentWindow->mActiveKeyboardHandler->mReleaseAction)
-									mCurrentWindow->mActiveKeyboardHandler->mReleaseAction(mCurrentWindow, k);
-							}
-						}*/
 
 						// Send keyboard events to focused element
 						if (mCurrentWindow->mFocusedElement) {
@@ -182,6 +173,12 @@ void Console::Run() {
 	}
 }
 
-void Console::Stop() { mRunning = false; }
+void Console::Stop() { 
+	if (mCurrentWindow) {
+		mCurrentWindow->mFocusedElement = nullptr;
+		mCurrentWindow->ApplyToElements([](Element* e) { e->mState = ELEMENT_DEFAULT; });
+	}
+	mRunning = false; 
+}
 
 }
