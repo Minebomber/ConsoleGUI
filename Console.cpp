@@ -147,6 +147,15 @@ void Console::Run() {
 							}
 						}
 						break;
+					case MOUSE_WHEELED:
+						if (mCurrentWindow->mFocusedElement) {
+							for (EventHandler* h : mCurrentWindow->mFocusedElement->mEventHandlers) {
+								int d = inputBuffer[i].Event.MouseEvent.dwButtonState;
+								if (d < 0 && h->MouseWheelDownActionExists()) h->InvokeMouseWheelDownAction(mCurrentWindow, d);
+								if (d > 0 && h->MouseWheelUpActionExists()) h->InvokeMouseWheelUpAction(mCurrentWindow, d);
+							}
+						}
+						break;
 					default:
 						break;
 					}
