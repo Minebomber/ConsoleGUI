@@ -25,7 +25,7 @@ Console::~Console() {
 	SetConsoleCursorInfo(mConsole, &mOriginalConsoleCursorInfo);
 }
 
-void Console::CreateConsole(int sW, int sH, int cW, int cH) {
+void Console::Create(int sW, int sH, int cW, int cH) {
 	mScreenWidth = sW; mScreenHeight = sH; mCharWidth = cW; mCharHeight = cH;
 
 	if (mConsole == INVALID_HANDLE_VALUE) return;
@@ -69,8 +69,6 @@ void Console::SetCurrentWindow(Window* w) {
 
 void Console::Run() {
 	if (!mInitialized) return;
-
-	if (!Initialize()) return;
 
 	auto timePoint1 = std::chrono::system_clock::now();
 	auto timePoint2 = std::chrono::system_clock::now();

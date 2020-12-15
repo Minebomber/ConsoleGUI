@@ -45,15 +45,13 @@ private:
 public:
 	Console();
 	virtual ~Console();
-	void CreateConsole(int sW, int sH, int cW, int cH);
+	void Create(int sW, int sH, int cW, int cH);
 
 	Window* GetCurrentWindow() { return mCurrentWindow; }
 	void SetCurrentWindow(Window* w);
 
 	void Run();
 	void Stop();
-
-	virtual bool Initialize() = 0;
 
 	const int& GetScreenWidth() const { return mScreenWidth; }
 	const int& GetScreenHeight() const { return mScreenHeight; }
