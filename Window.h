@@ -34,18 +34,12 @@ protected:
 	std::function<void(void)> mOnHideCallback;
 	std::function<void(void)> mOnShowCallback;
 
-	StyleMap mStyleMap;
+	std::unordered_map<std::type_index, ElementStyle*> mStyleMap;
 public:
 	Window(int w, int h) : mWidth(w), mHeight(h), mBuffer(new CHAR_INFO[w * h]) {}
 	Window(int w, int h, ElementStyle* defStyle);
 
 	virtual ~Window();
-
-	template <typename T>
-	ElementStyle* GetStyle();
-
-	template <typename T>
-	void SetStyle(ElementStyle* s) { mStyleMap.SetStyle<T>(s); }
 
 	void SetChar(int x, int y, WCHAR chr, WORD clr);
 	void FillScreen(WCHAR chr, WORD clr);
@@ -62,6 +56,24 @@ public:
 
 	Element* GetFocusedElement() const { return mFocusedElement; }
 	void SetFocusedElement(Element* e) { mFocusedElement = e; }
+
+	template <typename T> ElementStyle* GetStyle() {
+		if (auto s = mStyleMap[std::type_index(typeid(T))]) return s;
+		else return mStyleMap[std::type_index(typeid(Element))];
+	}
+
+	template <typename T> ElementStyle* GetStyle(const T& e) {
+		if (auto s = mStyleMap[std::type_index(typeid(e))]) return s;
+		else return mStyleMap[std::type_index(typeid(Element))];
+	}
+
+	template <typename T> void SetStyle(ElementStyle* s) {
+		mStyleMap[std::type_index(typeid(T))] = s;
+	}
+
+	template <typename T> void SetStyle(T e, ElementStyle* s) {
+		mStyleMap[std::type_index(typeid(e))] = s;
+	}
 
 	void AddElement(Element* e, bool applyStyle = true);
 	void RemoveElement(Element* e);

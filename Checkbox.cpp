@@ -16,13 +16,13 @@ void Checkbox::Draw(Window* w) {
 	Element::Draw(w);
 
 	Rect textBounds = GetInnerBounds();
-	WORD cl = GetCurrentForegroundColor();
+	WORD cl = GetCurrentForeground().Foreground() | GetCurrentBackground().Background();
+
 	w->WriteString(textBounds.GetX(), textBounds.GetY(), mChecked ? L"[\x25CF]" : L"[ ]", cl);
 
 	textBounds.SetX(textBounds.GetX() + 4);
 	textBounds.SetWidth(textBounds.GetWidth() - 4);
 	RenderText(w, textBounds, mText, cl);
 }
-
 
 }

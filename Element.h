@@ -29,16 +29,16 @@ protected:
 
 	int mState = ELEMENT_DEFAULT;
 
-	WORD mDefaultForegroundColor = FG_WHITE;
-	WORD mDefaultBackgroundColor = BG_BLACK;
+	Color mDefaultForeground = Color::White();
+	Color mDefaultBackground = Color::Black();
 
-	WORD mFocusedForegroundColor = FG_WHITE;
-	WORD mFocusedBackgroundColor = FG_WHITE;
+	Color mFocusedForeground = Color::White();
+	Color mFocusedBackground = Color::Black();
 
-	WORD mDisabledForegroundColor = FG_WHITE;
-	WORD mDisabledBackgroundColor = FG_WHITE;
+	Color mDisabledForeground  = Color::White();
+	Color mDisabledBackground  = Color::Black();
 
-	bool mBorders = true;
+	bool mBorders = false;
 
 	std::vector<EventHandler*> mEventHandlers;
 public:
@@ -46,9 +46,9 @@ public:
 	Element(Rect b) : mBounds(b) {}
 	Element(const Element& e) : 
 		mBounds(e.mBounds), mBorders(e.mBorders),
-		mDefaultForegroundColor(e.mDefaultForegroundColor), mDefaultBackgroundColor(e.mDefaultBackgroundColor), 
-		mFocusedForegroundColor(e.mFocusedForegroundColor), mFocusedBackgroundColor(e.mFocusedBackgroundColor), 
-		mDisabledForegroundColor(e.mDisabledForegroundColor), mDisabledBackgroundColor(e.mDisabledBackgroundColor) 
+		mDefaultForeground(e.mDefaultForeground), mDefaultBackground(e.mDefaultBackground), 
+		mFocusedForeground(e.mFocusedForeground), mFocusedBackground(e.mFocusedBackground), 
+		mDisabledForeground(e.mDisabledForeground), mDisabledBackground(e.mDisabledBackground) 
 	{}
 
 	virtual ~Element() {}
@@ -91,20 +91,20 @@ public:
 	const Rect& GetBounds() const { return mBounds; }
 	virtual void SetBounds(Rect b) { mBounds = b; }
 
-	const WORD& GetDefaultForegroundColor() const { return mDefaultForegroundColor; }
-	void SetDefaultForegroundColor(WORD c) { mDefaultForegroundColor = c; }
-	const WORD& GetDefaultBackgroundColor() const { return mDefaultBackgroundColor; }
-	void SetDefaultBackgroundColor(WORD c) { mDefaultBackgroundColor = c; }
+	const Color& GetDefaultForeground() const { return mDefaultForeground; }
+	void SetDefaultForeground(Color c) { mDefaultForeground = c; }
+	const Color& GetDefaultBackground() const { return mDefaultBackground; }
+	void SetDefaultBackground(Color c) { mDefaultBackground = c; }
 
-	const WORD& GetFocusedForegroundColor() const { return mFocusedForegroundColor; }
-	void SetFocusedForegroundColor(WORD c) { mFocusedForegroundColor = c; }
-	const WORD& GetFocusedBackgroundColor() const { return mFocusedBackgroundColor; }
-	void SetFocusedBackgroundColor(WORD c) { mFocusedBackgroundColor = c; }
+	const Color& GetFocusedForeground() const { return mFocusedForeground; }
+	void SetFocusedForeground(Color c) { mFocusedForeground = c; }
+	const Color& GetFocusedBackground() const { return mFocusedBackground; }
+	void SetFocusedBackground(Color c) { mFocusedBackground = c; }
 
-	const WORD& GetDisabledForegroundColor() const { return mDisabledBackgroundColor; }
-	void SetDisabledForegroundColor(WORD c) { mDisabledBackgroundColor = c; }
-	const WORD& GetDisabledBackgroundColor() const { return mDisabledBackgroundColor; }
-	void SetDisabledBackgroundColor(WORD c) { mDisabledBackgroundColor = c; }
+	const Color& GetDisabledForeground() const { return mDisabledBackground; }
+	void SetDisabledForeground(Color c) { mDisabledBackground = c; }
+	const Color& GetDisabledBackground() const { return mDisabledBackground; }
+	void SetDisabledBackground(Color c) { mDisabledBackground = c; }
 
 	void AddEventHandler(EventHandler* e) { mEventHandlers.push_back(e); }
 	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
@@ -112,8 +112,8 @@ public:
 	const bool& GetBorders() const { return mBorders; }
 	void SetBorders(bool b) { mBorders = b; }
 
-	WORD GetCurrentForegroundColor() const;
-	WORD GetCurrentBackgroundColor() const;
+	Color GetCurrentForeground() const;
+	Color GetCurrentBackground() const;
 	Rect GetInnerBounds() const;
 
 	virtual void Draw(Window* w);

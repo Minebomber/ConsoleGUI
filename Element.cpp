@@ -2,25 +2,25 @@
 
 namespace gui {
 
-WORD Element::GetCurrentForegroundColor() const {
+Color Element::GetCurrentForeground() const {
 	switch (mState) {
 	case ELEMENT_FOCUSED:
-		return mFocusedForegroundColor;
+		return mFocusedForeground;
 	case ELEMENT_DISABLED:
-		return mDisabledForegroundColor;
+		return mDisabledForeground;
 	default:
-		return mDefaultForegroundColor;
+		return mDefaultForeground;
 	}
 }
 
-WORD Element::GetCurrentBackgroundColor() const {
+Color Element::GetCurrentBackground() const {
 	switch (mState) {
 	case ELEMENT_FOCUSED:
-		return mFocusedBackgroundColor;
+		return mFocusedBackground;
 	case ELEMENT_DISABLED:
-		return mDisabledBackgroundColor;
+		return mDisabledBackground;
 	default:
-		return mDefaultBackgroundColor;
+		return mDefaultBackground;
 	}
 }
 
@@ -34,12 +34,12 @@ Rect Element::GetInnerBounds() const {
 }
 
 void Element::Draw(Window* w) {
-	w->DrawRect(mBounds, L' ', GetCurrentBackgroundColor(), true);
+	w->DrawRect(mBounds, L' ', GetCurrentBackground().Background(), true);
 
 	if (mBorders) {
 		int x0 = mBounds.Left(); int x1 = mBounds.Right();
 		int y0 = mBounds.Top(); int y1 = mBounds.Bottom();
-		WORD cl = GetCurrentForegroundColor();
+		WORD cl = GetCurrentForeground().Foreground();
 
 		w->SetChar(x0, y0, L'\x250F', cl);
 		w->SetChar(x1, y0, L'\x2513', cl);

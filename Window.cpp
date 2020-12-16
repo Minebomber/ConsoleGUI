@@ -3,14 +3,8 @@
 namespace gui {
 
 Window::Window(int w, int h, ElementStyle* defStyle) : mWidth(w), mHeight(h), 
-	mBuffer(new CHAR_INFO[w * h]), mStyleMap(std::type_index(typeid(Element)), defStyle) {}
+mBuffer(new CHAR_INFO[w * h]), mStyleMap({ {std::type_index(typeid(Element)), defStyle} }) {}
 
-
-template <typename T>
-ElementStyle* Window::GetStyle() { 
-	return mStyleMap.GetStyle<T>() ? 
-		mStyleMap.GetStyle<T>() : mStyleMap.GetStyle<Element>(); 
-}
 
 void Window::SetChar(int x, int y, WCHAR chr, WORD clr) {
 	mBuffer[y * mWidth + x].Char.UnicodeChar = chr;
@@ -54,15 +48,15 @@ void Window::AddElement(Element* e, bool applyStyle) {
 	mElements.push_back(e);
 
 	if (applyStyle) {
-		if (ElementStyle* s = GetStyle<decltype(e)>()) {
-			e->SetDefaultForegroundColor(s->GetDefaultForeground().Foreground());
-			e->SetDefaultBackgroundColor(s->GetDefaultBackground().Background());
+		if (ElementStyle* s = GetStyle(*e)) {
+			e->SetDefaultForeground(s->GetDefaultForeground());
+			e->SetDefaultBackground(s->GetDefaultBackground());
 
-			e->SetFocusedForegroundColor(s->GetFocusedForeground().Foreground());
-			e->SetFocusedBackgroundColor(s->GetFocusedBackground().Background());
+			e->SetFocusedForeground(s->GetFocusedForeground());
+			e->SetFocusedBackground(s->GetFocusedBackground());
 
-			e->SetDisabledForegroundColor(s->GetDisabledForeground().Foreground());
-			e->SetDisabledBackgroundColor(s->GetDisabledBackground().Background());
+			e->SetDisabledForeground(s->GetDisabledForeground());
+			e->SetDisabledBackground(s->GetDisabledBackground());
 
 			e->SetBorders(s->GetBorders());
 		}

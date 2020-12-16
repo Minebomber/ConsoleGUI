@@ -62,7 +62,7 @@ public:
 	Color(unsigned short v) : mValue(v) {}
 
 	unsigned short Foreground() const { return mValue; }
-	unsigned short Background() const { return mValue << 1; }
+	unsigned short Background() const { return mValue << 4; }
 };
 
 }

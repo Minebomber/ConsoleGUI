@@ -89,7 +89,8 @@ void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
 
 void Label::Draw(Window* w) {
 	Element::Draw(w);
-	RenderText(w, GetInnerBounds(), mText, GetCurrentForegroundColor());
+	Rect r = GetInnerBounds();
+	RenderText(w, r, mText, GetCurrentForeground().Foreground() | GetCurrentBackground().Background());
 }
 
 }

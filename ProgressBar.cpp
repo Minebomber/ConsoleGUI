@@ -9,9 +9,9 @@ ProgressBar::ProgressBar(const ProgressBar& e) : Element(e), mProgress(e.mProgre
 void ProgressBar::Draw(Window* w) {
 	Element::Draw(w);
 	Rect displayArea = GetInnerBounds();
-	w->DrawRect(displayArea, L'\x2591', GetDefaultForegroundColor(), true);
+	w->DrawRect(displayArea, L'\x2591', GetDefaultForeground().Foreground(), true);
 	displayArea.SetWidth((int)((float)displayArea.GetWidth() * mProgress));
-	w->DrawRect(displayArea, L'\x2588', GetFocusedForegroundColor(), true);
+	w->DrawRect(displayArea, L'\x2588', GetDefaultBackground().Foreground(), true);
 }
 
 }

@@ -3,6 +3,7 @@
 #define NOMINMAX
 #include <Windows.h>
 #include <unordered_map>
+#include <typeinfo>
 #include <typeindex>
 
 #include "Colors.h"
@@ -18,7 +19,7 @@ private:
 	Color mDisabledForeground;
 	Color mDisabledBackground;
 
-	bool mBorders = true;
+	bool mBorders;
 public:
 	static ElementStyle* Default(bool borders = true) {
 		return new ElementStyle(
@@ -49,7 +50,7 @@ public:
 
 	ElementStyle(Color defF, Color defB, Color focF, Color focB, Color disF, Color disB, bool bds) :
 		mDefaultForeground(defF), mDefaultBackground(defB), mFocusedForeground(focF),
-		mFocusedBackground(focB), mDisabledForeground(disF), mDisabledBackground(disB) {}
+		mFocusedBackground(focB), mDisabledForeground(disF), mDisabledBackground(disB), mBorders(bds) {}
 
 	const Color& GetDefaultForeground() const { return mDefaultForeground; }
 	void SetDefaultForeground(Color c) { mDefaultForeground = c; }
@@ -71,21 +72,6 @@ public:
 
 	const bool& GetBorders() const { return mBorders; }
 	void SetBorders(bool b) { mBorders = b; }
-};
-
-class StyleMap {
-private:
-	std::unordered_map<std::type_index, ElementStyle*> mMap;
-
-public:
-	StyleMap() {}
-	StyleMap(std::type_index i, ElementStyle* s) : mMap({ {i, s} }) {}
-
-	template <typename T>
-	void SetStyle(ElementStyle* s) { mMap[std::type_index(typeid(T))] = s; }
-
-	template <typename T>
-	ElementStyle* GetStyle() { return mMap[std::type_index(typeid(T))]; }
 };
 
 }

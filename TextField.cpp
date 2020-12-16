@@ -76,14 +76,14 @@ void TextField::Draw(Window* w) {
 			w,
 			GetInnerBounds(),
 			text + (mState == ELEMENT_FOCUSED && mShowCursor ? L"_" : L""),
-			GetCurrentForegroundColor()
+			GetCurrentForeground().Foreground() | GetCurrentBackground().Background()
 		);
 	} else
 		RenderText(
 			w,
 			GetInnerBounds(),
 			mText + (mState == ELEMENT_FOCUSED && mShowCursor ? L"_" : L""),
-			GetCurrentForegroundColor()
+			GetCurrentForeground().Foreground() | GetCurrentBackground().Background()
 		);
 }
 
