@@ -22,7 +22,11 @@ public:
 	Timer(std::chrono::milliseconds i) : mInterval(i) {}
 	Timer(std::chrono::milliseconds i, std::function<void()> a) : mInterval(i), mAction(a) {}
 
+	const std::function<void()>& GetAction() const { return mAction; }
 	void SetAction(std::function<void()> a) { mAction = a; }
+
+	const std::chrono::milliseconds& GetInterval() const { return mInterval; }
+	void SetInterval(std::chrono::milliseconds i) { mInterval = i; }
 
 	void Start() {
 		if (mRunning) return;

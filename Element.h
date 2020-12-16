@@ -42,8 +42,15 @@ protected:
 
 	std::vector<EventHandler*> mEventHandlers;
 public:
+
 	Element(Rect b) : mBounds(b) {}
-	Element(const Element& e) : mBounds(e.mBounds) {}
+	Element(const Element& e) : 
+		mBounds(e.mBounds), mBorders(e.mBorders),
+		mDefaultForegroundColor(e.mDefaultForegroundColor), mDefaultBackgroundColor(e.mDefaultBackgroundColor), 
+		mFocusedForegroundColor(e.mFocusedForegroundColor), mFocusedBackgroundColor(e.mFocusedBackgroundColor), 
+		mDisabledForegroundColor(e.mDisabledForegroundColor), mDisabledBackgroundColor(e.mDisabledBackgroundColor) 
+	{}
+
 	virtual ~Element() {}
 
 	void HandleMouseDownEvent(Window* w, int i) {

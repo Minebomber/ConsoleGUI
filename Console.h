@@ -11,6 +11,7 @@
 #include <thread>
 #include <atomic>
 
+#include "Timer.h"
 #include "Window.h"
 
 #include "Element.h"
