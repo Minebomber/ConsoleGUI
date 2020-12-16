@@ -139,16 +139,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Checkbox.cpp" />
     <ClCompile Include="Console.cpp" />
-    <ClCompile Include="Elements.cpp" />
+    <ClCompile Include="Element.cpp" />
+    <ClCompile Include="Label.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ProgressBar.cpp" />
+    <ClCompile Include="TextField.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="Checkbox.h" />
+    <ClInclude Include="Colors.h" />
+    <ClInclude Include="Element.h" />
     <ClInclude Include="Events.h" />
+    <ClInclude Include="Label.h" />
+    <ClInclude Include="ProgressBar.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Console.h" />
-    <ClInclude Include="Elements.h" />
+    <ClInclude Include="TextField.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>

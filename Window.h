@@ -1,8 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "Elements.h"
-#include "Rect.h"
+
+#include "Element.h"
 
 namespace gui {
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #define NOMINMAX
-
 #include <Windows.h>
 #include <chrono>
 #include <vector>
@@ -11,11 +10,15 @@
 #include <future>
 #include <thread>
 #include <atomic>
-#include "Elements.h"
+
 #include "Window.h"
-#include "Rect.h"
-#include "Events.h"
-#include "Timer.h"
+
+#include "Element.h"
+#include "Label.h"
+#include "TextField.h"
+#include "Button.h"
+#include "Checkbox.h"
+#include "ProgressBar.h"
 
 namespace gui {
 
