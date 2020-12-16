@@ -86,5 +86,8 @@
     <ClInclude Include="Checkbox.h">
       <Filter>Header Files\Elements</Filter>
     </ClInclude>
+    <ClInclude Include="Styles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

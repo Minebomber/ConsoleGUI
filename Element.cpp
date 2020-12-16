@@ -26,10 +26,10 @@ WORD Element::GetCurrentBackgroundColor() const {
 
 Rect Element::GetInnerBounds() const {
 	return {
-		mBounds.origin.x + mBorders,
-		mBounds.origin.y + mBorders,
-		mBounds.size.width - (2 * mBorders),
-		mBounds.size.height - (2 * mBorders)
+		mBounds.GetX() + mBorders,
+		mBounds.GetY() + mBorders,
+		mBounds.GetWidth() - (2 * mBorders),
+		mBounds.GetHeight() - (2 * mBorders)
 	};
 }
 

@@ -1,6 +1,6 @@
 #include <math.h>
 #include "Console.h"
-
+#include "Styles.h"
 class Program : public gui::Console {
 private:
 	bool mNum = true;
@@ -12,7 +12,7 @@ private:
 	gui::TextField* stTf = nullptr;
 	gui::ProgressBar* pgBr = nullptr;
 
-	gui::Timer* pgTm;
+	gui::Timer* pgTm = nullptr;
 
 	int pgMs = 100;
 	int pgSt = 1;
@@ -20,11 +20,8 @@ private:
 public:
 	void Initialize() override {
 		using namespace gui;
-
-		auto w = new Window(GetScreenWidth(), GetScreenHeight());
+		auto w = new Window(GetScreenWidth(), GetScreenHeight(), ElementStyle::Green(false));
 		SetCurrentWindow(w);
-
-		w->SetScheme(WindowScheme::Green());
 
 		auto msLab = new Label({ 1, 1, 13, 1 });
 		w->AddElement(msLab);

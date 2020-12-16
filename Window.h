@@ -3,54 +3,9 @@
 #include <vector>
 
 #include "Element.h"
+#include "Styles.h"
 
 namespace gui {
-
-class WindowScheme {
-protected:
-	WORD mDefaultForeground;
-	WORD mDefaultBackground;
-
-	WORD mFocusedForeground;
-	WORD mFocusedBackground;
-	
-	WORD mDisabledForeground;
-	WORD mDisabledBackground;
-
-	bool mBorderEnabled;
-public:
-	WindowScheme(
-		WORD fg, WORD bg,
-		WORD ffg, WORD fbg,
-		WORD dfg, WORD dbg,
-		bool bd
-	) : mDefaultForeground(fg), mDefaultBackground(bg),
-		mFocusedForeground(ffg), mFocusedBackground(fbg),
-		mDisabledForeground(dfg), mDisabledBackground(dbg),
-		mBorderEnabled(bd) {}
-
-	const bool& GetBorderEnabled() const { return mBorderEnabled; }
-	void SetBorderEnabled(bool e) { mBorderEnabled = e; }
-
-	const WORD& GetDefaultForeground() const { return mDefaultForeground; }
-	void SetDefaultForeground(WORD c) { mDefaultForeground = c; }
-	const WORD& GetDefaultBackground() const { return mDefaultBackground; }
-	void SetDefaultBackground(WORD c) { mDefaultBackground = c; }
-
-	const WORD& GetFocusedForeground() const { return mFocusedForeground; }
-	void SetFocusedForeground(WORD c) { mFocusedForeground = c; }
-	const WORD& GetFocusedBackground() const { return mFocusedBackground; }
-	void SetFocusedBackground(WORD c) { mFocusedBackground = c; }
-
-	const WORD& GetDisabledForeground() const { return mDisabledForeground; }
-	void SetDisabledForeground(WORD c) { mDisabledForeground = c; }
-	const WORD& GetDisabledBackground() const { return mDisabledBackground; }
-	void SetDisabledBackground(WORD c) { mDisabledBackground = c; }
-
-	static WindowScheme* Default();
-	static WindowScheme* Green();
-	static WindowScheme* Red();
-};
 
 class Element;
 class MouseHandler;
@@ -69,7 +24,7 @@ protected:
 	bool mKeyboard[256] = { 0 };
 	bool mMouseButtons[3] = { 0 };
 
-	Point mMousePosition{ 0 };
+	Point mMousePosition;
 
 	WCHAR mBaseChar = L' ';
 	WORD mBaseColor = 0;
@@ -79,10 +34,18 @@ protected:
 	std::function<void(void)> mOnHideCallback;
 	std::function<void(void)> mOnShowCallback;
 
-	WindowScheme* mScheme = nullptr;
+	StyleMap mStyleMap;
 public:
 	Window(int w, int h) : mWidth(w), mHeight(h), mBuffer(new CHAR_INFO[w * h]) {}
+	Window(int w, int h, ElementStyle* defStyle);
+
 	virtual ~Window();
+
+	template <typename T>
+	ElementStyle* GetStyle();
+
+	template <typename T>
+	void SetStyle(ElementStyle* s) { mStyleMap.SetStyle<T>(s); }
 
 	void SetChar(int x, int y, WCHAR chr, WORD clr);
 	void FillScreen(WCHAR chr, WORD clr);
@@ -97,13 +60,10 @@ public:
 	const WORD& GetBaseColor() const { return mBaseColor; }
 	void SetBaseColor(WORD c) { mBaseColor = c; }
 
-	WindowScheme* GetScheme() { return mScheme; }
-	void SetScheme(WindowScheme* cs) { if (mScheme) delete mScheme; mScheme = cs; }
-
 	Element* GetFocusedElement() const { return mFocusedElement; }
 	void SetFocusedElement(Element* e) { mFocusedElement = e; }
 
-	void AddElement(Element* e, bool applyScheme = true);
+	void AddElement(Element* e, bool applyStyle = true);
 	void RemoveElement(Element* e);
 
 	void ApplyToElements(std::function<void(Element*)> f) { for (Element* e : mElements) f(e); }

@@ -2,31 +2,14 @@
 
 namespace gui {
 
-WindowScheme* WindowScheme::Default() {
-	return new WindowScheme(
-		FG_GREY, BG_BLACK,
-		FG_WHITE, BG_BLACK,
-		FG_DARK_GREY, BG_BLACK,
-		true 
-	);
-}
+Window::Window(int w, int h, ElementStyle* defStyle) : mWidth(w), mHeight(h), 
+	mBuffer(new CHAR_INFO[w * h]), mStyleMap(std::type_index(typeid(Element)), defStyle) {}
 
-WindowScheme* WindowScheme::Green() {
-	return new WindowScheme(
-		FG_DARK_GREEN, BG_BLACK,
-		FG_GREEN, BG_BLACK,
-		FG_DARK_GREEN, BG_BLACK,
-		true
-	);
-}
 
-WindowScheme* WindowScheme::Red() {
-	return new WindowScheme(
-		FG_DARK_RED, BG_BLACK,
-		FG_RED, BG_BLACK,
-		FG_DARK_RED, BG_BLACK,
-		true
-	);
+template <typename T>
+ElementStyle* Window::GetStyle() { 
+	return mStyleMap.GetStyle<T>() ? 
+		mStyleMap.GetStyle<T>() : mStyleMap.GetStyle<Element>(); 
 }
 
 void Window::SetChar(int x, int y, WCHAR chr, WORD clr) {
@@ -42,11 +25,11 @@ void Window::FillScreen(WCHAR chr, WORD clr) {
 }
 
 void Window::DrawRect(Rect r, WCHAR chr, WORD clr, bool fill) {
-	for (int i = 0; i < r.size.height; i++) {
-		for (int j = 0; j < r.size.width; j++) {
-			if (fill) SetChar(j + r.origin.x, i + r.origin.y, chr, clr);
-			else if (i == 0 || i == r.size.height - 1 || j == 0 || j == r.size.width - 1) 
-				SetChar(j + r.origin.x, i + r.origin.y, chr, clr);
+	for (int i = 0; i < r.GetHeight(); i++) {
+		for (int j = 0; j < r.GetWidth(); j++) {
+			if (fill) SetChar(j + r.GetX(), i + r.GetY(), chr, clr);
+			else if (i == 0 || i == r.GetHeight() - 1 || j == 0 || j == r.GetWidth() - 1) 
+				SetChar(j + r.GetX(), i + r.GetY(), chr, clr);
 		}
 	}
 }
@@ -67,21 +50,24 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st
 
 const Point& Window::GetMousePosition() const { return mMousePosition; }
 
-void Window::AddElement(Element* e, bool applyScheme) {
+void Window::AddElement(Element* e, bool applyStyle) {
 	mElements.push_back(e);
 
-	if (applyScheme && mScheme) {
-		e->SetDefaultForegroundColor(mScheme->GetDefaultForeground());
-		e->SetDefaultBackgroundColor(mScheme->GetDefaultBackground());
+	if (applyStyle) {
+		if (ElementStyle* s = GetStyle<decltype(e)>()) {
+			e->SetDefaultForegroundColor(s->GetDefaultForeground().Foreground());
+			e->SetDefaultBackgroundColor(s->GetDefaultBackground().Background());
 
-		e->SetFocusedForegroundColor(mScheme->GetFocusedForeground());
-		e->SetFocusedBackgroundColor(mScheme->GetFocusedBackground());
+			e->SetFocusedForegroundColor(s->GetFocusedForeground().Foreground());
+			e->SetFocusedBackgroundColor(s->GetFocusedBackground().Background());
 
-		e->SetDisabledForegroundColor(mScheme->GetDisabledForeground());
-		e->SetDisabledBackgroundColor(mScheme->GetDisabledBackground());
+			e->SetDisabledForegroundColor(s->GetDisabledForeground().Foreground());
+			e->SetDisabledBackgroundColor(s->GetDisabledBackground().Background());
 
-		e->mBorders = mScheme->GetBorderEnabled();
+			e->SetBorders(s->GetBorders());
+		}
 	}
+
 }
 
 void Window::RemoveElement(Element* e) { 
@@ -105,7 +91,6 @@ void Window::Display() {
 Window::~Window() {
 	for (Element* e : mElements) delete e;
 	delete[] mBuffer;
-	if (mScheme) delete mScheme;
 }
 
 }

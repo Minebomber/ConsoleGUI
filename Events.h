@@ -19,6 +19,7 @@ protected:
 
 	EventAction mKeyDownAction;
 	EventAction mKeyUpAction;
+
 public:
 	EventHandler(
 		EventAction mDown = nullptr,

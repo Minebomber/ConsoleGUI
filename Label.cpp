@@ -6,8 +6,8 @@ Label::Label(Rect b) : Element(b) {}
 Label::Label(const Label& e) : Element(e), mText(e.mText), mAlignH(e.mAlignH), mAlignV(e.mAlignV), mTextWrap(e.mTextWrap) {}
 
 void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
-	int textWidth = r.size.width;
-	int textHeight = r.size.height;
+	int textWidth = r.GetWidth();
+	int textHeight = r.GetHeight();
 
 	struct LineInfo {
 		int dX, sI, lW;
@@ -38,7 +38,7 @@ void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
 					if (currentIdx == s.length() - 1) {
 						lines[currentLine] = { xOffset, lineBeginIdx, lineWidth }; currentLine++;
 					} else {
-						int spaceIdx = std::distance(s.begin(), iSpace.base()) - 1;
+						int spaceIdx = (int)std::distance(s.begin(), iSpace.base()) - 1;
 						lineWidth = spaceIdx - lineBeginIdx;
 						if (mAlignH == TEXT_ALIGN_MID) xOffset = (textWidth - lineWidth) / 2;
 						else if (mAlignH == TEXT_ALIGN_MAX)  xOffset = textWidth - lineWidth;
@@ -82,7 +82,7 @@ void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
 	if (mAlignV == TEXT_ALIGN_MID) yOffset = (textHeight - currentLine) / 2;
 	else if (mAlignV == TEXT_ALIGN_MAX) yOffset = textHeight - currentLine;
 	for (int i = 0; i < currentLine; i++)
-		c->WriteString(r.origin.x + lines[i].dX, r.origin.y + yOffset + i, s, cl, lines[i].sI, lines[i].lW);
+		c->WriteString(r.GetX() + lines[i].dX, r.GetY() + yOffset + i, s, cl, lines[i].sI, lines[i].lW);
 
 	delete[] lines;
 }
