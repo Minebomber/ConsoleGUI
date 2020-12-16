@@ -70,6 +70,8 @@ void Console::SetCurrentWindow(Window* w) {
 void Console::Run() {
 	if (!mInitialized) return;
 
+	Initialize();
+
 	auto timePoint1 = std::chrono::system_clock::now();
 	auto timePoint2 = std::chrono::system_clock::now();
 

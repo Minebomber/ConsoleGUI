@@ -67,10 +67,10 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st
 
 const Point& Window::GetMousePosition() const { return mMousePosition; }
 
-void Window::AddElement(Element* e) {
+void Window::AddElement(Element* e, bool applyScheme) {
 	mElements.push_back(e);
 
-	if (mScheme) {
+	if (applyScheme && mScheme) {
 		e->SetDefaultForegroundColor(mScheme->GetDefaultForeground());
 		e->SetDefaultBackgroundColor(mScheme->GetDefaultBackground());
 

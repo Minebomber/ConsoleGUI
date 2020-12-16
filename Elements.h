@@ -203,13 +203,13 @@ public:
 };
 
 enum TextMode {
-	TEXT_MODE_NUMBERS	= 0x1,
-	TEXT_MODE_ALPHABET	= 0x2,
-	TEXT_MODE_SPECIAL	= 0x4,
-	TEXT_MODE_SECURE	= 0x8,
+	TEXT_MODE_NUMBERS	= 0x1, // 0001
+	TEXT_MODE_ALPHABET	= 0x2, // 0010
+	TEXT_MODE_SPECIAL	= 0x4, // 0100
+	TEXT_MODE_SECURE	= 0x8, // 1000
 
-	TEXT_MODE_ALPHANUM	= 0x3,
-	TEXT_MODE_ALL		= 0x7,
+	TEXT_MODE_ALPHANUM	= 0x3, // 0011
+	TEXT_MODE_ALL		= 0x7, // 0111
 };
 
 class TextField : public Label {
@@ -226,13 +226,13 @@ protected:
 
 		if (k == 0x08) return true;
 
-		if (mMode & TEXT_MODE_NUMBERS)
+		if (TEXT_MODE_NUMBERS & mMode)
 			if (k >= '0' && k <= '9') return true;
 		
-		if (mMode & TEXT_MODE_ALPHABET)
+		if (TEXT_MODE_ALPHABET & mMode)
 			if ((k >= 'A' && k <= 'Z') || k == ' ' || k == 0x10 || k == 0x0D) return true;
 		
-		if (mMode & TEXT_MODE_SPECIAL)
+		if (TEXT_MODE_SPECIAL & mMode)
 			if (!(k >= 'A' && k <= 'Z') && !(k >= '0' && k <= '9')) return true;
 
 		return false;

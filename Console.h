@@ -51,6 +51,8 @@ public:
 	Window* GetCurrentWindow() { return mCurrentWindow; }
 	void SetCurrentWindow(Window* w);
 
+	virtual void Initialize() {}
+
 	void Run();
 	void Stop();
 

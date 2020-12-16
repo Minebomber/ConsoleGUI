@@ -103,7 +103,7 @@ public:
 	Element* GetFocusedElement() const { return mFocusedElement; }
 	void SetFocusedElement(Element* e) { mFocusedElement = e; }
 
-	void AddElement(Element* e);
+	void AddElement(Element* e, bool applyScheme = true);
 	void RemoveElement(Element* e);
 
 	void ApplyToElements(std::function<void(Element*)> f) { for (Element* e : mElements) f(e); }
