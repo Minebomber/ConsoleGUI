@@ -1,11 +1,5 @@
 #pragma once
 
-#define NOMINMAX
-#include <Windows.h>
-#include <unordered_map>
-#include <typeinfo>
-#include <typeindex>
-
 #include "Colors.h"
 
 namespace gui {

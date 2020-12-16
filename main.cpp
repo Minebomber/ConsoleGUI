@@ -1,7 +1,4 @@
-#include <math.h>
 #include "Console.h"
-#include "Styles.h"
-#include <iostream>
 
 class Program : public gui::Console {
 private:

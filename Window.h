@@ -1,9 +1,12 @@
 #pragma once
 
 #include <vector>
+#include <unordered_map>
+#include <typeinfo>
+#include <typeindex>
 
 #include "Element.h"
-#include "Styles.h"
+#include "ElementStyle.h"
 
 namespace gui {
 
