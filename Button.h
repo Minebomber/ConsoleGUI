@@ -18,6 +18,7 @@ protected:
 	void Init();
 public:
 	Button(Rect b);
+	Button(Rect b, std::wstring t, bool fit = false);
 	Button(const Button& e);
 
 	const int& GetButtons() const { return mButtons; }
