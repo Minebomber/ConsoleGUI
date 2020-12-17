@@ -14,7 +14,7 @@ void Label::Autosize() {
 	int w = 0, h = 0, l = mText.length();
 	for (int i = 0, nl = 0; i < l; i++) {
 		if (i == l - 1 || mText[i] == L'\n') {
-			if (i - nl > w) { w = i - nl + 1; nl = i; }
+			if (i - nl >= w) { w = i - nl + 1; nl = i; }
 			h++;
 		}
 	}
