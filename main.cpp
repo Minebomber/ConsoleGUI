@@ -18,18 +18,17 @@ public:
 		e->SetDefaultForeground(Color::Red());
 
 		auto b = new Button({ 5, 3 }, L"Test Button", true);
-		b->SetButtons(MOUSE_BUTTON_LEFT);
 		b->AddEventHandler(
 			EventHandler::New()->
-			SetMouseDownAction([b, e](auto _w, auto _i) {
+			SetAction(EVENT_MOUSE_DOWN, [b, e](auto _w, auto _i) {
 				_w->SetFocusedElement(b);
 				e->SetDefaultForeground(Color::Red());
 			})->
-			SetMouseUpAction([e](auto _w, auto _i) {
+			SetAction(EVENT_MOUSE_UP, [e](auto _w, auto _i) {
 				_w->SetFocusedElement(nullptr);
 				e->SetDefaultForeground(Color::Blue());
 			})->
-			SetKeyDownAction([e](auto&&... _) {
+			SetAction(EVENT_KEY_DOWN, [e](auto&&... _) {
 				e->SetDefaultForeground(rand() % 16);
 			})
 		);

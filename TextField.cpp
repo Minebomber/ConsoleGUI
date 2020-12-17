@@ -25,14 +25,14 @@ bool TextField::ValidKeyForMode(int k) {
 
 void TextField::Init() {
 	AddEventHandler(EventHandler::New()->
-		SetMouseDownAction([this](Window* w, int m) {
+		SetAction(EVENT_MOUSE_DOWN, [this](Window* w, int m) {
 			w->SetFocusedElement(this);
 			mState = ELEMENT_FOCUSED;
 
 			if (!mCursorFlashFuture.valid() || mCursorFlashFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
 				mCursorFlashFuture = std::async(std::launch::async, std::bind(&TextField::FlashCursor, this));
 			}
-		})->SetKeyDownAction([this](Window* w, int k) {
+		})->SetAction(EVENT_KEY_DOWN, [this](Window* w, int k) {
 			if (ValidKeyForMode(k)) {
 				if (k == VK_SHIFT) mCapitalize = true;
 				else if (k == VK_BACK) {
@@ -47,7 +47,7 @@ void TextField::Init() {
 					if (ToUnicode((UINT)k, sc, b, &c, 1, 0)) mText += c;
 				}
 			}
-		})->SetKeyUpAction([this](Window* w, int k) {
+		})->SetAction(EVENT_KEY_UP, [this](Window* w, int k) {
 			if (ValidKeyForMode(k)) {
 				if (k == VK_SHIFT) mCapitalize = false;
 			}

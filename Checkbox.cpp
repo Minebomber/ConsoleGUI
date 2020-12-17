@@ -6,10 +6,11 @@ Checkbox::Checkbox(Rect b) : Label(b) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT
 Checkbox::Checkbox(const Checkbox& e) : Label(e), mChecked(e.mChecked) { mAlignH = TEXT_ALIGN_MIN; mAlignV = TEXT_ALIGN_MIN; Init(); }
 
 void Checkbox::Init() {
-	EventHandler* h = new EventHandler();
-	h->SetMouseDownAction([this](Window* w, int m) { mState = ELEMENT_FOCUSED; });
-	h->SetMouseUpAction([this](Window* w, int m) { mState = ELEMENT_DEFAULT; mChecked = !mChecked; });
-	AddEventHandler(h);
+	AddEventHandler(
+		EventHandler::New()->
+		SetAction(EVENT_MOUSE_DOWN, [this](Window* w, int m) { mState = ELEMENT_FOCUSED; })->
+		SetAction(EVENT_MOUSE_UP, [this](Window* w, int m) { mState = ELEMENT_DEFAULT; mChecked = !mChecked; })
+	);
 }
 
 void Checkbox::Autosize() {

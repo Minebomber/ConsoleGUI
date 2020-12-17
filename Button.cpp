@@ -9,10 +9,11 @@ Button::Button(Rect b, std::wstring t, bool fit) : Label(b, t, fit) { Init(); }
 Button::Button(const Button& e) : Label(e) { Init(); }
 
 void Button::Init() {
-	AddEventHandler(EventHandler::New()->
-		SetMouseDownAction([this](Window* w, int m) { 
+	AddEventHandler(
+		EventHandler::New()->
+		SetAction(EVENT_MOUSE_DOWN, [this](Window* w, int m) {
 			if (m & mButtons) mState = ELEMENT_FOCUSED; 
-		})->SetMouseUpAction([this](Window* w, int m) { 
+		})->SetAction(EVENT_MOUSE_UP, [this](Window* w, int m) { 
 			if (m & mButtons) mState = ELEMENT_DEFAULT; 
 		})
 	);

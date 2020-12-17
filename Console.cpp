@@ -108,9 +108,9 @@ void Console::Run() {
 						// Send keyboard events to focused element
 						if (mCurrentWindow->mFocusedElement) {
 							if (mCurrentWindow->mKeyboard[k]) 
-								mCurrentWindow->mFocusedElement->HandleKeyDownEvent(mCurrentWindow, k);
+								mCurrentWindow->mFocusedElement->HandleEvent(EVENT_KEY_DOWN, mCurrentWindow, k);
 							else 
-								mCurrentWindow->mFocusedElement->HandleKeyUpEvent(mCurrentWindow, k);
+								mCurrentWindow->mFocusedElement->HandleEvent(EVENT_KEY_UP, mCurrentWindow, k);
 						}
 					}
 					break;
@@ -126,7 +126,7 @@ void Console::Run() {
 									if (auto e = mCurrentWindow->GetElementAtPoint(p))
 										for (int m = 0; m < 3; m++)
 											if (((1 << m) & btnState))
-												e->HandleMouseDragEvent(mCurrentWindow, 1 << m);
+												e->HandleEvent(EVENT_MOUSE_DRAG, mCurrentWindow, 1 << m);
 							}
 						}
 						break;
@@ -145,8 +145,8 @@ void Console::Run() {
 							if (pressed != mCurrentWindow->mMouseButtons[m]) {
 								mCurrentWindow->mMouseButtons[m] = pressed;
 								if (Element* e = mCurrentWindow->GetElementAtPoint(mCurrentWindow->mMousePosition)) {
-									if (pressed) e->HandleMouseDownEvent(mCurrentWindow, 1 << m);
-									else e->HandleMouseUpEvent(mCurrentWindow, 1 << m);
+									if (pressed) e->HandleEvent(EVENT_MOUSE_DOWN, mCurrentWindow, 1 << m);
+									else e->HandleEvent(EVENT_MOUSE_UP, mCurrentWindow, 1 << m);
 								}
 							}
 						}
@@ -155,9 +155,9 @@ void Console::Run() {
 						if (mCurrentWindow->mFocusedElement) {
 							int d = inputBuffer[i].Event.MouseEvent.dwButtonState;
 							if (d < 0)
-								mCurrentWindow->mFocusedElement->HandleMouseWheelDownEvent(mCurrentWindow, d);
+								mCurrentWindow->mFocusedElement->HandleEvent(EVENT_MOUSE_WHEELDOWN, mCurrentWindow, d);
 							else if (d > 0)
-								mCurrentWindow->mFocusedElement->HandleMouseWheelUpEvent(mCurrentWindow, d);
+								mCurrentWindow->mFocusedElement->HandleEvent(EVENT_MOUSE_WHEELUP, mCurrentWindow, d);
 						}
 						break;
 					default:
