@@ -9,61 +9,47 @@ typedef std::function<void(Window*, int)> EventAction;
 
 class EventHandler {
 protected:
-	EventAction mMouseDownAction;
-	EventAction mMouseUpAction;
+	EventAction mMouseDownAction = nullptr;
+	EventAction mMouseUpAction = nullptr;
 	
-	EventAction mMouseDragAction;
+	EventAction mMouseDragAction = nullptr;
 
-	EventAction mMouseWheelDownAction;
-	EventAction mMouseWheelUpAction;
+	EventAction mMouseWheelDownAction = nullptr;
+	EventAction mMouseWheelUpAction = nullptr;
 
-	EventAction mKeyDownAction;
-	EventAction mKeyUpAction;
+	EventAction mKeyDownAction = nullptr;
+	EventAction mKeyUpAction = nullptr;
 
 public:
-	EventHandler(
-		EventAction mDown = nullptr,
-		EventAction mUp = nullptr,
-		EventAction mDrag = nullptr,
-		EventAction wDown = nullptr,
-		EventAction wUp = nullptr,
-		EventAction kDown = nullptr,
-		EventAction kUp = nullptr
-	) : mMouseDownAction(mDown),
-		mMouseUpAction(mUp),
-		mMouseDragAction(mDrag),
-		mMouseWheelDownAction(wDown),
-		mMouseWheelUpAction(wUp),
-		mKeyDownAction(kDown),
-		mKeyUpAction(kUp) {}
+	static EventHandler* New() { return new EventHandler(); }
 
 	bool MouseDownActionExists() const { return (bool)mMouseDownAction; }
 	void InvokeMouseDownAction(Window* w, int i) { mMouseDownAction(w, i); }
-	void SetMouseDownAction(EventAction f) { mMouseDownAction = f; }
+	EventHandler* SetMouseDownAction(EventAction f) { mMouseDownAction = f; return this; }
 
 	bool MouseUpActionExists() const { return (bool)mMouseUpAction; }
 	void InvokeMouseUpAction(Window* w, int i) { mMouseUpAction(w, i); }
-	void SetMouseUpAction(EventAction f) { mMouseUpAction = f; }
+	EventHandler* SetMouseUpAction(EventAction f) { mMouseUpAction = f; return this; }
 
 	bool MouseDragActionExists() const { return (bool)mMouseDragAction; }
 	void InvokeMouseDragAction(Window* w, int i) { mMouseDragAction(w, i); }
-	void SetMouseDragAction(EventAction f) { mMouseDragAction = f; }
+	EventHandler* SetMouseDragAction(EventAction f) { mMouseDragAction = f; return this; }
 
 	bool MouseWheelDownActionExists() const { return (bool)mMouseWheelDownAction; }
 	void InvokeMouseWheelDownAction(Window* w, int i) { mMouseWheelDownAction(w, i); }
-	void SetMouseWheelDownAction(EventAction f) { mMouseWheelDownAction = f; }
+	EventHandler* SetMouseWheelDownAction(EventAction f) { mMouseWheelDownAction = f; return this; }
 
 	bool MouseWheelUpActionExists() const { return (bool)mMouseWheelUpAction; }
 	void InvokeMouseWheelUpAction(Window* w, int i) { mMouseWheelUpAction(w, i); }
-	void SetMouseWheelUpAction(EventAction f) { mMouseWheelUpAction = f; }
+	EventHandler* SetMouseWheelUpAction(EventAction f) { mMouseWheelUpAction = f; return this; }
 
 	bool KeyDownActionExists() const { return (bool)mKeyDownAction; }
 	void InvokeKeyDownAction(Window* w, int i) { mKeyDownAction(w, i); }
-	void SetKeyDownAction(EventAction f) { mKeyDownAction = f; }
+	EventHandler* SetKeyDownAction(EventAction f) { mKeyDownAction = f; return this; }
 	
 	bool KeyUpActionExists() const { return (bool)mKeyUpAction; }
 	void InvokeKeyUpAction(Window* w, int i) { mKeyUpAction(w, i); }
-	void SetKeyUpAction(EventAction f) { mKeyUpAction = f; }
+	EventHandler* SetKeyUpAction(EventAction f) { mKeyUpAction = f; return this; }
 };
 
 }

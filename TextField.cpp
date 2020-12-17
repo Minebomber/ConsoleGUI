@@ -24,40 +24,35 @@ bool TextField::ValidKeyForMode(int k) {
 }
 
 void TextField::Init() {
-	EventHandler* h = new EventHandler();
-	h->SetMouseDownAction([this](Window* w, int m) {
-		w->SetFocusedElement(this);
-		mState = ELEMENT_FOCUSED;
+	AddEventHandler(EventHandler::New()->
+		SetMouseDownAction([this](Window* w, int m) {
+			w->SetFocusedElement(this);
+			mState = ELEMENT_FOCUSED;
 
-		if (!mCursorFlashFuture.valid() || mCursorFlashFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
-			mCursorFlashFuture = std::async(std::launch::async, std::bind(&TextField::FlashCursor, this));
-		}
-	});
-
-	h->SetKeyDownAction([this](Window* w, int k) {
-		if (ValidKeyForMode(k)) {
-			if (k == VK_SHIFT) mCapitalize = true;
-			else if (k == VK_BACK) {
-				if (mText.length() > 0) mText = mText.substr(0, mText.length() - 1);
-			} else if (k == VK_RETURN) mText += L'\n';
-			else {
-				UINT sc = MapVirtualKey(k, MAPVK_VK_TO_VSC);
-				static byte b[256];
-				GetKeyboardState(b);
-				if (mCapitalize) b[0x10] = 0x80;
-				WCHAR c;
-				if (ToUnicode((UINT)k, sc, b, &c, 1, 0)) mText += c;
+			if (!mCursorFlashFuture.valid() || mCursorFlashFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
+				mCursorFlashFuture = std::async(std::launch::async, std::bind(&TextField::FlashCursor, this));
 			}
-		}
-	});
-
-	h->SetKeyUpAction([this](Window* w, int k) {
-		if (ValidKeyForMode(k)) {
-			if (k == VK_SHIFT) mCapitalize = false;
-		}
-	});
-
-	AddEventHandler(h);
+		})->SetKeyDownAction([this](Window* w, int k) {
+			if (ValidKeyForMode(k)) {
+				if (k == VK_SHIFT) mCapitalize = true;
+				else if (k == VK_BACK) {
+					if (mText.length() > 0) mText = mText.substr(0, mText.length() - 1);
+				} else if (k == VK_RETURN) mText += L'\n';
+				else {
+					UINT sc = MapVirtualKey(k, MAPVK_VK_TO_VSC);
+					static byte b[256];
+					GetKeyboardState(b);
+					if (mCapitalize) b[0x10] = 0x80;
+					WCHAR c;
+					if (ToUnicode((UINT)k, sc, b, &c, 1, 0)) mText += c;
+				}
+			}
+		})->SetKeyUpAction([this](Window* w, int k) {
+			if (ValidKeyForMode(k)) {
+				if (k == VK_SHIFT) mCapitalize = false;
+			}
+		})
+	);
 }
 
 void TextField::FlashCursor() {
