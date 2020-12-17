@@ -56,6 +56,62 @@ public:
 			p.GetY() <= Bottom()
 		);
 	}
+
+	Rect& AlignLeftToLeft(const Rect& r, int offset = 0) { 
+		mX = r.Left() + offset; 
+		return *this; 
+	}
+
+	Rect& AlignLeftToRight(const Rect& r, int offset = 0) {
+		mX = r.Right() + offset;
+		return *this;
+	}
+
+	Rect& AlignTopToTop(const Rect& r, int offset = 0) {
+		mY = r.Top() + offset;
+		return *this;
+	}
+	
+	Rect& AlignTopToBottom(const Rect& r, int offset = 0) {
+		mY = r.Bottom() + offset;
+		return *this;
+	}
+
+	Rect& AlignRightToRight(const Rect& r, int offset = 0) {
+		mX += r.Right() - Right() + offset;
+		return *this;
+	}
+
+	Rect& AlignRightToLeft(const Rect& r, int offset = 0) {
+		mX += r.Left() - Right() + offset;
+		return *this;
+	}
+
+	Rect& AlignBottomToBottom(const Rect& r, int offset = 0) {
+		mY += r.Bottom() - Bottom() + offset;
+		return *this;
+	}
+
+	Rect& AlignBottomToTop(const Rect& r, int offset = 0) {
+		mY += r.Top() - Bottom() + offset;
+		return *this;
+	}
+
+	Rect& CenterHorizontalWith(const Rect& r, int offset = 0) {
+		mX += r.Center().mX - Center().mX + offset;
+		return *this;
+	}
+	Rect& CenterVerticalWith(const Rect& r, int offset = 0) {
+		mY += r.Center().mY - Center().mY + offset;
+		return *this;
+	}
+
+	Rect& CenterWith(const Rect& r, Point offset = { 0, 0 }) {
+		mX += r.Center().mX - Center().mX + offset.mX;
+		mY += r.Center().mY - Center().mY + offset.mY;
+		return *this;
+	}
+	
 };
 
 }
