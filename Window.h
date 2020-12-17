@@ -10,6 +10,17 @@
 
 namespace gui {
 
+enum TextAlignment {
+	TEXT_ALIGN_MIN,
+	TEXT_ALIGN_MID,
+	TEXT_ALIGN_MAX,
+};
+
+enum TextWrap {
+	TEXT_WRAP_CHAR,
+	TEXT_WRAP_WORD,
+};
+
 class Element;
 class MouseHandler;
 class KeyboardHandler;
@@ -50,7 +61,9 @@ public:
 	void WriteString(int x, int y, const std::wstring& str, WORD clr);
 	void WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w);
 
-	const Point& GetMousePosition() const;
+	void RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, int alignV, int wrap);
+
+	const Point& GetMousePosition() const { return mMousePosition; }
 
 	const WCHAR& GetBaseChar() const { return mBaseChar; }
 	void SetBaseChar(WCHAR c) { mBaseChar = c; }

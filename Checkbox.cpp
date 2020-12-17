@@ -14,15 +14,17 @@ void Checkbox::Init() {
 
 void Checkbox::Draw(Window* w) {
 	Element::Draw(w);
-
 	Rect textBounds = GetInnerBounds();
 	WORD cl = GetCurrentForeground().Foreground() | GetCurrentBackground().Background();
-
-	w->WriteString(textBounds.GetX(), textBounds.GetY(), mChecked ? L"[\x25CF]" : L"[ ]", cl);
-
+	w->WriteString(
+		textBounds.GetX(), 
+		textBounds.GetY(), 
+		mChecked ? L"[\x25CF]" : L"[ ]", 
+		cl
+	);
 	textBounds.SetX(textBounds.GetX() + 4);
 	textBounds.SetWidth(textBounds.GetWidth() - 4);
-	RenderText(w, textBounds, mText, cl);
+	w->RenderText(textBounds, mText, cl, mAlignH, mAlignV, mTextWrap);
 }
 
 }

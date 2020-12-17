@@ -3,17 +3,6 @@
 
 namespace gui {
 
-enum TextAlignment {
-	TEXT_ALIGN_MIN,
-	TEXT_ALIGN_MID,
-	TEXT_ALIGN_MAX,
-};
-
-enum TextWrap {
-	TEXT_WRAP_CHAR,
-	TEXT_WRAP_WORD,
-};
-
 class Label : public Element {
 	friend class Window;
 protected:
@@ -23,7 +12,7 @@ protected:
 	int mAlignV = TEXT_ALIGN_MID;
 	int mTextWrap = TEXT_WRAP_WORD;
 
-	void RenderText(Window* w, Rect r, const std::wstring& s, WORD cl);
+	//void RenderText(Window* w, Rect r, const std::wstring& s, WORD cl);
 public:
 	Label(Rect b);
 	Label(Rect b, std::wstring t, bool fit = false);

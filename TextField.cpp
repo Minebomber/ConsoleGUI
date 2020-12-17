@@ -70,21 +70,15 @@ void TextField::FlashCursor() {
 
 void TextField::Draw(Window* w) {
 	Element::Draw(w);
-	if (mMode & TEXT_MODE_SECURE) {
-		std::wstring text = std::wstring(mText.length(), L'*');
-		RenderText(
-			w,
-			GetInnerBounds(),
-			text + (mState == ELEMENT_FOCUSED && mShowCursor ? L"_" : L""),
-			GetCurrentForeground().Foreground() | GetCurrentBackground().Background()
-		);
-	} else
-		RenderText(
-			w,
-			GetInnerBounds(),
-			mText + (mState == ELEMENT_FOCUSED && mShowCursor ? L"_" : L""),
-			GetCurrentForeground().Foreground() | GetCurrentBackground().Background()
-		);
+	w->RenderText(
+		GetInnerBounds(),
+		((mMode & TEXT_MODE_SECURE) ? std::wstring(mText.length(), L'*') : mText) + 
+		(mState == ELEMENT_FOCUSED && mShowCursor ? L"_" : L""),
+		GetCurrentForeground().Foreground() | GetCurrentBackground().Background(),
+		mAlignH,
+		mAlignV,
+		mTextWrap
+	);
 }
 
 }
