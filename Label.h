@@ -11,8 +11,6 @@ protected:
 	int mAlignH = TEXT_ALIGN_MID;
 	int mAlignV = TEXT_ALIGN_MID;
 	int mTextWrap = TEXT_WRAP_WORD;
-
-	//void RenderText(Window* w, Rect r, const std::wstring& s, WORD cl);
 public:
 	Label(Rect b);
 	Label(Rect b, std::wstring t, bool fit = false);
