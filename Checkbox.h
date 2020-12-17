@@ -15,6 +15,8 @@ public:
 	const bool& GetChecked() const { return mChecked; }
 	void SetChecked(bool c) { mChecked = c; }
 
+	virtual void Autosize();
+
 	virtual void Draw(Window* w);
 };
 

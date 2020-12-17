@@ -12,6 +12,13 @@ void Checkbox::Init() {
 	AddEventHandler(h);
 }
 
+void Checkbox::Autosize() {
+	Label::Autosize();
+	Rect r = mBounds;
+	r.SetWidth(r.GetWidth() + 4);
+	SetBounds(r);
+}
+
 void Checkbox::Draw(Window* w) {
 	Element::Draw(w);
 	Rect textBounds = GetInnerBounds();

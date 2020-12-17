@@ -53,6 +53,8 @@ public:
 
 	virtual ~Element() {}
 
+	virtual void Autosize() {}
+
 	void HandleMouseDownEvent(Window* w, int i) {
 		for (EventHandler* h : mEventHandlers)
 			if (h->MouseDownActionExists()) h->InvokeMouseDownAction(w, i);

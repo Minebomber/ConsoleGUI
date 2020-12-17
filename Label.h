@@ -16,7 +16,7 @@ public:
 	Label(Rect b, std::wstring t, bool fit = false);
 	Label(const Label& e);
 
-	void Autosize();
+	virtual void Autosize() override;
 
 	const std::wstring& GetText() const { return mText; }
 	void SetText(std::wstring t, bool fit = false) { mText = t; if (fit) Autosize(); }
