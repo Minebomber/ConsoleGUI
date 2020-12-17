@@ -60,6 +60,8 @@ public:
 	Element* GetFocusedElement() const { return mFocusedElement; }
 	void SetFocusedElement(Element* e) { mFocusedElement = e; }
 
+	void ApplyStyle(Element* e);
+
 	template <typename T> ElementStyle* GetStyle() {
 		if (auto s = mStyleMap[std::type_index(typeid(T))]) return s;
 		else return mStyleMap[std::type_index(typeid(Element))];

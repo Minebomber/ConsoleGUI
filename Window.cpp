@@ -44,24 +44,24 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st
 
 const Point& Window::GetMousePosition() const { return mMousePosition; }
 
+void Window::ApplyStyle(Element* e) {
+	if (ElementStyle* s = GetStyle(*e)) {
+		e->SetDefaultForeground(s->GetDefaultForeground());
+		e->SetDefaultBackground(s->GetDefaultBackground());
+
+		e->SetFocusedForeground(s->GetFocusedForeground());
+		e->SetFocusedBackground(s->GetFocusedBackground());
+
+		e->SetDisabledForeground(s->GetDisabledForeground());
+		e->SetDisabledBackground(s->GetDisabledBackground());
+
+		e->SetBorders(s->GetBorders());
+	}
+}
+
 void Window::AddElement(Element* e, bool applyStyle) {
 	mElements.push_back(e);
-
-	if (applyStyle) {
-		if (ElementStyle* s = GetStyle(*e)) {
-			e->SetDefaultForeground(s->GetDefaultForeground());
-			e->SetDefaultBackground(s->GetDefaultBackground());
-
-			e->SetFocusedForeground(s->GetFocusedForeground());
-			e->SetFocusedBackground(s->GetFocusedBackground());
-
-			e->SetDisabledForeground(s->GetDisabledForeground());
-			e->SetDisabledBackground(s->GetDisabledBackground());
-
-			e->SetBorders(s->GetBorders());
-		}
-	}
-
+	if (applyStyle) { ApplyStyle(e); }
 }
 
 void Window::RemoveElement(Element* e) { 
