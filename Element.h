@@ -116,6 +116,51 @@ public:
 	Color GetCurrentBackground() const;
 	Rect GetInnerBounds() const;
 
+	// Alignment passthroughs
+	void AlignLeftToLeft(Element* e, int offset = 0) {
+		Rect r = GetBounds(); SetBounds(r.AlignLeftToLeft(e->GetBounds(), offset));
+	}
+
+	void AlignLeftToRight(Element* e, int offset = 0) {
+		Rect r = GetBounds(); SetBounds(r.AlignLeftToRight(e->GetBounds(), offset));
+	}
+
+	void AlignTopToTop(Element* e, int offset = 0) {
+		Rect r = GetBounds(); SetBounds(r.AlignTopToTop(e->GetBounds(), offset));
+	}
+
+	void AlignTopToBottom(Element* e, int offset = 0) {
+		Rect r = GetBounds(); SetBounds(r.AlignTopToBottom(e->GetBounds(), offset));
+	}
+	
+	void AlignRightToRight(Element* e, int offset = 0) {
+		Rect r = GetBounds(); SetBounds(r.AlignRightToRight(e->GetBounds(), offset));
+	}
+
+	void AlignRightToLeft(Element* e, int offset = 0) {
+		Rect r = GetBounds(); SetBounds(r.AlignRightToLeft(e->GetBounds(), offset));
+	}
+
+	void AlignBottomToBottom(Element* e, int offset = 0) {
+		Rect r = GetBounds(); SetBounds(r.AlignBottomToBottom(e->GetBounds(), offset));
+	}
+
+	void AlignBottomToTop(Element* e, int offset = 0) {
+		Rect r = GetBounds(); SetBounds(r.AlignBottomToTop(e->GetBounds(), offset));
+	}
+	
+	void CenterHorizontalWith(Element* e, int offset = 0) {
+		Rect r = GetBounds(); SetBounds(r.CenterHorizontalWith(e->GetBounds(), offset));
+	}
+
+	void CenterVerticalWith(Element* e, int offset = 0) {
+		Rect r = GetBounds(); SetBounds(r.CenterVerticalWith(e->GetBounds(), offset));
+	}
+
+	void CenterWith(Element* e, Point offset = { 0, 0 }) {
+		Rect r = GetBounds(); SetBounds(r.CenterWith(e->GetBounds(), offset));
+	}
+
 	virtual void Draw(Window* w);
 };
 

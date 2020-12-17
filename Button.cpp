@@ -4,7 +4,7 @@ namespace gui {
 
 Button::Button(Rect b) : Label(b) { Init(); }
 
-Button::Button(Rect b, std::wstring t, bool fit = false) : Label(b, t, fit) {}
+Button::Button(Rect b, std::wstring t, bool fit) : Label(b, t, fit) {}
 
 Button::Button(const Button& e) : Label(e) { Init(); }
 

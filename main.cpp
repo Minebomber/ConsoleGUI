@@ -19,12 +19,7 @@ public:
 	void SetupStyles(gui::Window* w) {
 		using namespace gui;
 
-		w->SetStyle<Element>(new ElementStyle(
-			Color::Black(), Color::DarkGreen(),
-			Color::Black(), Color::Green(),
-			Color::Black(), Color::DarkGreen(),
-			true
-		));
+		w->SetStyle<Element>(ElementStyle::Green(false));
 	}
 
 	void Initialize() override {
@@ -35,13 +30,16 @@ public:
 		SetCurrentWindow(w);
 
 
-		auto lab = new Label({ 3, 3 }, L"Test 123", true);
-
-		for (int i = 0; i < 3; i++) {
-
+		auto lab = new Label({}, L"Test", true);
+		w->AddElement(lab);
+		for (int i = 0; i < 5; i++) {
+			auto l = new Label({}, L"Test", true);
+			l->CenterWith(lab, { 1, 1 });
+			w->AddElement(l);
+			l->SetDefaultForeground(rand() % 16);
+			lab = l;
 		}
 
-		w->AddElement(new Label({ 1, 1 }, L"Autosize Test", true));
 	}
 };
 
