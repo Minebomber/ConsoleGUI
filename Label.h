@@ -32,7 +32,7 @@ public:
 	void Autosize();
 
 	const std::wstring& GetText() const { return mText; }
-	void SetText(std::wstring t) { mText = t; }
+	void SetText(std::wstring t, bool fit = false) { mText = t; if (fit) Autosize(); }
 
 	const int& GetAlignHorizontal() const { return mAlignH; }
 	void SetAlignHorizontal(int h) { mAlignH = h; }

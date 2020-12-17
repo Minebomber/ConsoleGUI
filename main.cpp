@@ -34,6 +34,13 @@ public:
 		SetupStyles(w);
 		SetCurrentWindow(w);
 
+
+		auto lab = new Label({ 3, 3 }, L"Test 123", true);
+
+		for (int i = 0; i < 3; i++) {
+
+		}
+
 		w->AddElement(new Label({ 1, 1 }, L"Autosize Test", true));
 	}
 };

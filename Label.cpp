@@ -18,8 +18,7 @@ void Label::Autosize() {
 			h++;
 		}
 	}
-	mBounds.SetWidth(w + 2 * mBorders);
-	mBounds.SetHeight(h + 2 * mBorders);
+	SetBounds({mBounds.GetX(), mBounds.GetY(), w + 2 * mBorders, h + 2 * mBorders});
 }
 
 void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
