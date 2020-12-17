@@ -6,7 +6,7 @@
 #include <thread>
 #include <vector>
 
-#include "Colors.h"
+#include "ElementStyle.h"
 #include "Rect.h"
 #include "Events.h"
 #include "Window.h"
@@ -29,26 +29,13 @@ protected:
 
 	int mState = ELEMENT_DEFAULT;
 
-	Color mDefaultForeground = Color::White();
-	Color mDefaultBackground = Color::Black();
-
-	Color mFocusedForeground = Color::White();
-	Color mFocusedBackground = Color::Black();
-
-	Color mDisabledForeground  = Color::White();
-	Color mDisabledBackground  = Color::Black();
-
-	bool mBorders = false;
+	ElementStyle mStyle;
 
 	std::vector<EventHandler*> mEventHandlers;
 public:
 
 	Element(Rect b) : mBounds(b) {}
-	Element(const Element& e) : 
-		mBounds(e.mBounds), mBorders(e.mBorders),
-		mDefaultForeground(e.mDefaultForeground), mDefaultBackground(e.mDefaultBackground), 
-		mFocusedForeground(e.mFocusedForeground), mFocusedBackground(e.mFocusedBackground), 
-		mDisabledForeground(e.mDisabledForeground), mDisabledBackground(e.mDisabledBackground) 
+	Element(const Element& e) : mBounds(e.mBounds), mStyle(e.mStyle) 
 	{}
 
 	virtual ~Element() {}
@@ -63,26 +50,12 @@ public:
 	const Rect& GetBounds() const { return mBounds; }
 	virtual void SetBounds(Rect b) { mBounds = b; }
 
-	const Color& GetDefaultForeground() const { return mDefaultForeground; }
-	void SetDefaultForeground(Color c) { mDefaultForeground = c; }
-	const Color& GetDefaultBackground() const { return mDefaultBackground; }
-	void SetDefaultBackground(Color c) { mDefaultBackground = c; }
+	Rect& Bounds() { return mBounds; }
 
-	const Color& GetFocusedForeground() const { return mFocusedForeground; }
-	void SetFocusedForeground(Color c) { mFocusedForeground = c; }
-	const Color& GetFocusedBackground() const { return mFocusedBackground; }
-	void SetFocusedBackground(Color c) { mFocusedBackground = c; }
-
-	const Color& GetDisabledForeground() const { return mDisabledBackground; }
-	void SetDisabledForeground(Color c) { mDisabledBackground = c; }
-	const Color& GetDisabledBackground() const { return mDisabledBackground; }
-	void SetDisabledBackground(Color c) { mDisabledBackground = c; }
+	ElementStyle& Style() { return mStyle; }
 
 	void AddEventHandler(EventHandler* e) { mEventHandlers.push_back(e); }
 	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
-
-	const bool& GetBorders() const { return mBorders; }
-	virtual void SetBorders(bool b) { mBorders = b; }
 
 	Color GetCurrentForeground() const;
 	Color GetCurrentBackground() const;

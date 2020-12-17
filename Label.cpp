@@ -18,7 +18,7 @@ void Label::Autosize() {
 			h++;
 		}
 	}
-	SetBounds({mBounds.GetX(), mBounds.GetY(), w + 2 * mBorders, h + 2 * mBorders});
+	SetBounds({mBounds.GetX(), mBounds.GetY(), w + 2 * mStyle.GetBorders(), h + 2 * mStyle.GetBorders() });
 }
 
 void Label::Draw(Window* w) {

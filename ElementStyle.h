@@ -42,6 +42,9 @@ public:
 		);
 	}
 
+	ElementStyle() : mDefaultForeground(0), mDefaultBackground(0), mFocusedForeground(0),
+		mFocusedBackground(0), mDisabledForeground(0), mDisabledBackground(0), mBorders(false) {}
+
 	ElementStyle(Color defF, Color defB, Color focF, Color focB, Color disF, Color disB, bool bds) :
 		mDefaultForeground(defF), mDefaultBackground(defB), mFocusedForeground(focF),
 		mFocusedBackground(focB), mDisabledForeground(disF), mDisabledBackground(disB), mBorders(bds) {}

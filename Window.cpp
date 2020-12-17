@@ -125,18 +125,7 @@ void Window::RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, i
 }
 
 void Window::ApplyStyle(Element* e) {
-	if (ElementStyle* s = GetStyle(*e)) {
-		e->SetDefaultForeground(s->GetDefaultForeground());
-		e->SetDefaultBackground(s->GetDefaultBackground());
-
-		e->SetFocusedForeground(s->GetFocusedForeground());
-		e->SetFocusedBackground(s->GetFocusedBackground());
-
-		e->SetDisabledForeground(s->GetDisabledForeground());
-		e->SetDisabledBackground(s->GetDisabledBackground());
-
-		e->SetBorders(s->GetBorders());
-	}
+	if (ElementStyle* s = GetStyle(*e)) { e->Style() = *s; }
 }
 
 void Window::AddElement(Element* e, bool applyStyle, bool postAutosize) {

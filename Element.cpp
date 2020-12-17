@@ -5,38 +5,38 @@ namespace gui {
 Color Element::GetCurrentForeground() const {
 	switch (mState) {
 	case ELEMENT_FOCUSED:
-		return mFocusedForeground;
+		return mStyle.GetFocusedForeground();
 	case ELEMENT_DISABLED:
-		return mDisabledForeground;
+		return mStyle.GetDisabledForeground();
 	default:
-		return mDefaultForeground;
+		return mStyle.GetDefaultForeground();
 	}
 }
 
 Color Element::GetCurrentBackground() const {
 	switch (mState) {
 	case ELEMENT_FOCUSED:
-		return mFocusedBackground;
+		return mStyle.GetFocusedBackground();
 	case ELEMENT_DISABLED:
-		return mDisabledBackground;
+		return mStyle.GetDisabledBackground();
 	default:
-		return mDefaultBackground;
+		return mStyle.GetDefaultBackground();
 	}
 }
 
 Rect Element::GetInnerBounds() const {
 	return {
-		mBounds.GetX() + mBorders,
-		mBounds.GetY() + mBorders,
-		mBounds.GetWidth() - (2 * mBorders),
-		mBounds.GetHeight() - (2 * mBorders)
+		mBounds.GetX() + mStyle.GetBorders(),
+		mBounds.GetY() + mStyle.GetBorders(),
+		mBounds.GetWidth() - (2 * mStyle.GetBorders()),
+		mBounds.GetHeight() - (2 * mStyle.GetBorders())
 	};
 }
 
 void Element::Draw(Window* w) {
 	w->DrawRect(mBounds, L' ', GetCurrentBackground().Background(), true);
 
-	if (mBorders) {
+	if (mStyle.GetBorders()) {
 		int x0 = mBounds.Left(); int x1 = mBounds.Right();
 		int y0 = mBounds.Top(); int y1 = mBounds.Bottom();
 		WORD cl = GetCurrentForeground().Foreground() | GetCurrentBackground().Background();
