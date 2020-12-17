@@ -39,7 +39,7 @@ void Element::Draw(Window* w) {
 	if (mBorders) {
 		int x0 = mBounds.Left(); int x1 = mBounds.Right();
 		int y0 = mBounds.Top(); int y1 = mBounds.Bottom();
-		WORD cl = GetCurrentForeground().Foreground();
+		WORD cl = GetCurrentForeground().Foreground() | GetCurrentBackground().Background();
 
 		w->SetChar(x0, y0, L'\x250F', cl);
 		w->SetChar(x1, y0, L'\x2513', cl);

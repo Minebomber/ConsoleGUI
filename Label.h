@@ -26,7 +26,10 @@ protected:
 	void RenderText(Window* w, Rect r, const std::wstring& s, WORD cl);
 public:
 	Label(Rect b);
+	Label(Rect b, std::wstring t, bool fit = false);
 	Label(const Label& e);
+
+	void Autosize();
 
 	const std::wstring& GetText() const { return mText; }
 	void SetText(std::wstring t) { mText = t; }
@@ -39,6 +42,8 @@ public:
 
 	const int& GetTextWrap() const { return mTextWrap; }
 	void SetTextWrap(int w) { mTextWrap = w; }
+
+	virtual void SetBorders(bool b) override { Element::SetBorders(b); Autosize(); }
 
 	virtual void Draw(Window* w);
 };

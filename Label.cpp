@@ -3,7 +3,24 @@
 namespace gui {
 
 Label::Label(Rect b) : Element(b) {}
+
+Label::Label(Rect b, std::wstring t, bool fit) : Element(b), mText(t) {
+	if (fit) Autosize();
+}
+
 Label::Label(const Label& e) : Element(e), mText(e.mText), mAlignH(e.mAlignH), mAlignV(e.mAlignV), mTextWrap(e.mTextWrap) {}
+
+void Label::Autosize() {
+	int w = 0, h = 0, l = mText.length();
+	for (int i = 0, nl = 0; i < l; i++) {
+		if (i == l - 1 || mText[i] == L'\n') {
+			if (i - nl + 1 > w) { w = i - nl + 1; nl = i; }
+			h++;
+		}
+	}
+	mBounds.SetWidth(w + 2 * mBorders);
+	mBounds.SetHeight(h + 2 * mBorders);
+}
 
 void Label::RenderText(Window* c, Rect r, const std::wstring& s, WORD cl) {
 	int textWidth = r.GetWidth();

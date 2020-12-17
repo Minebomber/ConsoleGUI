@@ -110,7 +110,7 @@ public:
 	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
 
 	const bool& GetBorders() const { return mBorders; }
-	void SetBorders(bool b) { mBorders = b; }
+	virtual void SetBorders(bool b) { mBorders = b; }
 
 	Color GetCurrentForeground() const;
 	Color GetCurrentBackground() const;

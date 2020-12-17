@@ -46,6 +46,12 @@ public:
 		mDefaultForeground(defF), mDefaultBackground(defB), mFocusedForeground(focF),
 		mFocusedBackground(focB), mDisabledForeground(disF), mDisabledBackground(disB), mBorders(bds) {}
 
+	ElementStyle(const ElementStyle& s) :
+		mDefaultForeground(s.mDefaultForeground), mDefaultBackground(s.mDefaultBackground),
+		mFocusedForeground(s.mFocusedForeground), mFocusedBackground(s.mFocusedBackground),
+		mDisabledForeground(s.mDisabledForeground), mDisabledBackground(s.mDisabledBackground),
+		mBorders(s.mBorders) {}
+
 	const Color& GetDefaultForeground() const { return mDefaultForeground; }
 	void SetDefaultForeground(Color c) { mDefaultForeground = c; }
 
