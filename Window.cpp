@@ -139,9 +139,12 @@ void Window::ApplyStyle(Element* e) {
 	}
 }
 
-void Window::AddElement(Element* e, bool applyStyle) {
+void Window::AddElement(Element* e, bool applyStyle, bool postAutosize) {
 	mElements.push_back(e);
-	if (applyStyle) { ApplyStyle(e); }
+	if (applyStyle) { 
+		ApplyStyle(e);
+		if (postAutosize) e->Autosize();
+	}
 }
 
 void Window::RemoveElement(Element* e) { 

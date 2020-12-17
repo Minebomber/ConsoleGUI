@@ -30,8 +30,6 @@ public:
 	const int& GetTextWrap() const { return mTextWrap; }
 	void SetTextWrap(int w) { mTextWrap = w; }
 
-	virtual void SetBorders(bool b) override { Element::SetBorders(b); Autosize(); }
-
 	virtual void Draw(Window* w);
 };
 

@@ -93,7 +93,7 @@ public:
 		mStyleMap[std::type_index(typeid(e))] = s;
 	}
 
-	void AddElement(Element* e, bool applyStyle = true);
+	void AddElement(Element* e, bool applyStyle = true, bool postAutosize = true);
 	void RemoveElement(Element* e);
 
 	void ApplyToElements(std::function<void(Element*)> f) { for (Element* e : mElements) f(e); }

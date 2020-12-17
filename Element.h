@@ -119,48 +119,59 @@ public:
 	Rect GetInnerBounds() const;
 
 	// Alignment passthroughs
-	void AlignLeftToLeft(Element* e, int offset = 0) {
+	Element* AlignLeftToLeft(Element* e, int offset = 0) {
 		Rect r = GetBounds(); SetBounds(r.AlignLeftToLeft(e->GetBounds(), offset));
+		return this;
 	}
 
-	void AlignLeftToRight(Element* e, int offset = 0) {
+	Element* AlignLeftToRight(Element* e, int offset = 0) {
 		Rect r = GetBounds(); SetBounds(r.AlignLeftToRight(e->GetBounds(), offset));
+		return this;
 	}
 
-	void AlignTopToTop(Element* e, int offset = 0) {
+	Element* AlignTopToTop(Element* e, int offset = 0) {
 		Rect r = GetBounds(); SetBounds(r.AlignTopToTop(e->GetBounds(), offset));
+		return this;
 	}
 
-	void AlignTopToBottom(Element* e, int offset = 0) {
+	Element* AlignTopToBottom(Element* e, int offset = 0) {
 		Rect r = GetBounds(); SetBounds(r.AlignTopToBottom(e->GetBounds(), offset));
+		return this;
 	}
 	
-	void AlignRightToRight(Element* e, int offset = 0) {
+	Element* AlignRightToRight(Element* e, int offset = 0) {
 		Rect r = GetBounds(); SetBounds(r.AlignRightToRight(e->GetBounds(), offset));
+		return this;
 	}
 
-	void AlignRightToLeft(Element* e, int offset = 0) {
+	Element* AlignRightToLeft(Element* e, int offset = 0) {
 		Rect r = GetBounds(); SetBounds(r.AlignRightToLeft(e->GetBounds(), offset));
+		return this;
 	}
 
-	void AlignBottomToBottom(Element* e, int offset = 0) {
+	Element* AlignBottomToBottom(Element* e, int offset = 0) {
 		Rect r = GetBounds(); SetBounds(r.AlignBottomToBottom(e->GetBounds(), offset));
+		return this;
 	}
 
-	void AlignBottomToTop(Element* e, int offset = 0) {
+	Element* AlignBottomToTop(Element* e, int offset = 0) {
 		Rect r = GetBounds(); SetBounds(r.AlignBottomToTop(e->GetBounds(), offset));
+		return this;
 	}
 	
-	void CenterHorizontalWith(Element* e, int offset = 0) {
+	Element* CenterHorizontalWith(Element* e, int offset = 0) {
 		Rect r = GetBounds(); SetBounds(r.CenterHorizontalWith(e->GetBounds(), offset));
+		return this;
 	}
 
-	void CenterVerticalWith(Element* e, int offset = 0) {
+	Element* CenterVerticalWith(Element* e, int offset = 0) {
 		Rect r = GetBounds(); SetBounds(r.CenterVerticalWith(e->GetBounds(), offset));
+		return this;
 	}
 
-	void CenterWith(Element* e, Point offset = { 0, 0 }) {
+	Element* CenterWith(Element* e, Point offset = { 0, 0 }) {
 		Rect r = GetBounds(); SetBounds(r.CenterWith(e->GetBounds(), offset));
+		return this;
 	}
 
 	virtual void Draw(Window* w);
