@@ -106,11 +106,11 @@ void Console::Run() {
 						mCurrentWindow->mKeyboard[k] = inputBuffer[i].Event.KeyEvent.bKeyDown;
 
 						// Send keyboard events to focused element
-						if (mCurrentWindow->mFocusedElement) {
+						if (mCurrentWindow->focusedElement) {
 							if (mCurrentWindow->mKeyboard[k]) 
-								mCurrentWindow->mFocusedElement->HandleEvent(EVENT_KEY_DOWN, mCurrentWindow, k);
+								mCurrentWindow->focusedElement->HandleEvent(EVENT_KEY_DOWN, mCurrentWindow, k);
 							else 
-								mCurrentWindow->mFocusedElement->HandleEvent(EVENT_KEY_UP, mCurrentWindow, k);
+								mCurrentWindow->focusedElement->HandleEvent(EVENT_KEY_UP, mCurrentWindow, k);
 						}
 					}
 					break;
@@ -120,8 +120,8 @@ void Console::Run() {
 					case MOUSE_MOVED:
 						{
 							Point p = { inputBuffer[i].Event.MouseEvent.dwMousePosition.X, inputBuffer[i].Event.MouseEvent.dwMousePosition.Y };
-							if (p != mCurrentWindow->mMousePosition) {
-								mCurrentWindow->mMousePosition = p;
+							if (p != mCurrentWindow->mousePosition) {
+								mCurrentWindow->mousePosition = p;
 								if (int btnState = inputBuffer[i].Event.MouseEvent.dwButtonState)
 									if (auto e = mCurrentWindow->GetElementAtPoint(p))
 										for (int m = 0; m < 3; m++)
@@ -138,13 +138,13 @@ void Console::Run() {
 
 							if (!mCurrentWindow->mMouseButtons[m] && pressed) {
 								// Clear focused at start, handlers will set if needed
-								mCurrentWindow->mFocusedElement = nullptr;
-								mCurrentWindow->ApplyToElements([](Element* e) { e->mState = ELEMENT_DEFAULT; });
+								mCurrentWindow->focusedElement = nullptr;
+								mCurrentWindow->ApplyToElements([](Element* e) { e->state = ELEMENT_DEFAULT; });
 							}
 
 							if (pressed != mCurrentWindow->mMouseButtons[m]) {
 								mCurrentWindow->mMouseButtons[m] = pressed;
-								if (Element* e = mCurrentWindow->GetElementAtPoint(mCurrentWindow->mMousePosition)) {
+								if (Element* e = mCurrentWindow->GetElementAtPoint(mCurrentWindow->mousePosition)) {
 									if (pressed) e->HandleEvent(EVENT_MOUSE_DOWN, mCurrentWindow, 1 << m);
 									else e->HandleEvent(EVENT_MOUSE_UP, mCurrentWindow, 1 << m);
 								}
@@ -152,12 +152,12 @@ void Console::Run() {
 						}
 						break;
 					case MOUSE_WHEELED:
-						if (mCurrentWindow->mFocusedElement) {
+						if (mCurrentWindow->focusedElement) {
 							int d = inputBuffer[i].Event.MouseEvent.dwButtonState;
 							if (d < 0)
-								mCurrentWindow->mFocusedElement->HandleEvent(EVENT_MOUSE_WHEELDOWN, mCurrentWindow, d);
+								mCurrentWindow->focusedElement->HandleEvent(EVENT_MOUSE_WHEELDOWN, mCurrentWindow, d);
 							else if (d > 0)
-								mCurrentWindow->mFocusedElement->HandleEvent(EVENT_MOUSE_WHEELUP, mCurrentWindow, d);
+								mCurrentWindow->focusedElement->HandleEvent(EVENT_MOUSE_WHEELUP, mCurrentWindow, d);
 						}
 						break;
 					default:
@@ -188,8 +188,8 @@ void Console::Run() {
 
 void Console::Stop() { 
 	if (mCurrentWindow) {
-		mCurrentWindow->mFocusedElement = nullptr;
-		mCurrentWindow->ApplyToElements([](Element* e) { e->mState = ELEMENT_DEFAULT; });
+		mCurrentWindow->focusedElement = nullptr;
+		mCurrentWindow->ApplyToElements([](Element* e) { e->state = ELEMENT_DEFAULT; });
 	}
 	mRunning = false; 
 }

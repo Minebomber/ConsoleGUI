@@ -19,11 +19,11 @@ void Window::FillScreen(WCHAR chr, WORD clr) {
 }
 
 void Window::DrawRect(Rect r, WCHAR chr, WORD clr, bool fill) {
-	for (int i = 0; i < r.GetHeight(); i++) {
-		for (int j = 0; j < r.GetWidth(); j++) {
-			if (fill) SetChar(j + r.GetX(), i + r.GetY(), chr, clr);
-			else if (i == 0 || i == r.GetHeight() - 1 || j == 0 || j == r.GetWidth() - 1) 
-				SetChar(j + r.GetX(), i + r.GetY(), chr, clr);
+	for (int i = 0; i < r.height; i++) {
+		for (int j = 0; j < r.width; j++) {
+			if (fill) SetChar(j + r.x, i + r.y, chr, clr);
+			else if (i == 0 || i == r.height - 1 || j == 0 || j == r.width - 1) 
+				SetChar(j + r.x, i + r.y, chr, clr);
 		}
 	}
 }
@@ -43,8 +43,8 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st
 }
 
 void Window::RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, int alignV, int wrap) {
-	int textWidth = r.GetWidth();
-	int textHeight = r.GetHeight();
+	int textWidth = r.width;
+	int textHeight = r.height;
 
 	struct LineInfo {
 		int dX, sI, lW;
@@ -119,13 +119,13 @@ void Window::RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, i
 	if (alignV == TEXT_ALIGN_MID) yOffset = (textHeight - currentLine) / 2;
 	else if (alignV == TEXT_ALIGN_MAX) yOffset = textHeight - currentLine;
 	for (int i = 0; i < currentLine; i++)
-		WriteString(r.GetX() + lines[i].dX, r.GetY() + yOffset + i, txt, clr, lines[i].sI, lines[i].lW);
+		WriteString(r.x + lines[i].dX, r.y + yOffset + i, txt, clr, lines[i].sI, lines[i].lW);
 
 	delete[] lines;
 }
 
 void Window::ApplyStyle(Element* e) {
-	if (ElementStyle* s = GetStyle(*e)) { e->Style() = *s; }
+	if (ElementStyle* s = GetStyle(*e)) { e->style = *s; }
 }
 
 void Window::AddElement(Element* e, bool applyStyle, bool postAutosize) {
@@ -137,18 +137,18 @@ void Window::AddElement(Element* e, bool applyStyle, bool postAutosize) {
 }
 
 void Window::RemoveElement(Element* e) { 
-	if (mFocusedElement == e) mFocusedElement = nullptr; 
+	if (focusedElement == e) focusedElement = nullptr; 
 	mElements.erase(std::remove(mElements.begin(), mElements.end(), e), mElements.end()); 
 }
 
 Element* Window::GetElementAtPoint(const Point& p) {
 	Element* r = nullptr;
-	for (Element* e : mElements) if (e->mBounds.Contains(p)) r = e;
+	for (Element* e : mElements) if (e->bounds.Contains(p)) r = e;
 	return r;
 }
 
 void Window::Display() {
-	FillScreen(mBaseChar, mBaseColor);
+	FillScreen(baseChar, baseColor);
 	for (Element* e : mElements) {
 		e->Draw(this);
 	}

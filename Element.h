@@ -22,21 +22,15 @@ enum ElementState {
 };
 
 class Element {
-	friend class Window;
-	friend class Console;
 protected:
-	Rect mBounds = { 0, 0, 0, 0 };
-
-	int mState = ELEMENT_DEFAULT;
-
-	ElementStyle mStyle;
-
 	std::vector<EventHandler*> mEventHandlers;
 public:
+	Rect bounds = { 0, 0, 0, 0 };
+	int state = ELEMENT_DEFAULT;
+	ElementStyle style;
 
-	Element(Rect b) : mBounds(b) {}
-	Element(const Element& e) : mBounds(e.mBounds), mStyle(e.mStyle) 
-	{}
+	Element(Rect b) : bounds(b) {}
+	Element(const Element& e) : bounds(e.bounds), style(e.style) {}
 
 	virtual ~Element() {}
 
@@ -47,75 +41,14 @@ public:
 			if (h->ActionExists(e)) h->InvokeAction(e, w, i);
 	}
 
-	const Rect& GetBounds() const { return mBounds; }
-	virtual void SetBounds(Rect b) { mBounds = b; }
-
-	Rect& Bounds() { return mBounds; }
-
-	ElementStyle& Style() { return mStyle; }
-
 	void AddEventHandler(EventHandler* e) { mEventHandlers.push_back(e); }
 	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
 
-	Color GetCurrentForeground() const;
-	Color GetCurrentBackground() const;
-	Rect GetInnerBounds() const;
+	Color CurrentForeground() const;
+	Color CurrentBackground() const;
+	Rect InnerBounds() const;
 
-	// Alignment passthroughs
-	Element* AlignLeftToLeft(Element* e, int offset = 0) {
-		Rect r = GetBounds(); SetBounds(r.AlignLeftToLeft(e->GetBounds(), offset));
-		return this;
-	}
-
-	Element* AlignLeftToRight(Element* e, int offset = 0) {
-		Rect r = GetBounds(); SetBounds(r.AlignLeftToRight(e->GetBounds(), offset));
-		return this;
-	}
-
-	Element* AlignTopToTop(Element* e, int offset = 0) {
-		Rect r = GetBounds(); SetBounds(r.AlignTopToTop(e->GetBounds(), offset));
-		return this;
-	}
-
-	Element* AlignTopToBottom(Element* e, int offset = 0) {
-		Rect r = GetBounds(); SetBounds(r.AlignTopToBottom(e->GetBounds(), offset));
-		return this;
-	}
-	
-	Element* AlignRightToRight(Element* e, int offset = 0) {
-		Rect r = GetBounds(); SetBounds(r.AlignRightToRight(e->GetBounds(), offset));
-		return this;
-	}
-
-	Element* AlignRightToLeft(Element* e, int offset = 0) {
-		Rect r = GetBounds(); SetBounds(r.AlignRightToLeft(e->GetBounds(), offset));
-		return this;
-	}
-
-	Element* AlignBottomToBottom(Element* e, int offset = 0) {
-		Rect r = GetBounds(); SetBounds(r.AlignBottomToBottom(e->GetBounds(), offset));
-		return this;
-	}
-
-	Element* AlignBottomToTop(Element* e, int offset = 0) {
-		Rect r = GetBounds(); SetBounds(r.AlignBottomToTop(e->GetBounds(), offset));
-		return this;
-	}
-	
-	Element* CenterHorizontalWith(Element* e, int offset = 0) {
-		Rect r = GetBounds(); SetBounds(r.CenterHorizontalWith(e->GetBounds(), offset));
-		return this;
-	}
-
-	Element* CenterVerticalWith(Element* e, int offset = 0) {
-		Rect r = GetBounds(); SetBounds(r.CenterVerticalWith(e->GetBounds(), offset));
-		return this;
-	}
-
-	Element* CenterWith(Element* e, Point offset = { 0, 0 }) {
-		Rect r = GetBounds(); SetBounds(r.CenterWith(e->GetBounds(), offset));
-		return this;
-	}
+	operator Rect() const { return bounds; }
 
 	virtual void Draw(Window* w);
 };

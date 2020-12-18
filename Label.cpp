@@ -4,26 +4,33 @@ namespace gui {
 
 Label::Label(Rect b) : Element(b) {}
 
-Label::Label(Rect b, std::wstring t, bool fit) : Element(b), mText(t) {
+Label::Label(Rect b, std::wstring t, bool fit) : Element(b), text(t) {
 	if (fit) Autosize();
 }
 
-Label::Label(const Label& e) : Element(e), mText(e.mText), mAlignH(e.mAlignH), mAlignV(e.mAlignV), mTextWrap(e.mTextWrap) {}
+Label::Label(const Label& e) : Element(e), text(e.text), alignH(e.alignH), alignV(e.alignV), textWrap(e.textWrap) {}
 
 void Label::Autosize() {
-	int w = 0, h = 0, l = mText.length();
+	int w = 0, h = 0, l = text.length();
 	for (int i = 0, nl = 0; i < l; i++) {
-		if (i == l - 1 || mText[i] == L'\n') {
+		if (i == l - 1 || text[i] == L'\n') {
 			if (i - nl >= w) { w = i - nl + 1; nl = i; }
 			h++;
 		}
 	}
-	SetBounds({mBounds.GetX(), mBounds.GetY(), w + 2 * mStyle.GetBorders(), h + 2 * mStyle.GetBorders() });
+	bounds = { bounds.x, bounds.y, w + 2 * style.borders, h + 2 * style.borders };
 }
 
 void Label::Draw(Window* w) {
 	Element::Draw(w);
-	w->RenderText(GetInnerBounds(), mText, GetCurrentForeground().Foreground() | GetCurrentBackground().Background(), mAlignH, mAlignV, mTextWrap);
+	w->RenderText(
+		InnerBounds(), 
+		text, 
+		CurrentForeground().value | CurrentBackground().value << 4, 
+		alignH, 
+		alignV, 
+		textWrap
+	);
 }
 
 }

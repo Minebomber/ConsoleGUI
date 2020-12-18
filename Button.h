@@ -11,20 +11,16 @@ enum MouseButtons {
 };
 
 class Button : public Label {
-	friend class Window;
-protected:
-	int mButtons = MOUSE_BUTTON_LEFT;
-
+private:
 	void Init();
 public:
+	int buttons = MOUSE_BUTTON_LEFT;
+
 	Button(Rect b);
 	Button(Rect b, std::wstring t, bool fit = false);
 	Button(const Button& e);
 
-	const int& GetButtons() const { return mButtons; }
-	void SetButtons(int b) { mButtons = b; }
-
-	virtual void Draw(Window* w);
+	virtual void Draw(Window* w) override;
 };
 
 }

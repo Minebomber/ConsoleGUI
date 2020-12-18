@@ -15,21 +15,21 @@ public:
 
 		auto e = new Element({ 1, 1, 2, 2 });
 		w->AddElement(e);
-		e->Style().SetDefaultForeground(Color::Red());
+		e->style.defaultForeground = Color::Blue();
 
 		auto b = new Button({ 5, 3 }, L"Test Button", true);
 		b->AddEventHandler(
 			EventHandler::New()->
 			SetAction(EVENT_MOUSE_DOWN, [b, e](auto _w, auto _i) {
-				_w->SetFocusedElement(b);
-				e->Style().SetDefaultForeground(Color::Red());
+				_w->focusedElement = b;
+				e->style.defaultForeground = Color::Red();
 			})->
 			SetAction(EVENT_MOUSE_UP, [e](auto _w, auto _i) {
-				_w->SetFocusedElement(nullptr);
-				e->Style().SetDefaultForeground(Color::Blue());
+				_w->focusedElement = nullptr;
+				e->style.defaultForeground = Color::Blue();
 			})->
-			SetAction(EVENT_KEY_DOWN, [e](auto&&... _) {
-				e->Style().SetDefaultForeground(rand() % 16);
+			SetAction(EVENT_MOUSE_DRAG, [e](auto&&... _) {
+				e->style.defaultForeground = rand() % 16;
 			})
 		);
 		w->AddElement(b);

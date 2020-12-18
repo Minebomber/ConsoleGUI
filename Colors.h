@@ -3,9 +3,9 @@
 namespace gui {
 
 class Color {
-private:
-	unsigned short mValue;
 public:
+	unsigned short value;
+
 	static Color Black() { return Color(0x0); }
 	static Color DarkBlue() { return Color(0x1); }
 	static Color DarkGreen() { return Color(0x2); }
@@ -23,11 +23,8 @@ public:
 	static Color Yellow() { return Color(0xE); }
 	static Color White() { return Color(0xF); }
 
-	Color() : mValue(0) {}
-	Color(unsigned short v) : mValue(v) {}
-
-	unsigned short Foreground() const { return mValue; }
-	unsigned short Background() const { return mValue << 4; }
+	Color() : value(0) {}
+	Color(unsigned short v) : value(v) {}
 };
 
 }

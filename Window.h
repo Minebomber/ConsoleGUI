@@ -33,23 +33,21 @@ protected:
 
 	std::vector<Element*> mElements;
 
-	Element* mFocusedElement = nullptr;
-
 	bool mKeyboard[256] = { 0 };
 	bool mMouseButtons[3] = { 0 };
 
-	Point mMousePosition;
-
-	WCHAR mBaseChar = L' ';
-	WORD mBaseColor = 0;
-
 	CHAR_INFO* mBuffer = nullptr;
-
-	std::function<void(void)> mOnHideCallback;
-	std::function<void(void)> mOnShowCallback;
-
 	std::unordered_map<std::type_index, ElementStyle*> mStyleMap;
 public:
+	Element* focusedElement = nullptr;
+	Point mousePosition;
+
+	WCHAR baseChar = L' ';
+	WORD baseColor = 0;
+	
+	std::function<void(void)> onHideCallback;
+	std::function<void(void)> onShowCallback;
+
 	Window(int w, int h) : mWidth(w), mHeight(h), mBuffer(new CHAR_INFO[w * h]) {}
 	Window(int w, int h, ElementStyle* defStyle);
 
@@ -60,18 +58,7 @@ public:
 	void DrawRect(Rect r, WCHAR chr, WORD clr, bool fill = false);
 	void WriteString(int x, int y, const std::wstring& str, WORD clr);
 	void WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w);
-
 	void RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, int alignV, int wrap);
-
-	const Point& GetMousePosition() const { return mMousePosition; }
-
-	const WCHAR& GetBaseChar() const { return mBaseChar; }
-	void SetBaseChar(WCHAR c) { mBaseChar = c; }
-	const WORD& GetBaseColor() const { return mBaseColor; }
-	void SetBaseColor(WORD c) { mBaseColor = c; }
-
-	Element* GetFocusedElement() const { return mFocusedElement; }
-	void SetFocusedElement(Element* e) { mFocusedElement = e; }
 
 	void ApplyStyle(Element* e);
 
@@ -102,11 +89,8 @@ public:
 
 	void Display();
 
-	void OnHide() { if (mOnHideCallback) mOnHideCallback(); }
-	void OnShow() { if (mOnShowCallback) mOnShowCallback(); }
-
-	void SetOnHideCallback(std::function<void(void)> f) { mOnHideCallback = f; }
-	void SetOnShowCallback(std::function<void(void)> f) { mOnShowCallback = f; }
+	void OnHide() { if (onHideCallback) onHideCallback(); }
+	void OnShow() { if (onShowCallback) onShowCallback(); }
 };
 
 }

@@ -3,15 +3,15 @@
 namespace gui {
 
 ProgressBar::ProgressBar(Rect b) : Element(b) {}
-ProgressBar::ProgressBar(Rect b, float p) : Element(b), mProgress(p) {}
-ProgressBar::ProgressBar(const ProgressBar& e) : Element(e), mProgress(e.mProgress) {}
+ProgressBar::ProgressBar(Rect b, float p) : Element(b), progress(p) {}
+ProgressBar::ProgressBar(const ProgressBar& e) : Element(e), progress(e.progress) {}
 
 void ProgressBar::Draw(Window* w) {
 	Element::Draw(w);
-	Rect displayArea = GetInnerBounds();
-	w->DrawRect(displayArea, L'\x2591', mStyle.GetDefaultBackground().Foreground(), true);
-	displayArea.SetWidth((int)((float)displayArea.GetWidth() * mProgress));
-	w->DrawRect(displayArea, L'\x2588', mStyle.GetDefaultForeground().Foreground(), true);
+	Rect displayArea = InnerBounds();
+	w->DrawRect(displayArea, L'\x2591', style.defaultBackground.value, true);
+	displayArea.width = (int)((float)displayArea.width * progress);
+	w->DrawRect(displayArea, L'\x2588', style.defaultForeground.value, true);
 }
 
 }

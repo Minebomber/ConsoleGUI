@@ -20,13 +20,15 @@ enum EventType {
 
 class EventHandler {
 protected:
-	std::unordered_map<int, EventAction> mActions;
+	std::unordered_map<int, EventAction> mActionMap;
 public:
 	static EventHandler* New() { return new EventHandler(); }
 
-	bool ActionExists(int e) { return (bool)mActions[e]; }
-	void InvokeAction(int e, Window* w, int i) { mActions[e](w, i); }
-	EventHandler* SetAction(int e, EventAction f) { mActions[e] = f; return this; }
+	EventHandler() : mActionMap() {}
+
+	bool ActionExists(int e) { return (bool)mActionMap[e]; }
+	void InvokeAction(int e, Window* w, int i) { mActionMap[e](w, i); }
+	EventHandler* SetAction(int e, EventAction f) { mActionMap[e] = f; return this; }
 };
 
 }

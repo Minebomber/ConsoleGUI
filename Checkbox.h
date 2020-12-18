@@ -4,21 +4,16 @@
 namespace gui {
 
 class Checkbox : public Label {
-protected:
-	bool mChecked = false;
-
+private:
 	void Init();
 public:
+	bool checked = false;
+
 	Checkbox(Rect b);
 	Checkbox(const Checkbox& e);
 
-	const bool& GetChecked() const { return mChecked; }
-	void SetChecked(bool c) { mChecked = c; }
-
-	virtual void Autosize();
-
-	virtual void Draw(Window* w);
+	virtual void Autosize() override;
+	virtual void Draw(Window* w) override;
 };
-
 
 }

@@ -3,112 +3,92 @@
 namespace gui {
 
 class Point {
-	friend class Rect;
-private:
-	int mX, mY;
 public:
-	Point() : mX(0), mY(0) {}
-	Point(int x, int y) : mX(x), mY(y) {}
+	int x, y;
+	Point() : x(0), y(0) {}
+	Point(int x, int y) : x(x), y(y) {}
 
-	const int& GetX() const { return mX; }
-	void SetX(int x) { mX = x; }
-
-	const int& GetY() const { return mY; }
-	void SetY(int y) { mY = y; }
-
-	bool operator==(const Point& p) const { return mX == p.mX && mY == p.mY; }
+	bool operator==(const Point& p) const { return x == p.x && y == p.y; }
 	bool operator!=(const Point& p) const { return !(*this == p); }
 };
 
 class Rect {
-private:
-	int mX, mY, mWidth, mHeight;
 public:
-	Rect() : mX(0), mY(0), mWidth(0), mHeight(0) {}
-	Rect(int x, int y) : mX(x), mY(y), mWidth(0), mHeight(0) {}
-	Rect(int x, int y, int w, int h) : mX(x), mY(y), mWidth(w), mHeight(h) {}
+	int x, y, width, height;
 
-	const int& GetX() const { return mX; }
-	void SetX(int x) { mX = x; }
+	Rect() : x(0), y(0), width(0), height(0) {}
+	Rect(int x, int y) : x(x), y(y), width(0), height(0) {}
+	Rect(int x, int y, int w, int h) : x(x), y(y), width(w), height(h) {}
+	
+	int Left() const { return x; }
+	int Right() const { return x + width - 1; }
+	int Top() const { return y; }
+	int Bottom() const { return y + height - 1; }
 
-	const int& GetY() const { return mY; }
-	void SetY(int y) { mY = y; }
-
-	const int& GetWidth() const { return mWidth; }
-	void SetWidth(int w) { mWidth = w; }
-
-	const int& GetHeight() const { return mHeight; }
-	void SetHeight(int h) { mHeight = h; }
-
-	int Left() const { return mX; }
-	int Right() const { return mX + mWidth - 1; }
-	int Top() const { return mY; }
-	int Bottom() const { return mY + mHeight - 1; }
-
-	Point Center() const { return { mX + mWidth / 2, mY + mHeight / 2 }; }
+	Point Center() const { return { x + width / 2, y + height / 2 }; }
 	Point Max() const { return { Right(), Bottom() }; }
 
 	bool Contains(const Point& p) const {
 		return (
-			p.GetX() >= Left() &&
-			p.GetX() <= Right() &&
-			p.GetY() >= Top() &&
-			p.GetY() <= Bottom()
+			p.x >= Left() &&
+			p.x <= Right() &&
+			p.y >= Top() &&
+			p.y <= Bottom()
 		);
 	}
 
 	Rect& AlignLeftToLeft(const Rect& r, int offset = 0) { 
-		mX = r.Left() + offset; 
+		x = r.Left() + offset; 
 		return *this; 
 	}
 
 	Rect& AlignLeftToRight(const Rect& r, int offset = 0) {
-		mX = r.Right() + offset;
+		x = r.Right() + offset;
 		return *this;
 	}
 
 	Rect& AlignTopToTop(const Rect& r, int offset = 0) {
-		mY = r.Top() + offset;
+		y = r.Top() + offset;
 		return *this;
 	}
 	
 	Rect& AlignTopToBottom(const Rect& r, int offset = 0) {
-		mY = r.Bottom() + offset;
+		y = r.Bottom() + offset;
 		return *this;
 	}
 
 	Rect& AlignRightToRight(const Rect& r, int offset = 0) {
-		mX += r.Right() - Right() + offset;
+		x += r.Right() - Right() + offset;
 		return *this;
 	}
 
 	Rect& AlignRightToLeft(const Rect& r, int offset = 0) {
-		mX += r.Left() - Right() + offset;
+		x += r.Left() - Right() + offset;
 		return *this;
 	}
 
 	Rect& AlignBottomToBottom(const Rect& r, int offset = 0) {
-		mY += r.Bottom() - Bottom() + offset;
+		y += r.Bottom() - Bottom() + offset;
 		return *this;
 	}
 
 	Rect& AlignBottomToTop(const Rect& r, int offset = 0) {
-		mY += r.Top() - Bottom() + offset;
+		y += r.Top() - Bottom() + offset;
 		return *this;
 	}
 
 	Rect& CenterHorizontalWith(const Rect& r, int offset = 0) {
-		mX += r.Center().mX - Center().mX + offset;
+		x += r.Center().x - Center().x + offset;
 		return *this;
 	}
 	Rect& CenterVerticalWith(const Rect& r, int offset = 0) {
-		mY += r.Center().mY - Center().mY + offset;
+		y += r.Center().y - Center().y + offset;
 		return *this;
 	}
 
 	Rect& CenterWith(const Rect& r, Point offset = { 0, 0 }) {
-		mX += r.Center().mX - Center().mX + offset.mX;
-		mY += r.Center().mY - Center().mY + offset.mY;
+		x += r.Center().x - Center().x + offset.x;
+		y += r.Center().y - Center().y + offset.y;
 		return *this;
 	}
 	

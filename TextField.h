@@ -14,25 +14,23 @@ enum TextMode {
 };
 
 class TextField : public Label {
-	friend class Window;
+private:
+	void Init();
 protected:
 	bool mCapitalize = false;
 	bool mShowCursor = false;
-	int mMode = TEXT_MODE_ALL;
 	std::future<void> mCursorFlashFuture;
 
 	bool ValidKeyForMode(int k);
-	void Init();
 	void FlashCursor();
 public:
+	int mode = TEXT_MODE_ALL;
+
 	TextField(Rect b);
 	TextField(Rect b, int m);
 	TextField(const TextField& e);
 
-	const int& GetMode() const { return mMode; }
-	void SetMode(int m) { mMode = m; }
-
-	virtual void Draw(Window* w);
+	virtual void Draw(Window* w) override;
 };
 
 }

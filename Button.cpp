@@ -12,9 +12,9 @@ void Button::Init() {
 	AddEventHandler(
 		EventHandler::New()->
 		SetAction(EVENT_MOUSE_DOWN, [this](Window* w, int m) {
-			if (m & mButtons) mState = ELEMENT_FOCUSED; 
+			if (m & buttons) state = ELEMENT_FOCUSED; 
 		})->SetAction(EVENT_MOUSE_UP, [this](Window* w, int m) { 
-			if (m & mButtons) mState = ELEMENT_DEFAULT; 
+			if (m & buttons) state = ELEMENT_DEFAULT; 
 		})
 	);
 }
