@@ -37,59 +37,48 @@ public:
 		);
 	}
 
-	Rect& AlignLeftToLeft(const Rect& r, int offset = 0) { 
-		x = r.Left() + offset; 
-		return *this; 
+	void AlignLeftToLeft(const Rect& r, int offset = 0) { 
+		x = r.Left() + offset;  
 	}
 
-	Rect& AlignLeftToRight(const Rect& r, int offset = 0) {
+	void AlignLeftToRight(const Rect& r, int offset = 0) {
 		x = r.Right() + offset;
-		return *this;
 	}
 
-	Rect& AlignTopToTop(const Rect& r, int offset = 0) {
+	void AlignTopToTop(const Rect& r, int offset = 0) {
 		y = r.Top() + offset;
-		return *this;
 	}
 	
-	Rect& AlignTopToBottom(const Rect& r, int offset = 0) {
+	void AlignTopToBottom(const Rect& r, int offset = 0) {
 		y = r.Bottom() + offset;
-		return *this;
 	}
 
-	Rect& AlignRightToRight(const Rect& r, int offset = 0) {
+	void AlignRightToRight(const Rect& r, int offset = 0) {
 		x += r.Right() - Right() + offset;
-		return *this;
 	}
 
-	Rect& AlignRightToLeft(const Rect& r, int offset = 0) {
+	void AlignRightToLeft(const Rect& r, int offset = 0) {
 		x += r.Left() - Right() + offset;
-		return *this;
 	}
 
-	Rect& AlignBottomToBottom(const Rect& r, int offset = 0) {
+	void AlignBottomToBottom(const Rect& r, int offset = 0) {
 		y += r.Bottom() - Bottom() + offset;
-		return *this;
 	}
 
-	Rect& AlignBottomToTop(const Rect& r, int offset = 0) {
+	void AlignBottomToTop(const Rect& r, int offset = 0) {
 		y += r.Top() - Bottom() + offset;
-		return *this;
 	}
 
-	Rect& CenterHorizontalWith(const Rect& r, int offset = 0) {
+	void CenterHorizontalWith(const Rect& r, int offset = 0) {
 		x += r.Center().x - Center().x + offset;
-		return *this;
 	}
-	Rect& CenterVerticalWith(const Rect& r, int offset = 0) {
+	void CenterVerticalWith(const Rect& r, int offset = 0) {
 		y += r.Center().y - Center().y + offset;
-		return *this;
 	}
 
-	Rect& CenterWith(const Rect& r, Point offset = { 0, 0 }) {
+	void CenterWith(const Rect& r, Point offset = { 0, 0 }) {
 		x += r.Center().x - Center().x + offset.x;
 		y += r.Center().y - Center().y + offset.y;
-		return *this;
 	}
 	
 };

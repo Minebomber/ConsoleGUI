@@ -34,6 +34,8 @@ Rect Element::InnerBounds() const {
 }
 
 void Element::Draw(Window* w) {
+	ApplyConstraints();
+
 	w->DrawRect(bounds, L' ', CurrentBackground().value << 4, true);
 
 	if (style.borders) {

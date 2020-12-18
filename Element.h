@@ -26,6 +26,17 @@ public:
 	};
 	State state = State::Default;
 
+	struct Constraint {
+		void (Rect::* target)(const Rect&, int);
+		Element* element;
+		int offset;
+
+		bool operator==(const Constraint& c) {
+			return element == c.element && target == c.target && offset == c.offset;
+		}
+	};
+	std::vector<Constraint> constraints;
+
 	Style style;
 
 	Rect bounds = { 0, 0, 0, 0 };
@@ -45,9 +56,26 @@ public:
 	void AddEventHandler(EventHandler* e) { mEventHandlers.push_back(e); }
 	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
 
+	Element* AddConstraint(Constraint c) {
+		constraints.push_back(c); 
+		return this;
+	}
+
+	Element* RemoveConstraint(Constraint c) { 
+		constraints.erase(
+			std::remove(constraints.begin(), constraints.end(), c), 
+			constraints.end()
+		);
+		return this;
+	}
+
 	Color CurrentForeground() const;
 	Color CurrentBackground() const;
 	Rect InnerBounds() const;
+
+	void ApplyConstraints() {
+		for (Constraint c : constraints) (bounds.*c.target)(c.element->bounds, c.offset);
+	}
 
 	operator Rect() const { return bounds; }
 

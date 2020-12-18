@@ -13,25 +13,30 @@ public:
 		using namespace gui;
 		auto w = SetupWindow();
 
-		auto e = new Element({ 1, 1, 2, 2 });
-		w->AddElement(e);
-		e->style.defaultForeground = Color::Blue();
+		auto e1 = new Label({}, L"Test label 1", true);
+		w->AddElement(e1);
 
-		auto b = new Button({ 5, 3 }, L"Test Button", true);
-		b->AddEventHandler(new EventHandler({
-			{ EventType::MouseDown, [b, e](auto _w, auto _i) {
-				_w->focusedElement = b;
-				e->style.defaultForeground = Color::Red();
-			} },
-			{ EventType::MouseUp, [e](auto _w, auto _i) {
-				_w->focusedElement = nullptr;
-				e->style.defaultForeground = Color::Blue();
-			} },
-			{ EventType::MouseDrag, [e](auto&&... _) {
-				e->style.defaultForeground = rand() % 16;
-			}}
-		}));
-		w->AddElement(b);
+		auto e2 = new Label({}, L"Test label 2", true);
+		w->AddElement(e2);
+
+		auto e3 = new Label({}, L"Test label 3", true);
+		w->AddElement(e3);
+
+		auto e4 = new Label({}, L"Test label 4", true);
+		w->AddElement(e4);
+
+		auto e5 = new Label({}, L"Test label 5", true);
+		w->AddElement(e5);
+
+		e2->AddConstraint({ &Rect::AlignLeftToLeft, e1 })->
+			AddConstraint({ &Rect::AlignTopToBottom, e1, 1 });
+		e3->AddConstraint({ &Rect::AlignLeftToLeft, e2 })->
+			AddConstraint({ &Rect::AlignTopToBottom, e2, 1 });
+		e4->AddConstraint({ &Rect::AlignLeftToLeft, e3 })->
+			AddConstraint({ &Rect::AlignTopToBottom, e3, 1 });
+		e5->AddConstraint({ &Rect::AlignLeftToLeft, e4 })->
+			AddConstraint({ &Rect::AlignTopToBottom, e4, 1 });
+
 	}
 };
 
