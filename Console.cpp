@@ -139,7 +139,7 @@ void Console::Run() {
 							if (!mCurrentWindow->mMouseButtons[m] && pressed) {
 								// Clear focused at start, handlers will set if needed
 								mCurrentWindow->focusedElement = nullptr;
-								mCurrentWindow->ApplyToElements([](Element* e) { e->state = ELEMENT_DEFAULT; });
+								mCurrentWindow->ApplyToElements([](Element* e) { e->state = Element::State::Default; });
 							}
 
 							if (pressed != mCurrentWindow->mMouseButtons[m]) {
@@ -189,7 +189,7 @@ void Console::Run() {
 void Console::Stop() { 
 	if (mCurrentWindow) {
 		mCurrentWindow->focusedElement = nullptr;
-		mCurrentWindow->ApplyToElements([](Element* e) { e->state = ELEMENT_DEFAULT; });
+		mCurrentWindow->ApplyToElements([](Element* e) { e->state = Element::State::Default; });
 	}
 	mRunning = false; 
 }

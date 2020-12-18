@@ -163,6 +163,7 @@
     <ClInclude Include="ProgressBar.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="Style.h" />
     <ClInclude Include="TextField.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Window.h" />

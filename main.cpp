@@ -4,7 +4,7 @@ class Program : public gui::Console {
 public:
 	gui::Window* SetupWindow() {
 		auto w = new gui::Window(GetScreenWidth(), GetScreenHeight());
-		w->SetStyle<gui::Element>(gui::ElementStyle::Green(true));
+		w->SetStyle<gui::Element>(gui::Style::Green(true));
 		SetCurrentWindow(w);
 		return w;
 	}

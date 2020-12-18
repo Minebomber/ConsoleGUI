@@ -4,9 +4,9 @@ namespace gui {
 
 Color Element::CurrentForeground() const {
 	switch (state) {
-	case ElementState::Focused:
+	case State::Focused:
 		return style.focusedForeground;
-	case ElementState::Disabled:
+	case State::Disabled:
 		return style.disabledForeground;
 	default:
 		return style.defaultForeground;
@@ -15,9 +15,9 @@ Color Element::CurrentForeground() const {
 
 Color Element::CurrentBackground() const {
 	switch (state) {
-	case ElementState::Focused:
+	case State::Focused:
 		return style.focusedBackground;
-	case ElementState::Disabled:
+	case State::Disabled:
 		return style.disabledBackground;
 	default:
 		return style.defaultBackground;

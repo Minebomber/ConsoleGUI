@@ -27,7 +27,7 @@ void TextField::Init() {
 	AddEventHandler(EventHandler::New()->
 		SetAction(EventType::MouseDown, [this](Window* w, int m) {
 			w->focusedElement = this;
-			state = ELEMENT_FOCUSED;
+			state = State::Focused;
 
 			if (!mCursorFlashFuture.valid() || mCursorFlashFuture.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
 				mCursorFlashFuture = std::async(std::launch::async, std::bind(&TextField::FlashCursor, this));
@@ -57,7 +57,7 @@ void TextField::Init() {
 
 void TextField::FlashCursor() {
 	mShowCursor = false;
-	while (state == ELEMENT_FOCUSED) {
+	while (state == State::Focused) {
 		mShowCursor = !mShowCursor;
 		std::this_thread::sleep_for(std::chrono::milliseconds(350));
 	}
@@ -68,7 +68,7 @@ void TextField::Draw(Window* w) {
 	w->RenderText(
 		InnerBounds(),
 		((mode & TEXT_MODE_SECURE) ? std::wstring(text.length(), L'*') : text) + 
-		(state == ELEMENT_FOCUSED && mShowCursor ? L"_" : L""),
+		(state == State::Focused && mShowCursor ? L"_" : L""),
 		CurrentForeground().value | CurrentBackground().value << 4,
 		alignH,
 		alignV,

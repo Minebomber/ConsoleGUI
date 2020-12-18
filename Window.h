@@ -6,7 +6,6 @@
 #include <typeindex>
 
 #include "Element.h"
-#include "ElementStyle.h"
 
 namespace gui {
 
@@ -22,8 +21,6 @@ enum TextWrap {
 };
 
 class Element;
-class MouseHandler;
-class KeyboardHandler;
 
 class Window {
 	friend class Console;
@@ -37,7 +34,7 @@ protected:
 	bool mMouseButtons[3] = { 0 };
 
 	CHAR_INFO* mBuffer = nullptr;
-	std::unordered_map<std::type_index, Element::Style*> mStyleMap;
+	std::unordered_map<std::type_index, Style*> mStyleMap;
 public:
 	Element* focusedElement = nullptr;
 	Point mousePosition;
@@ -49,7 +46,7 @@ public:
 	std::function<void(void)> onShowCallback;
 
 	Window(int w, int h) : mWidth(w), mHeight(h), mBuffer(new CHAR_INFO[w * h]) {}
-	Window(int w, int h, Element::Style* defStyle);
+	Window(int w, int h, Style* defStyle);
 
 	virtual ~Window();
 
@@ -62,21 +59,21 @@ public:
 
 	void ApplyStyle(Element* e);
 
-	template <typename T> Element::Style* GetStyle() {
+	template <typename T> Style* GetStyle() {
 		if (auto s = mStyleMap[std::type_index(typeid(T))]) return s;
 		else return mStyleMap[std::type_index(typeid(Element))];
 	}
 
-	template <typename T> Element::Style* GetStyle(const T& e) {
+	template <typename T> Style* GetStyle(const T& e) {
 		if (auto s = mStyleMap[std::type_index(typeid(e))]) return s;
 		else return mStyleMap[std::type_index(typeid(Element))];
 	}
 
-	template <typename T> void SetStyle(Element::Style* s) {
+	template <typename T> void SetStyle(Style* s) {
 		mStyleMap[std::type_index(typeid(T))] = s;
 	}
 
-	template <typename T> void SetStyle(T e, Element::Style* s) {
+	template <typename T> void SetStyle(T e, Style* s) {
 		mStyleMap[std::type_index(typeid(e))] = s;
 	}
 

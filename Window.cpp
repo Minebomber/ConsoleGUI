@@ -2,7 +2,7 @@
 
 namespace gui {
 
-Window::Window(int w, int h, ElementStyle* defStyle) : mWidth(w), mHeight(h), 
+Window::Window(int w, int h, Style* defStyle) : mWidth(w), mHeight(h), 
 mBuffer(new CHAR_INFO[w * h]), mStyleMap({ {std::type_index(typeid(Element)), defStyle} }) {}
 
 
@@ -125,7 +125,7 @@ void Window::RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, i
 }
 
 void Window::ApplyStyle(Element* e) {
-	if (ElementStyle* s = GetStyle(*e)) { e->style = *s; }
+	if (Style* s = GetStyle(*e)) { e->style = *s; }
 }
 
 void Window::AddElement(Element* e, bool applyStyle, bool postAutosize) {
