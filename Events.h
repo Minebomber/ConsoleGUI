@@ -8,14 +8,19 @@ namespace gui {
 class Window;
 typedef std::function<void(Window*, int)> EventAction;
 
+class T {
+	void f() {
+	}
+};
+
 enum EventType {
-	EVENT_MOUSE_DOWN,
-	EVENT_MOUSE_UP,
-	EVENT_MOUSE_DRAG,
-	EVENT_MOUSE_WHEELDOWN,
-	EVENT_MOUSE_WHEELUP,
-	EVENT_KEY_DOWN,
-	EVENT_KEY_UP
+	GUI_MOUSE_DOWN,
+	GUI_MOUSE_UP,
+	GUI_MOUSE_DRAG,
+	GUI_MOUSE_WHEELDOWN,
+	GUI_MOUSE_WHEELUP,
+	GUI_KEY_DOWN,
+	GUI_KEY_UP
 };
 
 class EventHandler {

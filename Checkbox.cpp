@@ -8,8 +8,8 @@ Checkbox::Checkbox(const Checkbox& e) : Label(e), checked(e.checked) { alignH = 
 void Checkbox::Init() {
 	AddEventHandler(
 		EventHandler::New()->
-		SetAction(EVENT_MOUSE_DOWN, [this](Window* w, int m) { state = ELEMENT_FOCUSED; })->
-		SetAction(EVENT_MOUSE_UP, [this](Window* w, int m) { state = ELEMENT_DEFAULT; checked = !checked; })
+		SetAction(GUI_MOUSE_DOWN, [this](Window* w, int m) { state = ELEMENT_FOCUSED; })->
+		SetAction(GUI_MOUSE_UP, [this](Window* w, int m) { state = ELEMENT_DEFAULT; checked = !checked; })
 	);
 }
 
