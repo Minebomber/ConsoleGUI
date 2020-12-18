@@ -18,20 +18,19 @@ public:
 		e->style.defaultForeground = Color::Blue();
 
 		auto b = new Button({ 5, 3 }, L"Test Button", true);
-		b->AddEventHandler(
-			EventHandler::New()->
-			SetAction(EVENT_MOUSE_DOWN, [b, e](auto _w, auto _i) {
+		b->AddEventHandler(new EventHandler({
+			{ EVENT_MOUSE_DOWN, [b, e](auto _w, auto _i) {
 				_w->focusedElement = b;
 				e->style.defaultForeground = Color::Red();
-			})->
-			SetAction(EVENT_MOUSE_UP, [e](auto _w, auto _i) {
+			} },
+			{ EVENT_MOUSE_UP, [e](auto _w, auto _i) {
 				_w->focusedElement = nullptr;
 				e->style.defaultForeground = Color::Blue();
-			})->
-			SetAction(EVENT_MOUSE_DRAG, [e](auto&&... _) {
+			} },
+			{ EVENT_MOUSE_DRAG, [e](auto&&... _) {
 				e->style.defaultForeground = rand() % 16;
-			})
-		);
+			}}
+		}));
 		w->AddElement(b);
 	}
 };

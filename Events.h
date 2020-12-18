@@ -25,6 +25,7 @@ public:
 	static EventHandler* New() { return new EventHandler(); }
 
 	EventHandler() : mActionMap() {}
+	EventHandler(std::initializer_list<std::pair<const int, EventAction>> m) : mActionMap(m) {}
 
 	bool ActionExists(int e) { return (bool)mActionMap[e]; }
 	void InvokeAction(int e, Window* w, int i) { mActionMap[e](w, i); }
