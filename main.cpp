@@ -19,15 +19,15 @@ public:
 
 		auto b = new Button({ 5, 3 }, L"Test Button", true);
 		b->AddEventHandler(new EventHandler({
-			{ GUI_MOUSE_DOWN, [b, e](auto _w, auto _i) {
+			{ EventType::MouseDown, [b, e](auto _w, auto _i) {
 				_w->focusedElement = b;
 				e->style.defaultForeground = Color::Red();
 			} },
-			{ GUI_MOUSE_UP, [e](auto _w, auto _i) {
+			{ EventType::MouseUp, [e](auto _w, auto _i) {
 				_w->focusedElement = nullptr;
 				e->style.defaultForeground = Color::Blue();
 			} },
-			{ GUI_MOUSE_DRAG, [e](auto&&... _) {
+			{ EventType::MouseDrag, [e](auto&&... _) {
 				e->style.defaultForeground = rand() % 16;
 			}}
 		}));

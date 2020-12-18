@@ -11,9 +11,9 @@ Button::Button(const Button& e) : Label(e) { Init(); }
 void Button::Init() {
 	AddEventHandler(
 		EventHandler::New()->
-		SetAction(GUI_MOUSE_DOWN, [this](Window* w, int m) {
+		SetAction(EventType::MouseDown, [this](Window* w, int m) {
 			if (m & buttons) state = ELEMENT_FOCUSED; 
-		})->SetAction(GUI_MOUSE_UP, [this](Window* w, int m) { 
+		})->SetAction(EventType::MouseUp, [this](Window* w, int m) {
 			if (m & buttons) state = ELEMENT_DEFAULT; 
 		})
 	);

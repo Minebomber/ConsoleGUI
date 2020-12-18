@@ -8,33 +8,32 @@ namespace gui {
 class Window;
 typedef std::function<void(Window*, int)> EventAction;
 
-class T {
-	void f() {
-	}
-};
-
-enum EventType {
-	GUI_MOUSE_DOWN,
-	GUI_MOUSE_UP,
-	GUI_MOUSE_DRAG,
-	GUI_MOUSE_WHEELDOWN,
-	GUI_MOUSE_WHEELUP,
-	GUI_KEY_DOWN,
-	GUI_KEY_UP
+enum class EventType {
+	MouseDown,
+	MouseUp,
+	MouseDrag,
+	MouseWheelDown,
+	MouseWheelUp,
+	KeyDown,
+	KeyUp
 };
 
 class EventHandler {
 protected:
-	std::unordered_map<int, EventAction> mActionMap;
+	struct EventTypeHash { 
+		template <typename T> 
+		std::size_t operator()(T t) const { return static_cast<std::size_t>(t); }
+	};
+	std::unordered_map<EventType, EventAction, EventTypeHash> mActionMap;
 public:
 	static EventHandler* New() { return new EventHandler(); }
 
 	EventHandler() : mActionMap() {}
-	EventHandler(std::initializer_list<std::pair<const int, EventAction>> m) : mActionMap(m) {}
+	EventHandler(std::initializer_list<std::pair<const EventType, EventAction>> m) : mActionMap(m) {}
 
-	bool ActionExists(int e) { return (bool)mActionMap[e]; }
-	void InvokeAction(int e, Window* w, int i) { mActionMap[e](w, i); }
-	EventHandler* SetAction(int e, EventAction f) { mActionMap[e] = f; return this; }
+	bool ActionExists(EventType e) { return (bool)mActionMap[e]; }
+	void InvokeAction(EventType e, Window* w, int i) { mActionMap[e](w, i); }
+	EventHandler* SetAction(EventType e, EventAction f) { mActionMap[e] = f; return this; }
 };
 
 }

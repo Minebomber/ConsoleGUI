@@ -8,7 +8,8 @@ Label::Label(Rect b, std::wstring t, bool fit) : Element(b), text(t) {
 	if (fit) Autosize();
 }
 
-Label::Label(const Label& e) : Element(e), text(e.text), alignH(e.alignH), alignV(e.alignV), textWrap(e.textWrap) {}
+Label::Label(const Label& e) : 
+	Element(e), text(e.text), alignH(e.alignH), alignV(e.alignV), textWrap(e.textWrap) {}
 
 void Label::Autosize() {
 	int w = 0, h = 0, l = text.length();
