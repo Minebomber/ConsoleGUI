@@ -48,6 +48,9 @@
     <ClCompile Include="Checkbox.cpp">
       <Filter>Source Files\Elements</Filter>
     </ClCompile>
+    <ClCompile Include="Constraints.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h">
@@ -87,6 +90,9 @@
       <Filter>Header Files\Elements</Filter>
     </ClInclude>
     <ClInclude Include="Style.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Constraints.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

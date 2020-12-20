@@ -156,6 +156,7 @@ void Window::Display() {
 
 Window::~Window() {
 	for (Element* e : mElements) delete e;
+	for (auto p : mStyleMap) delete p.second;
 	delete[] mBuffer;
 }
 

@@ -8,9 +8,14 @@ public:
 	Point() : x(0), y(0) {}
 	Point(int x, int y) : x(x), y(y) {}
 
-	bool operator==(const Point& p) const { return x == p.x && y == p.y; }
-	bool operator!=(const Point& p) const { return !(*this == p); }
+	Point& operator+=(const Point& p) { x += p.x; y += p.y; return *this; }
+	Point& operator-=(const Point& p) { x -= p.x; y -= p.y; return *this; }
 };
+
+inline bool operator==(const Point& a, const Point& b) { return a.x == b.x && a.y == b.y; }
+inline bool operator!=(const Point& a, const Point& b) { return !operator==(a, b); }
+inline Point operator+(Point a, const Point& b) { a += b; return a; }
+inline Point operator-(Point a, const Point& b) { a -= b; return a; }
 
 class Rect {
 public:
@@ -25,6 +30,7 @@ public:
 	int Top() const { return y; }
 	int Bottom() const { return y + height - 1; }
 
+	Point Min() const { return {x, y}; }
 	Point Center() const { return { x + width / 2, y + height / 2 }; }
 	Point Max() const { return { Right(), Bottom() }; }
 

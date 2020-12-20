@@ -9,15 +9,18 @@
 #include "Style.h"
 #include "Rect.h"
 #include "Events.h"
+#include "Constraints.h"
 #include "Window.h"
 
 namespace gui {
 
 class Window;
+class Constraint;
 
 class Element {
 protected:
 	std::vector<EventHandler*> mEventHandlers;
+	std::vector<Constraint*> mConstraints;
 public:
 	enum class State {
 		Default,
@@ -26,17 +29,6 @@ public:
 	};
 	State state = State::Default;
 
-	struct Constraint {
-		void (Rect::* target)(const Rect&, int);
-		Element* element;
-		int offset;
-
-		bool operator==(const Constraint& c) {
-			return element == c.element && target == c.target && offset == c.offset;
-		}
-	};
-	std::vector<Constraint> constraints;
-
 	Style style;
 
 	Rect bounds = { 0, 0, 0, 0 };
@@ -44,7 +36,7 @@ public:
 	Element(Rect b) : bounds(b) {}
 	Element(const Element& e) : bounds(e.bounds), style(e.style) {}
 
-	virtual ~Element() {}
+	virtual ~Element();
 
 	virtual void Autosize() {}
 
@@ -56,15 +48,15 @@ public:
 	void AddEventHandler(EventHandler* e) { mEventHandlers.push_back(e); }
 	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
 
-	Element* AddConstraint(Constraint c) {
-		constraints.push_back(c); 
+	Element* AddConstraint(Constraint* c) {
+		mConstraints.push_back(c); 
 		return this;
 	}
 
-	Element* RemoveConstraint(Constraint c) { 
-		constraints.erase(
-			std::remove(constraints.begin(), constraints.end(), c), 
-			constraints.end()
+	Element* RemoveConstraint(Constraint* c) { 
+		mConstraints.erase(
+			std::remove(mConstraints.begin(), mConstraints.end(), c), 
+			mConstraints.end()
 		);
 		return this;
 	}
@@ -73,9 +65,7 @@ public:
 	Color CurrentBackground() const;
 	Rect InnerBounds() const;
 
-	void ApplyConstraints() {
-		for (Constraint c : constraints) (bounds.*c.target)(c.element->bounds, c.offset);
-	}
+	void ApplyConstraints();
 
 	operator Rect() const { return bounds; }
 

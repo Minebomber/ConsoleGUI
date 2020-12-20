@@ -2,6 +2,10 @@
 
 namespace gui {
 
+Element::~Element() {
+	for (EventHandler* h : mEventHandlers) delete h;
+	for (Constraint* c : mConstraints) delete c;
+}
 Color Element::CurrentForeground() const {
 	switch (state) {
 	case State::Focused:
@@ -31,6 +35,10 @@ Rect Element::InnerBounds() const {
 		bounds.width - (2 * style.borders),
 		bounds.height - (2 * style.borders)
 	};
+}
+
+void Element::ApplyConstraints() { 
+	for (Constraint* c : mConstraints) c->ApplyTo(this); 
 }
 
 void Element::Draw(Window* w) {

@@ -96,7 +96,7 @@ void Console::Run() {
 			for (DWORD i = 0; i < events; i++) {
 				switch (inputBuffer[i].EventType) {
 				case FOCUS_EVENT:
-					//mFocused = inputBuffer[i].Event.FocusEvent.bSetFocus;
+					mFocused = inputBuffer[i].Event.FocusEvent.bSetFocus;
 					break;
 				case KEY_EVENT:
 					if (!mFocused) break;
@@ -122,11 +122,14 @@ void Console::Run() {
 							Point p = { inputBuffer[i].Event.MouseEvent.dwMousePosition.X, inputBuffer[i].Event.MouseEvent.dwMousePosition.Y };
 							if (p != mCurrentWindow->mousePosition) {
 								mCurrentWindow->mousePosition = p;
-								if (int btnState = inputBuffer[i].Event.MouseEvent.dwButtonState)
-									if (auto e = mCurrentWindow->GetElementAtPoint(p))
+								if (mCurrentWindow->focusedElement) {
+									if (int btnState = inputBuffer[i].Event.MouseEvent.dwButtonState)
 										for (int m = 0; m < 3; m++)
 											if (((1 << m) & btnState))
-												e->HandleEvent(EventType::MouseDrag, mCurrentWindow, 1 << m);
+												mCurrentWindow->focusedElement->HandleEvent(EventType::MouseDrag, mCurrentWindow, 1 << m);
+											else
+												mCurrentWindow->focusedElement->HandleEvent(EventType::MouseMove, mCurrentWindow, 1 << m);
+								}
 							}
 						}
 						break;

@@ -12,6 +12,7 @@ enum class EventType {
 	MouseDown,
 	MouseUp,
 	MouseDrag,
+	MouseMove,
 	MouseWheelDown,
 	MouseWheelUp,
 	KeyDown,

@@ -36,6 +36,7 @@ protected:
 	CHAR_INFO* mBuffer = nullptr;
 	std::unordered_map<std::type_index, Style*> mStyleMap;
 public:
+	// Which element gets keyboard, mousemove/drag events
 	Element* focusedElement = nullptr;
 	Point mousePosition;
 
@@ -56,6 +57,9 @@ public:
 	void WriteString(int x, int y, const std::wstring& str, WORD clr);
 	void WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w);
 	void RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, int alignV, int wrap);
+
+	int GetWidth() const { return mWidth; }
+	int GetHeight() const { return mHeight; }
 
 	void ApplyStyle(Element* e);
 
