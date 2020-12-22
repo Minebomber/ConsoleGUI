@@ -7,6 +7,8 @@ mBuffer(new CHAR_INFO[w * h]), mStyleMap({ {std::type_index(typeid(Element)), de
 
 
 void Window::SetChar(int x, int y, WCHAR chr, WORD clr) {
+	x += mDrawOffset.x;
+	y += mDrawOffset.y;
 	int i = y * bounds.width + x;
 	if (i < bounds.width * bounds.height) {
 		mBuffer[i].Char.UnicodeChar = chr;
@@ -32,6 +34,8 @@ void Window::DrawRect(Rect r, WCHAR chr, WORD clr, bool fill) {
 }
 
 void Window::WriteString(int x, int y, const std::wstring& str, WORD clr) {
+	x += mDrawOffset.x;
+	y += mDrawOffset.y;
 	for (int i = 0; i < str.size(); i++) {
 		int idx = y * bounds.width + x + i;
 		if (idx < bounds.width * bounds.height) {
@@ -42,6 +46,8 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr) {
 }
 
 void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w) {
+	x += mDrawOffset.x;
+	y += mDrawOffset.y;
 	for (int i = 0; i < w; i++) {
 		int idx = y * bounds.width + x + i;
 		if (idx < bounds.width * bounds.height) {
@@ -160,8 +166,12 @@ void Window::RemoveElement(Element* e) {
 
 Element* Window::SubElementAtPoint(Element* e, const Point& p) {
 	Element* r = e;
+	Point np = p;
+	np.x -= e->InnerBounds().x;
+	np.y -= e->InnerBounds().y;
 	for (Element* se : e->mSubElements) {
-		if (se->bounds.Contains(p)) {
+
+		if (se->bounds.Contains(np)) {
 			r = SubElementAtPoint(se, p);
 		}
 	}

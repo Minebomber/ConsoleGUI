@@ -34,20 +34,21 @@ public:
 		using namespace gui;
 		auto w = SetupWindow();
 
-		auto cont = new Element({ 1, 1, 20, 10 });
-		cont->padding = { 1, 1, 1, 1 };
+		auto cont = new Element({ 1, 1, 27, 10 });
+		cont->padding = { 0, 1, 1, 1 };
+		cont->style.borders = true;
 
-		auto l = new Label({}, L"Test", true);
+		auto l = new Label({}, L"Test\nLabel\nThree", true);
 		cont->AddSubElement(l);
 
-		auto t = new TextField({0, 0, 5, 1});
+		auto t = new TextField({0, 0, 15, 3});
 		t->AddConstraint(new VerticalCenterConstraint(l));
 		t->AddConstraint(new LeftToRightConstraint(l, 2));
 		cont->AddSubElement(t);
-
+		 
 		w->AddElement(cont, true, false);
-		
-		cont->style.borders = true;
+
+
 	}
 };
 

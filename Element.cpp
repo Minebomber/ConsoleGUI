@@ -9,8 +9,8 @@ Element::~Element() {
 }
 
 void Element::AddSubElement(Element* e) {
-	e->bounds.x += InnerBounds().x;
-	e->bounds.y += InnerBounds().y;
+	//e->bounds.x += InnerBounds().x;
+	//e->bounds.y += InnerBounds().y;
 	mSubElements.push_back(e);
 }
 
@@ -84,8 +84,9 @@ void Element::Draw(Window* w) {
 		}
 	}
 
+	w->PushOffset(InnerBounds().Min());
 	for (Element* e : mSubElements) e->Draw(w);
-
+	w->PopOffset(InnerBounds().Min());
 }
 
 }

@@ -33,6 +33,8 @@ protected:
 	CHAR_INFO* mBuffer = nullptr;
 	std::unordered_map<std::type_index, Style*> mStyleMap;
 
+	Point mDrawOffset = { 0, 0 };
+
 	Element* SubElementAtPoint(Element* e, const Point& p);
 	void ApplyToSubElements(Element* e, std::function<void(Element*)> f);
 public:
@@ -60,6 +62,9 @@ public:
 	void WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w);
 	void RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, int alignV, int wrap);
 
+	void PushOffset(const Point& p) { mDrawOffset += p; }
+	void PopOffset(const Point& p) { mDrawOffset -= p; }
+
 	void ApplyStyle(Element* e);
 
 	template <typename T> Style* GetStyle() {
@@ -83,7 +88,7 @@ public:
 	void AddElement(Element* e, bool applyStyle = true, bool postAutosize = true);
 	void AddElements(std::initializer_list<Element*> es, bool applyStyle = true, bool postAutosize = true);
 	void RemoveElement(Element* e);
-
+	
 	void ApplyToElements(std::function<void(Element*)> f, bool applyToSub = true) { 
 		for (Element* e : mElements) {
 			f(e);
