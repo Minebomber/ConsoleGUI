@@ -18,9 +18,11 @@ class Window;
 class Constraint;
 
 class Element {
+	friend class Window;
 protected:
 	std::vector<EventHandler*> mEventHandlers;
 	std::vector<Constraint*> mConstraints;
+	std::vector<Element*> mSubElements;
 public:
 	enum class State {
 		Default,
@@ -64,6 +66,15 @@ public:
 		mConstraints.erase(
 			std::remove(mConstraints.begin(), mConstraints.end(), c), 
 			mConstraints.end()
+		);
+	}
+
+	void AddSubElement(Element* e);
+
+	void RemoveSubElement(Element* e) {
+		mSubElements.erase(
+			std::remove(mSubElements.begin(), mSubElements.end(), e),
+			mSubElements.end()
 		);
 	}
 

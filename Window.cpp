@@ -35,8 +35,8 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr) {
 	for (int i = 0; i < str.size(); i++) {
 		int idx = y * bounds.width + x + i;
 		if (idx < bounds.width * bounds.height) {
-			mBuffer[y * bounds.width + x + i].Char.UnicodeChar = std::max(str[i], L' ');
-			mBuffer[y * bounds.width + x + i].Attributes = clr;
+			mBuffer[idx].Char.UnicodeChar = std::max(str[i], L' ');
+			mBuffer[idx].Attributes = clr;
 		}
 	}
 }
@@ -45,8 +45,8 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st
 	for (int i = 0; i < w; i++) {
 		int idx = y * bounds.width + x + i;
 		if (idx < bounds.width * bounds.height) {
-			mBuffer[y * bounds.width + x + i].Char.UnicodeChar = std::max(str[st + i], L' ');
-			mBuffer[y * bounds.width + x + i].Attributes = clr;
+			mBuffer[idx].Char.UnicodeChar = std::max(str[st + i], L' ');
+			mBuffer[idx].Attributes = clr;
 		}
 	}
 }
@@ -142,6 +142,10 @@ void Window::AddElement(Element* e, bool applyStyle, bool postAutosize) {
 	if (applyStyle) { 
 		ApplyStyle(e);
 		if (postAutosize) e->Autosize();
+		for (Element* se : e->mSubElements) {
+			ApplyStyle(se);
+			if (postAutosize) se->Autosize();
+		}
 	}
 }
 
@@ -154,9 +158,28 @@ void Window::RemoveElement(Element* e) {
 	mElements.erase(std::remove(mElements.begin(), mElements.end(), e), mElements.end()); 
 }
 
+Element* Window::SubElementAtPoint(Element* e, const Point& p) {
+	Element* r = e;
+	for (Element* se : e->mSubElements) {
+		if (se->bounds.Contains(p)) {
+			r = SubElementAtPoint(se, p);
+		}
+	}
+	return r;
+}
+
+void Window::ApplyToSubElements(Element* e, std::function<void(Element*)> f) {
+	for (Element* se : e->mSubElements) {
+		f(se);
+		ApplyToSubElements(se, f);
+	}
+}
+
 Element* Window::GetElementAtPoint(const Point& p) {
 	Element* r = nullptr;
-	for (Element* e : mElements) if (e->bounds.Contains(p)) r = e;
+	for (Element* e : mElements) {
+		if (e->bounds.Contains(p)) r = SubElementAtPoint(e, p);
+	}
 	return r;
 }
 

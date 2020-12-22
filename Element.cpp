@@ -5,6 +5,13 @@ namespace gui {
 Element::~Element() {
 	for (EventHandler* h : mEventHandlers) delete h;
 	for (Constraint* c : mConstraints) delete c;
+	for (Element* se : mSubElements) delete se;
+}
+
+void Element::AddSubElement(Element* e) {
+	e->bounds.x += InnerBounds().x;
+	e->bounds.y += InnerBounds().y;
+	mSubElements.push_back(e);
 }
 
 Color Element::CurrentForeground() const {
@@ -76,6 +83,9 @@ void Element::Draw(Window* w) {
 			w->SetChar(x1, y, L'\x2503', cl);
 		}
 	}
+
+	for (Element* e : mSubElements) e->Draw(w);
+
 }
 
 }
