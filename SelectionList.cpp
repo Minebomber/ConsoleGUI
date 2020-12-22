@@ -30,6 +30,16 @@ void SelectionList::Init() {
 	}));
 }
 
+void SelectionList::Autosize() {
+	Element::Autosize();
+	bounds.width += (*std::max_element(
+		options.begin(),
+		options.end(),
+		[](const auto& a, const auto& b) { return a.size() < b.size(); }
+	)).size();
+	bounds.height += 1;
+}
+
 void SelectionList::Draw(Window* w) {
 	Element::Draw(w);
 	w->RenderText(

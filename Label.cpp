@@ -19,7 +19,13 @@ void Label::Autosize() {
 			h++;
 		}
 	}
-	bounds = { bounds.x, bounds.y, w + 2 * style.borders, h + 2 * style.borders };
+
+	bounds = { 
+		bounds.x, 
+		bounds.y, 
+		w + 2 * style.borders + padding.TotalX(), 
+		h + 2 * style.borders + padding.TotalY()
+	};
 }
 
 void Label::Draw(Window* w) {

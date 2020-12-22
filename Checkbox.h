@@ -10,6 +10,7 @@ public:
 	bool checked = false;
 
 	Checkbox(Rect b);
+	Checkbox(Rect b, std::wstring t, bool fit = false);
 	Checkbox(const Checkbox& e);
 
 	virtual void Autosize() override;

@@ -6,6 +6,7 @@ Element::~Element() {
 	for (EventHandler* h : mEventHandlers) delete h;
 	for (Constraint* c : mConstraints) delete c;
 }
+
 Color Element::CurrentForeground() const {
 	switch (state) {
 	case State::Focused:
@@ -28,12 +29,21 @@ Color Element::CurrentBackground() const {
 	}
 }
 
+void Element::Autosize() {
+	bounds = {
+		bounds.x, 
+		bounds.y, 
+		style.borders * 2 + padding.TotalX(), 
+		style.borders * 2 + padding.TotalY(),
+	};
+}
+
 Rect Element::InnerBounds() const {
 	return {
-		bounds.x + style.borders,
-		bounds.y + style.borders,
-		bounds.width - (2 * style.borders),
-		bounds.height - (2 * style.borders)
+		bounds.x + style.borders + padding.left,
+		bounds.y + style.borders + padding.top,
+		bounds.width - (2 * style.borders) - padding.TotalX(),
+		bounds.height - (2 * style.borders) - padding.TotalY()
 	};
 }
 

@@ -12,7 +12,8 @@ public:
 	ProgressBar(Rect b, float p);
 	ProgressBar(const ProgressBar& e);
 
-	virtual void Draw(Window* w);
+	virtual void Autosize() override;
+	virtual void Draw(Window* w) override;
 };
 
 }

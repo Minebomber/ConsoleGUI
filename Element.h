@@ -35,16 +35,18 @@ public:
 
 	struct Padding {
 		int left, top, right, bottom;
+		int TotalX() const { return left + right; }
+		int TotalY() const { return top + bottom; }
 	};
 
-	Padding padding; // use for autosize
+	Padding padding = { 0 }; // use for autosize
 
 	Element(Rect b) : bounds(b) {}
 	Element(const Element& e) : bounds(e.bounds), style(e.style) {}
 
 	virtual ~Element();
 
-	virtual void Autosize() {}
+	virtual void Autosize();
 
 	void HandleEvent(EventType e, Window* w, int i) {
 		for (EventHandler* h : mEventHandlers)

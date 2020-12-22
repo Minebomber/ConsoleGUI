@@ -5,7 +5,7 @@ public:
 	gui::Window* SetupWindow() {
 		using namespace gui;
 		auto w = new Window(GetScreenWidth(), GetScreenHeight());
-		w->SetStyle<Element>(Style::Default(false));
+		w->SetStyle<Element>(new Style(Color::White(), Color::DarkBlue(), Color::White(), Color::Blue(), Color::White(), Color::DarkBlue(), false));
 
 		SetCurrentWindow(w);
 		return w;
@@ -15,9 +15,11 @@ public:
 		using namespace gui;
 		auto w = SetupWindow();
 
-		auto e = new SelectionList({ 0, 0, 10, 3 }, {L"First", L"Second", L"Third", L"Fourth", L"Fifth"}, 1);
+		auto e = new Checkbox({ 0, 0 }, L"Checkbox Test", true);
 		w->AddElement(e);
+		e->padding = { 2, 1, 2, 1 };
 		e->style.borders = true;
+		e->Autosize();
 	}
 };
 

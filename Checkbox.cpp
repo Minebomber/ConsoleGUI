@@ -2,8 +2,17 @@
 
 namespace gui {
 
-Checkbox::Checkbox(Rect b) : Label(b) { alignH = TEXT_ALIGN_MIN; alignV = TEXT_ALIGN_MIN; Init(); }
-Checkbox::Checkbox(const Checkbox& e) : Label(e), checked(e.checked) { alignH = TEXT_ALIGN_MIN; alignV = TEXT_ALIGN_MIN; Init(); }
+Checkbox::Checkbox(Rect b) : Label(b) { 
+	alignH = TEXT_ALIGN_MIN; alignV = TEXT_ALIGN_MIN; Init(); 
+}
+
+Checkbox::Checkbox(Rect b, std::wstring t, bool fit) : Label(b, t, fit) { 
+	alignH = TEXT_ALIGN_MIN; alignV = TEXT_ALIGN_MIN; Init(); 
+}
+
+Checkbox::Checkbox(const Checkbox& e) : Label(e), checked(e.checked) { 
+	alignH = TEXT_ALIGN_MIN; alignV = TEXT_ALIGN_MIN; Init(); 
+}
 
 void Checkbox::Init() {
 	AddEventHandler(
