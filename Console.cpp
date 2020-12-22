@@ -106,7 +106,7 @@ void Console::Run() {
 						mCurrentWindow->mKeyboard[k] = inputBuffer[i].Event.KeyEvent.bKeyDown;
 
 						// Send keyboard events to focused element
-						if (mCurrentWindow->focusedElement) {
+						if (mCurrentWindow->focusedElement && mCurrentWindow->focusedElement->state != Element::State::Disabled) {
 							if (mCurrentWindow->mKeyboard[k]) 
 								mCurrentWindow->focusedElement->HandleEvent(EventType::KeyDown, mCurrentWindow, k);
 							else 
@@ -122,7 +122,7 @@ void Console::Run() {
 							Point p = { inputBuffer[i].Event.MouseEvent.dwMousePosition.X, inputBuffer[i].Event.MouseEvent.dwMousePosition.Y };
 							if (p != mCurrentWindow->mousePosition) {
 								mCurrentWindow->mousePosition = p;
-								if (mCurrentWindow->focusedElement) {
+								if (mCurrentWindow->focusedElement && mCurrentWindow->focusedElement->state != Element::State::Disabled) {
 									if (int btnState = inputBuffer[i].Event.MouseEvent.dwButtonState)
 										for (int m = 0; m < 3; m++)
 											if (((1 << m) & btnState))
@@ -148,14 +148,16 @@ void Console::Run() {
 							if (pressed != mCurrentWindow->mMouseButtons[m]) {
 								mCurrentWindow->mMouseButtons[m] = pressed;
 								if (Element* e = mCurrentWindow->GetElementAtPoint(mCurrentWindow->mousePosition)) {
-									if (pressed) e->HandleEvent(EventType::MouseDown, mCurrentWindow, 1 << m);
-									else e->HandleEvent(EventType::MouseUp, mCurrentWindow, 1 << m);
+									if (e->state != Element::State::Disabled) {
+										if (pressed) e->HandleEvent(EventType::MouseDown, mCurrentWindow, 1 << m);
+										else e->HandleEvent(EventType::MouseUp, mCurrentWindow, 1 << m);
+									}
 								}
 							}
 						}
 						break;
 					case MOUSE_WHEELED:
-						if (mCurrentWindow->focusedElement) {
+						if (mCurrentWindow->focusedElement && mCurrentWindow->focusedElement->state != Element::State::Disabled) {
 							int d = inputBuffer[i].Event.MouseEvent.dwButtonState;
 							if (d < 0)
 								mCurrentWindow->focusedElement->HandleEvent(EventType::MouseWheelDown, mCurrentWindow, d);
@@ -174,7 +176,6 @@ void Console::Run() {
 
 			if (mFocused) {
 				mCurrentWindow->Display();
-
 				// Display
 				WCHAR title[256];
 				swprintf(title, 256, L"FPS: %3.0f", 1 / elapsedTime);

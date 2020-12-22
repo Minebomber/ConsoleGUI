@@ -20,6 +20,7 @@
 #include "Button.h"
 #include "Checkbox.h"
 #include "ProgressBar.h"
+#include "SelectionList.h"
 
 namespace gui {
 

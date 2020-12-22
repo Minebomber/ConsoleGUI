@@ -151,6 +151,7 @@
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ProgressBar.cpp" />
+    <ClCompile Include="SelectionList.cpp" />
     <ClCompile Include="TextField.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
@@ -165,6 +166,7 @@
     <ClInclude Include="ProgressBar.h" />
     <ClInclude Include="Rect.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="SelectionList.h" />
     <ClInclude Include="Style.h" />
     <ClInclude Include="TextField.h" />
     <ClInclude Include="Timer.h" />

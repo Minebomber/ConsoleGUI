@@ -51,6 +51,9 @@
     <ClCompile Include="Constraints.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SelectionList.cpp">
+      <Filter>Source Files\Elements</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Console.h">
@@ -94,6 +97,9 @@
     </ClInclude>
     <ClInclude Include="Constraints.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectionList.h">
+      <Filter>Header Files\Elements</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

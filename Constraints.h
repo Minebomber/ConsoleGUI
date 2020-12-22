@@ -2,19 +2,22 @@
 
 #include "Rect.h"
 #include "Element.h"
+#include "Window.h"
 
 namespace gui {
 
 class Element;
+class Window;
 
 class Constraint {
 public:
-	Element* target;
+	Rect* target;
 	int offset;
 
-	Constraint(Element* t) : target(t), offset(0) {}
-	Constraint(Element* t, int o) : target(t), offset(o) {}
-
+	Constraint(Rect* t, int o = 0) : target(t), offset(o) {}
+	Constraint(Element* e, int o = 0);
+	Constraint(Window* w, int o = 0);
+	
 	virtual void ApplyTo(Element* e) = 0;
 };
 

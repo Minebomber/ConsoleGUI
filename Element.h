@@ -33,6 +33,12 @@ public:
 
 	Rect bounds = { 0, 0, 0, 0 };
 
+	struct Padding {
+		int left, top, right, bottom;
+	};
+
+	Padding padding; // use for autosize
+
 	Element(Rect b) : bounds(b) {}
 	Element(const Element& e) : bounds(e.bounds), style(e.style) {}
 
@@ -48,17 +54,15 @@ public:
 	void AddEventHandler(EventHandler* e) { mEventHandlers.push_back(e); }
 	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
 
-	Element* AddConstraint(Constraint* c) {
+	void AddConstraint(Constraint* c) {
 		mConstraints.push_back(c); 
-		return this;
 	}
 
-	Element* RemoveConstraint(Constraint* c) { 
+	void RemoveConstraint(Constraint* c) { 
 		mConstraints.erase(
 			std::remove(mConstraints.begin(), mConstraints.end(), c), 
 			mConstraints.end()
 		);
-		return this;
 	}
 
 	Color CurrentForeground() const;

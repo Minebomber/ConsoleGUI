@@ -30,6 +30,8 @@ public:
 	TextField(Rect b, int m);
 	TextField(const TextField& e);
 
+	virtual void Autosize() override {}
+
 	virtual void Draw(Window* w) override;
 };
 

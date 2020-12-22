@@ -2,17 +2,20 @@
 
 namespace gui {
 
-Window::Window(int w, int h, Style* defStyle) : mWidth(w), mHeight(h), 
+Window::Window(int w, int h, Style* defStyle) : bounds(0, 0, w, h),
 mBuffer(new CHAR_INFO[w * h]), mStyleMap({ {std::type_index(typeid(Element)), defStyle} }) {}
 
 
 void Window::SetChar(int x, int y, WCHAR chr, WORD clr) {
-	mBuffer[y * mWidth + x].Char.UnicodeChar = chr;
-	mBuffer[y * mWidth + x].Attributes = clr;
+	int i = y * bounds.width + x;
+	if (i < bounds.width * bounds.height) {
+		mBuffer[i].Char.UnicodeChar = chr;
+		mBuffer[i].Attributes = clr;
+	}
 }
 
 void Window::FillScreen(WCHAR chr, WORD clr) {
-	for (int i = 0; i < mWidth * mHeight; i++) {
+	for (int i = 0; i < bounds.width * bounds.height; i++) {
 		mBuffer[i].Char.UnicodeChar = chr;
 		mBuffer[i].Attributes = clr;
 	}
@@ -30,15 +33,21 @@ void Window::DrawRect(Rect r, WCHAR chr, WORD clr, bool fill) {
 
 void Window::WriteString(int x, int y, const std::wstring& str, WORD clr) {
 	for (int i = 0; i < str.size(); i++) {
-		mBuffer[y * mWidth + x + i].Char.UnicodeChar = std::max(str[i], L' ');
-		mBuffer[y * mWidth + x + i].Attributes = clr;
+		int idx = y * bounds.width + x + i;
+		if (idx < bounds.width * bounds.height) {
+			mBuffer[y * bounds.width + x + i].Char.UnicodeChar = std::max(str[i], L' ');
+			mBuffer[y * bounds.width + x + i].Attributes = clr;
+		}
 	}
 }
 
 void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w) {
 	for (int i = 0; i < w; i++) {
-		mBuffer[y * mWidth + x + i].Char.UnicodeChar = std::max(str[st + i], L' ');
-		mBuffer[y * mWidth + x + i].Attributes = clr;
+		int idx = y * bounds.width + x + i;
+		if (idx < bounds.width * bounds.height) {
+			mBuffer[y * bounds.width + x + i].Char.UnicodeChar = std::max(str[st + i], L' ');
+			mBuffer[y * bounds.width + x + i].Attributes = clr;
+		}
 	}
 }
 
@@ -134,6 +143,10 @@ void Window::AddElement(Element* e, bool applyStyle, bool postAutosize) {
 		ApplyStyle(e);
 		if (postAutosize) e->Autosize();
 	}
+}
+
+void Window::AddElements(std::initializer_list<Element*> es, bool applyStyle, bool postAutosize) {
+	for (Element* e : es) AddElement(e, applyStyle, postAutosize);
 }
 
 void Window::RemoveElement(Element* e) { 

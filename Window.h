@@ -25,9 +25,6 @@ class Element;
 class Window {
 	friend class Console;
 protected:
-	int mWidth = 0;
-	int mHeight = 0;
-
 	std::vector<Element*> mElements;
 
 	bool mKeyboard[256] = { 0 };
@@ -36,6 +33,8 @@ protected:
 	CHAR_INFO* mBuffer = nullptr;
 	std::unordered_map<std::type_index, Style*> mStyleMap;
 public:
+	Rect bounds = { 0, 0 };
+
 	// Which element gets keyboard, mousemove/drag events
 	Element* focusedElement = nullptr;
 	Point mousePosition;
@@ -46,7 +45,7 @@ public:
 	std::function<void(void)> onHideCallback;
 	std::function<void(void)> onShowCallback;
 
-	Window(int w, int h) : mWidth(w), mHeight(h), mBuffer(new CHAR_INFO[w * h]) {}
+	Window(int w, int h) : bounds(0, 0, w, h), mBuffer(new CHAR_INFO[w * h]) {}
 	Window(int w, int h, Style* defStyle);
 
 	virtual ~Window();
@@ -57,9 +56,6 @@ public:
 	void WriteString(int x, int y, const std::wstring& str, WORD clr);
 	void WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w);
 	void RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, int alignV, int wrap);
-
-	int GetWidth() const { return mWidth; }
-	int GetHeight() const { return mHeight; }
 
 	void ApplyStyle(Element* e);
 
@@ -82,6 +78,7 @@ public:
 	}
 
 	void AddElement(Element* e, bool applyStyle = true, bool postAutosize = true);
+	void AddElements(std::initializer_list<Element*> es, bool applyStyle = true, bool postAutosize = true);
 	void RemoveElement(Element* e);
 
 	void ApplyToElements(std::function<void(Element*)> f) { for (Element* e : mElements) f(e); }
