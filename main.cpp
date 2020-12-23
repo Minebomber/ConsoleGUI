@@ -26,6 +26,13 @@ public:
 			false
 		));
 
+		w->SetStyle<Button>(new Style(
+			Color::White(), Color::DarkBlue(),
+			Color::DarkGrey(), Color::DarkBlue(),
+			Color::DarkGrey(), Color::Grey(),
+			true
+		));
+
 		SetCurrentWindow(w);
 		return w;
 	}
@@ -34,11 +41,10 @@ public:
 		using namespace gui;
 		auto w = SetupWindow();
 
-		auto cont = new Element({ 1, 1, 27, 10 });
+		auto cont = new Element({ 1, 1, 30, 15 });
 		cont->padding = { 0, 1, 1, 1 };
-		cont->style.borders = true;
 
-		auto l = new Label({}, L"Test\nLabel\nThree", true);
+		auto l = new Label({}, L"Multiline\nTest\nLabel", true);
 		cont->AddSubElement(l);
 
 		auto t = new TextField({0, 0, 15, 3});
@@ -46,9 +52,16 @@ public:
 		t->AddConstraint(new LeftToRightConstraint(l, 2));
 		cont->AddSubElement(t);
 		 
+		auto sl = new SelectionList({}, {L"Option 1", L"Option 2", L"Option 3", L"Option 4"});
+		sl->AddConstraint(new HorizontalCenterConstraint(cont));
+		sl->AddConstraint(new TopToBottomConstraint(t, 2));
+		
+		cont->AddSubElement(sl);
+
 		w->AddElement(cont, true, false);
 
-
+		//sl->style.borders = false;
+		sl->Autosize();
 	}
 };
 

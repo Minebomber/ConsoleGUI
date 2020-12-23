@@ -13,10 +13,10 @@ void SelectionList::Init() {
 			if (mShowOptions) {
 				// Get clicked
 				selection = std::max(
-					0, 
+					0,
 					std::min(
-						(int)options.size() - 1, 
-						w->mousePosition.y - InnerBounds().y - 2
+					(int)options.size() - 1,
+					w->mousePosition.y - TrueOrigin().y - 2 - style.borders
 					)
 				);
 				bounds.height = mOldHeight;
@@ -42,6 +42,7 @@ void SelectionList::Autosize() {
 
 void SelectionList::Draw(Window* w) {
 	Element::Draw(w);
+	Rect ib = InnerBounds();
 	w->RenderText(
 		InnerBounds(),
 		options.at(selection),

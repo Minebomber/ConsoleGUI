@@ -61,6 +61,9 @@ void Window::RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, i
 	int textWidth = r.width;
 	int textHeight = r.height;
 
+	if (textHeight < 0)
+		return;
+
 	struct LineInfo {
 		int dX, sI, lW;
 	};
@@ -170,7 +173,6 @@ Element* Window::SubElementAtPoint(Element* e, const Point& p) {
 	np.x -= e->InnerBounds().x;
 	np.y -= e->InnerBounds().y;
 	for (Element* se : e->mSubElements) {
-
 		if (se->bounds.Contains(np)) {
 			r = SubElementAtPoint(se, p);
 		}

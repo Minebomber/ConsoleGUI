@@ -24,6 +24,8 @@ protected:
 	std::vector<Constraint*> mConstraints;
 	std::vector<Element*> mSubElements;
 public:
+	Element* parent = nullptr;
+
 	enum class State {
 		Default,
 		Focused,
@@ -69,14 +71,20 @@ public:
 		);
 	}
 
-	void AddSubElement(Element* e);
+	void AddSubElement(Element* e) {
+		e->parent = this;
+		mSubElements.push_back(e);
+	}
 
 	void RemoveSubElement(Element* e) {
+		e->parent = nullptr;
 		mSubElements.erase(
 			std::remove(mSubElements.begin(), mSubElements.end(), e),
 			mSubElements.end()
 		);
 	}
+
+	Point TrueOrigin() const;
 
 	Color CurrentForeground() const;
 	Color CurrentBackground() const;

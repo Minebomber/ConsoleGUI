@@ -8,10 +8,14 @@ Element::~Element() {
 	for (Element* se : mSubElements) delete se;
 }
 
-void Element::AddSubElement(Element* e) {
-	//e->bounds.x += InnerBounds().x;
-	//e->bounds.y += InnerBounds().y;
-	mSubElements.push_back(e);
+Point Element::TrueOrigin() const {
+	Point origin = bounds.Min();
+	Element* p = parent;
+	while (p) {
+		origin += p->InnerBounds().Min();
+		p = p->parent;
+	}
+	return origin;
 }
 
 Color Element::CurrentForeground() const {
