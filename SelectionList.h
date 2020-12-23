@@ -16,6 +16,9 @@ public:
 	SelectionList(Rect b);
 	SelectionList(Rect b, std::initializer_list<std::wstring> opts, int select = 0);
 	
+	void ShowOptions();
+	void HideOptions();
+
 	virtual void Autosize() override;
 
 	virtual void Draw(Window* w) override;

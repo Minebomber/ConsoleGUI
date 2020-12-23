@@ -19,15 +19,23 @@ void SelectionList::Init() {
 					w->mousePosition.y - TrueOrigin().y - 2 - style.borders
 					)
 				);
-				bounds.height = mOldHeight;
-				mShowOptions = false;
+				HideOptions();
 			} else {
-				mOldHeight = bounds.height;
-				bounds.height += options.size() + 1;
-				mShowOptions = true;
+				ShowOptions();
 			}
 		}}
 	}));
+}
+
+void SelectionList::ShowOptions() {
+	mOldHeight = bounds.height;
+	bounds.height += options.size() + 1;
+	mShowOptions = true;
+}
+
+void SelectionList::HideOptions() {
+	bounds.height = mOldHeight;
+	mShowOptions = false;
 }
 
 void SelectionList::Autosize() {

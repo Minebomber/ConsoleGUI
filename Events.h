@@ -16,7 +16,8 @@ enum class EventType {
 	MouseWheelDown,
 	MouseWheelUp,
 	KeyDown,
-	KeyUp
+	KeyUp,
+	StateChange,
 };
 
 class EventHandler {

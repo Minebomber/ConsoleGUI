@@ -63,7 +63,7 @@ public:
 
 	const int& GetScreenWidth() const { return mScreenWidth; }
 	const int& GetScreenHeight() const { return mScreenHeight; }
-};
+}; 
 
 inline void RunAfterDelay(int ms, std::function<void()> f) {
 	std::thread t([ms, f] { std::this_thread::sleep_for(std::chrono::milliseconds(ms)); f(); });
