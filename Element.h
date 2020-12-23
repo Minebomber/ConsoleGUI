@@ -17,14 +17,14 @@ namespace gui {
 class Window;
 class Constraint;
 
-class Element {
+class View {
 	friend class Window;
 protected:
 	std::vector<EventHandler*> mEventHandlers;
 	std::vector<Constraint*> mConstraints;
-	std::vector<Element*> mSubElements;
+	std::vector<View*> mSubviews;
 public:
-	Element* parent = nullptr;
+	View* parent = nullptr;
 
 	enum class State {
 		Default,
@@ -45,10 +45,10 @@ public:
 
 	Padding padding = { 0 }; // use for autosize
 
-	Element(Rect b) : bounds(b) {}
-	Element(const Element& e) : bounds(e.bounds), style(e.style) {}
+	View(Rect b) : bounds(b) {}
+	View(const View& e) : bounds(e.bounds), style(e.style) {}
 
-	virtual ~Element();
+	virtual ~View();
 
 	virtual void Autosize();
 
@@ -71,16 +71,16 @@ public:
 		);
 	}
 
-	void AddSubElement(Element* e) {
-		e->parent = this;
-		mSubElements.push_back(e);
+	void AddSubview(View* v) {
+		v->parent = this;
+		mSubviews.push_back(v);
 	}
 
-	void RemoveSubElement(Element* e) {
-		e->parent = nullptr;
-		mSubElements.erase(
-			std::remove(mSubElements.begin(), mSubElements.end(), e),
-			mSubElements.end()
+	void RemoveSubview(View* v) {
+		v->parent = nullptr;
+		mSubviews.erase(
+			std::remove(mSubviews.begin(), mSubviews.end(), v),
+			mSubviews.end()
 		);
 	}
 

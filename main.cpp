@@ -5,7 +5,7 @@ public:
 	gui::Window* SetupWindow() {
 		using namespace gui;
 		auto w = new Window(GetScreenWidth(), GetScreenHeight());
-		w->SetStyle<Element>(new Style(
+		w->SetStyle<View>(new Style(
 			Color::White(), Color::DarkBlue(), 
 			Color::White(), Color::Blue(), 
 			Color::White(), Color::DarkBlue(), 
@@ -41,26 +41,26 @@ public:
 		using namespace gui;
 		auto w = SetupWindow();
 
-		auto cont = new Element({ 1, 1, 30, 15 });
+		auto cont = new View({ 1, 1, 30, 15 });
 		cont->padding = { 0, 1, 1, 1 };
 
 		auto l = new Label({}, L"Multiline\nTest\nLabel", true);
-		cont->AddSubElement(l);
+		cont->AddSubview(l);
 
 		auto t = new TextField({0, 0, 15, 3});
 		t->AddConstraint(new VerticalCenterConstraint(l));
 		t->AddConstraint(new LeftToRightConstraint(l, 2));
-		cont->AddSubElement(t);
+		cont->AddSubview(t);
 		 
 		auto sl = new SelectionList({}, {L"Option 1", L"Option 2", L"Option 3", L"Option 4"});
 		sl->AddConstraint(new HorizontalCenterConstraint(cont));
 		sl->AddConstraint(new TopToBottomConstraint(t, 2));
 		
-		cont->AddSubElement(sl);
+		cont->AddSubview(sl);
 
-		w->AddElement(cont, true, false);
+		w->view->AddSubview(cont);
 
-		//sl->style.borders = false;
+		w->ApplyStyle(cont, true);
 		sl->Autosize();
 	}
 };

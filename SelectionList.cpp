@@ -2,10 +2,10 @@
 
 namespace gui {
 
-SelectionList::SelectionList(Rect b) : Element(b), options(), selection(0) { Init(); }
+SelectionList::SelectionList(Rect b) : View(b), options(), selection(0) { Init(); }
 
 SelectionList::SelectionList(Rect b, std::initializer_list<std::wstring> opts, int select) :
-	Element(b), options(opts), selection(select) { Init(); }
+	View(b), options(opts), selection(select) { Init(); }
 
 void SelectionList::Init() {
 	AddEventHandler(new EventHandler({
@@ -39,7 +39,7 @@ void SelectionList::HideOptions() {
 }
 
 void SelectionList::Autosize() {
-	Element::Autosize();
+	View::Autosize();
 	bounds.width += (*std::max_element(
 		options.begin(),
 		options.end(),
@@ -49,7 +49,7 @@ void SelectionList::Autosize() {
 }
 
 void SelectionList::Draw(Window* w) {
-	Element::Draw(w);
+	View::Draw(w);
 	Rect ib = InnerBounds();
 	w->RenderText(
 		InnerBounds(),

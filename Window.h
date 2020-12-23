@@ -20,12 +20,12 @@ enum TextWrap {
 	TEXT_WRAP_WORD,
 };
 
-class Element;
+class View;
 
 class Window {
 	friend class Console;
 protected:
-	std::vector<Element*> mElements;
+	//std::vector<View*> mElements;
 
 	bool mKeyboard[256] = { 0 };
 	bool mMouseButtons[3] = { 0 };
@@ -35,13 +35,15 @@ protected:
 
 	Point mDrawOffset = { 0, 0 };
 
-	Element* SubElementAtPoint(Element* e, const Point& p);
-	void ApplyToSubElements(Element* e, std::function<void(Element*)> f);
+	//View* SubElementAtPoint(, const Point& p);
+	//void ApplyToSubElements(View* e, std::function<void(View*)> f);
 public:
-	Rect bounds = { 0, 0 };
+	View* view;
+
+	//Rect bounds = { 0, 0 };
 
 	// Which element gets keyboard, mousemove/drag events
-	Element* focusedElement = nullptr;
+	View* focusedElement = nullptr;
 	Point mousePosition;
 
 	WCHAR baseChar = L' ';
@@ -50,7 +52,7 @@ public:
 	std::function<void(void)> onHideCallback;
 	std::function<void(void)> onShowCallback;
 
-	Window(int w, int h) : bounds(0, 0, w, h), mBuffer(new CHAR_INFO[w * h]) {}
+	Window(int w, int h);
 	Window(int w, int h, Style* defStyle);
 
 	virtual ~Window();
@@ -65,16 +67,16 @@ public:
 	void PushOffset(const Point& p) { mDrawOffset += p; }
 	void PopOffset(const Point& p) { mDrawOffset -= p; }
 
-	void ApplyStyle(Element* e);
+	void ApplyStyle(View* v, bool applyToSub = false);
 
 	template <typename T> Style* GetStyle() {
 		if (auto s = mStyleMap[std::type_index(typeid(T))]) return s;
-		else return mStyleMap[std::type_index(typeid(Element))];
+		else return mStyleMap[std::type_index(typeid(View))];
 	}
 
 	template <typename T> Style* GetStyle(const T& e) {
 		if (auto s = mStyleMap[std::type_index(typeid(e))]) return s;
-		else return mStyleMap[std::type_index(typeid(Element))];
+		else return mStyleMap[std::type_index(typeid(View))];
 	}
 
 	template <typename T> void SetStyle(Style* s) {
@@ -85,18 +87,20 @@ public:
 		mStyleMap[std::type_index(typeid(e))] = s;
 	}
 
-	void AddElement(Element* e, bool applyStyle = true, bool postAutosize = true);
-	void AddElements(std::initializer_list<Element*> es, bool applyStyle = true, bool postAutosize = true);
-	void RemoveElement(Element* e);
+	//void AddElement(View* e, bool applyStyle = true, bool postAutosize = true);
+	//void AddElements(std::initializer_list<View*> es, bool applyStyle = true, bool postAutosize = true);
+	//void RemoveElement(View* e);
 	
-	void ApplyToElements(std::function<void(Element*)> f, bool applyToSub = true) { 
-		for (Element* e : mElements) {
+	/*void ApplyToElements(std::function<void(View*)> f, bool applyToSub = true) { 
+		for (View* e : mElements) {
 			f(e);
 			if (applyToSub) ApplyToSubElements(e, f);
 		}
-	}
+	}*/
 
-	Element* GetElementAtPoint(const Point& p);
+	void ApplyToAllViews(std::function<void(View*)> f, View* root = nullptr);
+
+	View* ViewAtPoint(Point p, View* root = nullptr);
 
 	void Display();
 

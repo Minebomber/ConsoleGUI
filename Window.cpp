@@ -2,22 +2,24 @@
 
 namespace gui {
 
-Window::Window(int w, int h, Style* defStyle) : bounds(0, 0, w, h),
-mBuffer(new CHAR_INFO[w * h]), mStyleMap({ {std::type_index(typeid(Element)), defStyle} }) {}
+Window::Window(int w, int h) : view(new View({ 0, 0, w, h })), mBuffer(new CHAR_INFO[w * h]) {}
+
+Window::Window(int w, int h, Style* defStyle) : view(new View({ 0, 0, w, h })),
+mBuffer(new CHAR_INFO[w * h]), mStyleMap({ {std::type_index(typeid(View)), defStyle} }) {}
 
 
 void Window::SetChar(int x, int y, WCHAR chr, WORD clr) {
 	x += mDrawOffset.x;
 	y += mDrawOffset.y;
-	int i = y * bounds.width + x;
-	if (i < bounds.width * bounds.height) {
+	int i = y * view->bounds.width + x;
+	if (i < view->bounds.width * view->bounds.height) {
 		mBuffer[i].Char.UnicodeChar = chr;
 		mBuffer[i].Attributes = clr;
 	}
 }
 
 void Window::FillScreen(WCHAR chr, WORD clr) {
-	for (int i = 0; i < bounds.width * bounds.height; i++) {
+	for (int i = 0; i < view->bounds.width * view->bounds.height; i++) {
 		mBuffer[i].Char.UnicodeChar = chr;
 		mBuffer[i].Attributes = clr;
 	}
@@ -37,8 +39,8 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr) {
 	x += mDrawOffset.x;
 	y += mDrawOffset.y;
 	for (int i = 0; i < str.size(); i++) {
-		int idx = y * bounds.width + x + i;
-		if (idx < bounds.width * bounds.height) {
+		int idx = y * view->bounds.width + x + i;
+		if (idx < view->bounds.width * view->bounds.height) {
 			mBuffer[idx].Char.UnicodeChar = std::max(str[i], L' ');
 			mBuffer[idx].Attributes = clr;
 		}
@@ -49,8 +51,8 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st
 	x += mDrawOffset.x;
 	y += mDrawOffset.y;
 	for (int i = 0; i < w; i++) {
-		int idx = y * bounds.width + x + i;
-		if (idx < bounds.width * bounds.height) {
+		int idx = y * view->bounds.width + x + i;
+		if (idx < view->bounds.width * view->bounds.height) {
 			mBuffer[idx].Char.UnicodeChar = std::max(str[st + i], L' ');
 			mBuffer[idx].Attributes = clr;
 		}
@@ -142,68 +144,83 @@ void Window::RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, i
 	delete[] lines;
 }
 
-void Window::ApplyStyle(Element* e) {
-	if (Style* s = GetStyle(*e)) { e->style = *s; }
+void Window::ApplyStyle(View* v, bool applyToSub) {
+	if (Style* s = GetStyle(*v)) { v->style = *s; }
+	ApplyToAllViews([this](View* sv) {
+		if (Style* s = GetStyle(*sv)) { sv->style = *s; }
+	}, v);
 }
 
-void Window::AddElement(Element* e, bool applyStyle, bool postAutosize) {
-	mElements.push_back(e);
-	if (applyStyle) { 
-		ApplyStyle(e);
-		if (postAutosize) e->Autosize();
-		for (Element* se : e->mSubElements) {
-			ApplyStyle(se);
-			if (postAutosize) se->Autosize();
-		}
+//void Window::AddElement(View* e, bool applyStyle, bool postAutosize) {
+//	mElements.push_back(e);
+//	if (applyStyle) { 
+//		ApplyStyle(e);
+//		if (postAutosize) e->Autosize();
+//		for (View* se : e->mSubviews) {
+//			ApplyStyle(se);
+//			if (postAutosize) se->Autosize();
+//		}
+//	}
+//}
+//
+//void Window::AddElements(std::initializer_list<View*> es, bool applyStyle, bool postAutosize) {
+//	for (View* e : es) AddElement(e, applyStyle, postAutosize);
+//}
+//
+//void Window::RemoveElement(View* e) { 
+//	if (focusedElement == e) focusedElement = nullptr; 
+//	mElements.erase(std::remove(mElements.begin(), mElements.end(), e), mElements.end()); 
+//}
+//
+//View* Window::SubElementAtPoint(View* e, const Point& p) {
+//	View* r = e;
+//	Point np = p;
+//	np.x -= e->InnerBounds().x;
+//	np.y -= e->InnerBounds().y;
+//	for (View* se : e->mSubviews) {
+//		if (se->bounds.Contains(np)) {
+//			r = SubElementAtPoint(se, p);
+//		}
+//	}
+//	return r;
+//}
+//
+//void Window::ApplyToSubElements(View* e, std::function<void(View*)> f) {
+//	for (View* se : e->mSubviews) {
+//		f(se);
+//		ApplyToSubElements(se, f);
+//	}
+//}
+
+void Window::ApplyToAllViews(std::function<void(View*)> f, View* root) {
+	if (!root) root = view;
+	for (View* v : root->mSubviews) {
+		f(v);
+		ApplyToAllViews(f, v);
 	}
 }
 
-void Window::AddElements(std::initializer_list<Element*> es, bool applyStyle, bool postAutosize) {
-	for (Element* e : es) AddElement(e, applyStyle, postAutosize);
-}
-
-void Window::RemoveElement(Element* e) { 
-	if (focusedElement == e) focusedElement = nullptr; 
-	mElements.erase(std::remove(mElements.begin(), mElements.end(), e), mElements.end()); 
-}
-
-Element* Window::SubElementAtPoint(Element* e, const Point& p) {
-	Element* r = e;
-	Point np = p;
-	np.x -= e->InnerBounds().x;
-	np.y -= e->InnerBounds().y;
-	for (Element* se : e->mSubElements) {
-		if (se->bounds.Contains(np)) {
-			r = SubElementAtPoint(se, p);
-		}
+View* Window::ViewAtPoint(Point p, View* root) {
+	if (!root) root = view;
+	View* found = root;
+	p -= root->InnerBounds().Min();
+	for (View* v : root->mSubviews) {
+		if (v->bounds.Contains(p)) found = ViewAtPoint(p, v);
 	}
-	return r;
-}
-
-void Window::ApplyToSubElements(Element* e, std::function<void(Element*)> f) {
-	for (Element* se : e->mSubElements) {
-		f(se);
-		ApplyToSubElements(se, f);
-	}
-}
-
-Element* Window::GetElementAtPoint(const Point& p) {
-	Element* r = nullptr;
-	for (Element* e : mElements) {
-		if (e->bounds.Contains(p)) r = SubElementAtPoint(e, p);
-	}
-	return r;
+	return found;
 }
 
 void Window::Display() {
 	FillScreen(baseChar, baseColor);
-	for (Element* e : mElements) {
+	view->Draw(this);/*
+	for (View* e : mElements) {
 		e->Draw(this);
-	}
+	}*/
 }
 
 Window::~Window() {
-	for (Element* e : mElements) delete e;
+	//for (View* e : mElements) delete e;
+	delete view;
 	for (auto p : mStyleMap) delete p.second;
 	delete[] mBuffer;
 }

@@ -28,7 +28,7 @@ void Checkbox::Autosize() {
 }
 
 void Checkbox::Draw(Window* w) {
-	Element::Draw(w);
+	View::Draw(w);
 	Rect textBounds = InnerBounds();
 	WORD cl = CurrentForeground().value | CurrentBackground().value << 4;
 	w->WriteString(

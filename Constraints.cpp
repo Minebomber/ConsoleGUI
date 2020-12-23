@@ -2,54 +2,54 @@
 
 namespace gui {
 
-Constraint::Constraint(Element* e, int o) : Constraint(&e->bounds, o) {}
-Constraint::Constraint(Window* w, int o) : Constraint(&w->bounds, o) {}
+Constraint::Constraint(View* e, int o) : Constraint(&e->bounds, o) {}
+Constraint::Constraint(Window* w, int o) : Constraint(&w->view->bounds, o) {}
 
-void LeftToLeftConstraint::ApplyTo(Element* e) { 
+void LeftToLeftConstraint::ApplyTo(View* e) { 
 	e->bounds.AlignLeftToLeft(*target, offset); 
 }
 
-void LeftToRightConstraint::ApplyTo(Element* e) { 
+void LeftToRightConstraint::ApplyTo(View* e) { 
 	e->bounds.AlignLeftToRight(*target, offset); 
 }
 
-void TopToTopConstraint::ApplyTo(Element* e) { 
+void TopToTopConstraint::ApplyTo(View* e) { 
 	e->bounds.AlignTopToTop(*target, offset); 
 }
 
-void TopToBottomConstraint::ApplyTo(Element* e) { 
+void TopToBottomConstraint::ApplyTo(View* e) { 
 	e->bounds.AlignTopToBottom(*target, offset); 
 }
 
-void RightToRightConstraint::ApplyTo(Element* e) {
+void RightToRightConstraint::ApplyTo(View* e) {
 	e->bounds.AlignRightToRight(*target, offset); 
 }
 
-void RightToLeftConstraint::ApplyTo(Element* e) { 
+void RightToLeftConstraint::ApplyTo(View* e) { 
 	e->bounds.AlignRightToLeft(*target, offset); 
 }
 
-void BottomToBottomConstraint::ApplyTo(Element* e) { 
+void BottomToBottomConstraint::ApplyTo(View* e) { 
 	e->bounds.AlignBottomToBottom(*target, offset); 
 }
 
-void BottomToTopConstraint::ApplyTo(Element* e) { 
+void BottomToTopConstraint::ApplyTo(View* e) { 
 	e->bounds.AlignBottomToTop(*target, offset); 
 }
 
-void HorizontalCenterConstraint::ApplyTo(Element* e) {
+void HorizontalCenterConstraint::ApplyTo(View* e) {
 	e->bounds.CenterHorizontalWith(*target, offset); 
 }
 
-void VerticalCenterConstraint::ApplyTo(Element* e) { 
+void VerticalCenterConstraint::ApplyTo(View* e) { 
 	e->bounds.CenterVerticalWith(*target, offset);
 }
 
-void EqualWidthConstraint::ApplyTo(Element* e) {
+void EqualWidthConstraint::ApplyTo(View* e) {
 	e->bounds.width = target->width;
 }
 
-void EqualHeightConstraint::ApplyTo(Element* e) {
+void EqualHeightConstraint::ApplyTo(View* e) {
 	e->bounds.width = target->height;
 }
 

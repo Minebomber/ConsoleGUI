@@ -106,7 +106,7 @@ void Console::Run() {
 						mCurrentWindow->mKeyboard[k] = inputBuffer[i].Event.KeyEvent.bKeyDown;
 
 						// Send keyboard events to focused element
-						if (mCurrentWindow->focusedElement && mCurrentWindow->focusedElement->state != Element::State::Disabled) {
+						if (mCurrentWindow->focusedElement && mCurrentWindow->focusedElement->state != View::State::Disabled) {
 							if (mCurrentWindow->mKeyboard[k]) 
 								mCurrentWindow->focusedElement->HandleEvent(EventType::KeyDown, mCurrentWindow, k);
 							else 
@@ -122,7 +122,7 @@ void Console::Run() {
 							Point p = { inputBuffer[i].Event.MouseEvent.dwMousePosition.X, inputBuffer[i].Event.MouseEvent.dwMousePosition.Y };
 							if (p != mCurrentWindow->mousePosition) {
 								mCurrentWindow->mousePosition = p;
-								if (mCurrentWindow->focusedElement && mCurrentWindow->focusedElement->state != Element::State::Disabled) {
+								if (mCurrentWindow->focusedElement && mCurrentWindow->focusedElement->state != View::State::Disabled) {
 									if (int btnState = inputBuffer[i].Event.MouseEvent.dwButtonState)
 										for (int m = 0; m < 3; m++)
 											if (((1 << m) & btnState))
@@ -142,25 +142,25 @@ void Console::Run() {
 							if (!mCurrentWindow->mMouseButtons[m] && pressed) {
 								// Clear focused at start, handlers will set if needed
 								mCurrentWindow->focusedElement = nullptr;
-								mCurrentWindow->ApplyToElements([this](Element* e) { 
-									e->state = Element::State::Default; 
-									e->HandleEvent(EventType::StateChange, mCurrentWindow, static_cast<int>(EventType::StateChange));
+								mCurrentWindow->ApplyToAllViews([this](View* v) { 
+									v->state = View::State::Default; 
+									v->HandleEvent(EventType::StateChange, mCurrentWindow, static_cast<int>(EventType::StateChange));
 								});
 							}
 
 							if (pressed != mCurrentWindow->mMouseButtons[m]) {
 								mCurrentWindow->mMouseButtons[m] = pressed;
-								if (Element* e = mCurrentWindow->GetElementAtPoint(mCurrentWindow->mousePosition)) {
-									if (e->state != Element::State::Disabled) {
-										if (pressed) e->HandleEvent(EventType::MouseDown, mCurrentWindow, 1 << m);
-										else e->HandleEvent(EventType::MouseUp, mCurrentWindow, 1 << m);
+								if (View* v = mCurrentWindow->ViewAtPoint(mCurrentWindow->mousePosition)) {
+									if (v->state != View::State::Disabled) {
+										if (pressed) v->HandleEvent(EventType::MouseDown, mCurrentWindow, 1 << m);
+										else v->HandleEvent(EventType::MouseUp, mCurrentWindow, 1 << m);
 									}
 								}
 							}
 						}
 						break;
 					case MOUSE_WHEELED:
-						if (mCurrentWindow->focusedElement && mCurrentWindow->focusedElement->state != Element::State::Disabled) {
+						if (mCurrentWindow->focusedElement && mCurrentWindow->focusedElement->state != View::State::Disabled) {
 							int d = inputBuffer[i].Event.MouseEvent.dwButtonState;
 							if (d < 0)
 								mCurrentWindow->focusedElement->HandleEvent(EventType::MouseWheelDown, mCurrentWindow, d);
@@ -196,7 +196,7 @@ void Console::Run() {
 void Console::Stop() { 
 	if (mCurrentWindow) {
 		mCurrentWindow->focusedElement = nullptr;
-		mCurrentWindow->ApplyToElements([](Element* e) { e->state = Element::State::Default; });
+		mCurrentWindow->ApplyToAllViews([](View* e) { e->state = View::State::Default; });
 	}
 	mRunning = false; 
 }

@@ -64,7 +64,7 @@ void TextField::FlashCursor() {
 }
 
 void TextField::Draw(Window* w) {
-	Element::Draw(w);
+	View::Draw(w);
 	w->RenderText(
 		InnerBounds(),
 		((mode & TEXT_MODE_SECURE) ? std::wstring(text.length(), L'*') : text) + 

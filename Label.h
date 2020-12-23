@@ -3,7 +3,7 @@
 
 namespace gui {
 
-class Label : public Element {
+class Label : public View {
 public:
 	std::wstring text = L"";
 

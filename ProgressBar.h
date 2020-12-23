@@ -4,7 +4,7 @@
 
 namespace gui {
 
-class ProgressBar : public Element {
+class ProgressBar : public View {
 public:
 	float progress = 0;
 

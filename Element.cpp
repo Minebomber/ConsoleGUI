@@ -2,15 +2,15 @@
 
 namespace gui {
 
-Element::~Element() {
+View::~View() {
 	for (EventHandler* h : mEventHandlers) delete h;
 	for (Constraint* c : mConstraints) delete c;
-	for (Element* se : mSubElements) delete se;
+	for (View* se : mSubviews) delete se;
 }
 
-Point Element::TrueOrigin() const {
+Point View::TrueOrigin() const {
 	Point origin = bounds.Min();
-	Element* p = parent;
+	View* p = parent;
 	while (p) {
 		origin += p->InnerBounds().Min();
 		p = p->parent;
@@ -18,7 +18,7 @@ Point Element::TrueOrigin() const {
 	return origin;
 }
 
-Color Element::CurrentForeground() const {
+Color View::CurrentForeground() const {
 	switch (state) {
 	case State::Focused:
 		return style.focusedForeground;
@@ -29,7 +29,7 @@ Color Element::CurrentForeground() const {
 	}
 }
 
-Color Element::CurrentBackground() const {
+Color View::CurrentBackground() const {
 	switch (state) {
 	case State::Focused:
 		return style.focusedBackground;
@@ -40,7 +40,7 @@ Color Element::CurrentBackground() const {
 	}
 }
 
-void Element::Autosize() {
+void View::Autosize() {
 	bounds = {
 		bounds.x, 
 		bounds.y, 
@@ -49,7 +49,7 @@ void Element::Autosize() {
 	};
 }
 
-Rect Element::InnerBounds() const {
+Rect View::InnerBounds() const {
 	return {
 		bounds.x + style.borders + padding.left,
 		bounds.y + style.borders + padding.top,
@@ -58,11 +58,11 @@ Rect Element::InnerBounds() const {
 	};
 }
 
-void Element::ApplyConstraints() { 
+void View::ApplyConstraints() { 
 	for (Constraint* c : mConstraints) c->ApplyTo(this); 
 }
 
-void Element::Draw(Window* w) {
+void View::Draw(Window* w) {
 	ApplyConstraints();
 
 	w->DrawRect(bounds, L' ', CurrentBackground().value << 4, true);
@@ -89,7 +89,7 @@ void Element::Draw(Window* w) {
 	}
 
 	w->PushOffset(InnerBounds().Min());
-	for (Element* e : mSubElements) e->Draw(w);
+	for (View* e : mSubviews) e->Draw(w);
 	w->PopOffset(InnerBounds().Min());
 }
 

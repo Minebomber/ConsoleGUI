@@ -3,7 +3,7 @@
 
 namespace gui {
 
-class SelectionList : public Element {
+class SelectionList : public View {
 private:
 	bool mShowOptions = false;
 	int mOldHeight = 0;

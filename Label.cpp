@@ -2,14 +2,14 @@
 
 namespace gui {
 
-Label::Label(Rect b) : Element(b) {}
+Label::Label(Rect b) : View(b) {}
 
-Label::Label(Rect b, std::wstring t, bool fit) : Element(b), text(t) {
+Label::Label(Rect b, std::wstring t, bool fit) : View(b), text(t) {
 	if (fit) Autosize();
 }
 
 Label::Label(const Label& e) : 
-	Element(e), text(e.text), alignH(e.alignH), alignV(e.alignV), textWrap(e.textWrap) {}
+	View(e), text(e.text), alignH(e.alignH), alignV(e.alignV), textWrap(e.textWrap) {}
 
 void Label::Autosize() {
 	int w = 0, h = 0, l = text.length();
@@ -29,7 +29,7 @@ void Label::Autosize() {
 }
 
 void Label::Draw(Window* w) {
-	Element::Draw(w);
+	View::Draw(w);
 	w->RenderText(
 		InnerBounds(), 
 		text, 
