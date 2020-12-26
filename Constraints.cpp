@@ -7,8 +7,8 @@ Constraint::Constraint(
 	View* v, 
 	Position::Type tgt, 
 	int ofst, 
-	Adjust adj
-) : source(src), targetView(v), target(tgt), offset(ofst), adjust(adj) {
+	bool prsvSz
+) : source(src), targetView(v), target(tgt), offset(ofst), preserveSize(prsvSz) {
 	if (src >> 2 != tgt >> 2) throw "Invalid constraint, different axis for source and target";
 }
 
@@ -32,25 +32,20 @@ void Constraint::ApplyTo(View* v) {
 	int i = TrueTargetValue() + offset;
 	Point o = v->parent->TrueOrigin();
 
+	auto SetValue = [this](int i, int* tgt, int* opp) {
+		int old = *tgt;
+		*tgt = i;
+		if (preserveSize) *opp += *tgt - old;
+	};
+
 	if (source == Position::Top) {
-		int n = i - o.y;
-		if (adjust == Adjust::Align) {
-			
-		} else if (adjust == Adjust::Resize) {
-
-		}
-		//v->bounds.y = n;
-		//ChangeBounds(i - o.y, &v->bounds.y, &v->bounds.height);
+		SetValue(i - o.y, &v->bounds.top, &v->bounds.bottom);
 	} else if (source == Position::Bottom) {
-		//if (adjust == Adjust::Resize) v->bounds.height = ;
-		//else v->bounds.y = i - v->bounds.height + 1 - o.y;
-
-		//ChangeBounds(, &v->bounds.y, &v->bounds.height);
+		SetValue(i - o.y, &v->bounds.bottom, &v->bounds.top);
 	} else if (source == Position::Left) {
-		//v->bounds.x = i - o.x;
-
+		SetValue(i - o.x, &v->bounds.left, &v->bounds.right);
 	} else if (source == Position::Right) {
-		//v->bounds.x = i - v->bounds.width + 1 - o.x;
+		SetValue(i - o.x, &v->bounds.right, &v->bounds.left);
 	}	
 }
 }

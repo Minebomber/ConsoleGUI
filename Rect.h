@@ -19,11 +19,8 @@ inline Point operator-(Point a, const Point& b) { a -= b; return a; }
 
 class Rect {
 public:
-	//int x, y, width, height;
 	int left, top, right, bottom;
-	/*Rect() : x(0), y(0), width(0), height(0) {}
-	Rect(int x, int y) : x(x), y(y), width(0), height(0) {}
-	Rect(int x, int y, int w, int h) : x(x), y(y), width(w), height(h) {}*/
+
 	Rect() : left(0), top(0), right(0), bottom(0) {}
 	
 	Rect(Point origin, int width, int height) : 
@@ -32,17 +29,11 @@ public:
 	Rect(int l, int t, int r, int b) : 
 		left(l), top(t), right(r), bottom(b) {}
 	
-	/*int Left() const { return x; }
-	int Right() const { return x + width - 1; }
-	int Top() const { return y; }
-	int Bottom() const { return y + height - 1; }*/
-
-	/*Point Min() const { return {x, y}; }
-	Point Center() const { return { x + width / 2, y + height / 2 }; }
-	Point Max() const { return { Right(), Bottom() }; }*/
-
 	int Width() const { return right - left + 1; }
 	int Height() const { return bottom - top + 1; }
+
+	void SetWidth(int w) { right = w + left - 1; }
+	void SetHeight(int h) { bottom = h + top - 1; }
 
 	Point Min() const { return { left, top }; }
 	Point Center() const { return { right / 2, bottom / 2 }; }

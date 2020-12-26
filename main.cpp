@@ -48,7 +48,7 @@ public:
 		w->ApplyStyle(v1);
 		w->ApplyStyle(v2); v2->style.defaultBackground = Color::DarkRed();
 
-		//v1->AddConstraint({ Position::Bottom, v2, Position::Top, 0, Adjust::Resize });
+		v1->AddConstraint({ Position::Top, v2, Position::Bottom, 0, true });
 	}
 };
 

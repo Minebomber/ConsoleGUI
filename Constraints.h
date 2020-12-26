@@ -27,23 +27,17 @@ public:
 	};
 };
 
-enum class Adjust {
-	Align,
-	Resize
-};
-
 class Constraint {
 private:
 	int TrueTargetValue();
 public:
-	
 	Position::Type source;
 	View* targetView;
 	Position::Type target;
-	Adjust adjust;
 	int offset;
+	bool preserveSize;
 
-	Constraint(Position::Type src, View* v, Position::Type tgt, int ofst = 0, Adjust adj = Adjust::Align);
+	Constraint(Position::Type src, View* v, Position::Type tgt, int ofst = 0, bool prsvSz = true);
 
 	void ApplyTo(View* v);
 

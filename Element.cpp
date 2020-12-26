@@ -18,7 +18,7 @@ Point View::TrueOrigin() const {
 }
 
 Rect View::TrueBounds() const {
-	Point o = TrueOrigin();
+	Point o = parent ? parent->TrueOrigin() : Point(0, 0);
 	return { 
 		o.x + bounds.left, 
 		o.y + bounds.top, 
