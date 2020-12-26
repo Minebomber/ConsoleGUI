@@ -7,8 +7,17 @@ View::~View() {
 	for (View* se : mSubviews) delete se;
 }
 
+Rect View::InnerBounds() const {
+	return {
+		bounds.left + style.borders + padding.left,
+		bounds.top + style.borders + padding.top,
+		bounds.right - style.borders - padding.right,
+		bounds.bottom - style.borders - padding.bottom
+	};
+}
+
 Point View::TrueOrigin() const {
-	Point origin = bounds.Min();
+	Point origin = InnerBounds().Min();
 	View* p = parent;
 	while (p) {
 		origin += p->InnerBounds().Min();
@@ -33,6 +42,14 @@ Rect View::TrueInnerBounds() const {
 	return { ib.left + o.x, ib.top + o.y, ib.right + o.x, ib.bottom + o.y };
 }
 
+void View::Autosize() {
+	bounds = {
+		{ bounds.left, bounds.top },
+		2 * style.borders + padding.TotalX(),
+		2 * style.borders + padding.TotalY()
+	};
+}
+
 Color View::CurrentForeground() const {
 	switch (state) {
 	case State::Focused:
@@ -55,14 +72,6 @@ Color View::CurrentBackground() const {
 	}
 }
 
-void View::Autosize() {
-	bounds = {
-		{ bounds.left, bounds.top },
-		2 * style.borders + padding.TotalX(), 
-		2 * style.borders + padding.TotalY()
-	};
-}
-
 void View::AddConstraint(Constraint c) {
 	mConstraints.push_back(c);
 }
@@ -72,15 +81,6 @@ void View::RemoveConstraint(Constraint c) {
 		std::remove(mConstraints.begin(), mConstraints.end(), c),
 		mConstraints.end()
 	);
-}
-
-Rect View::InnerBounds() const {
-	return {
-		bounds.left + style.borders + padding.left,
-		bounds.top + style.borders + padding.top,
-		bounds.right - style.borders - padding.right,
-		bounds.bottom - style.borders - padding.bottom
-	};
 }
 
 void View::ApplyConstraints() { 

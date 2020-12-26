@@ -41,14 +41,31 @@ public:
 		using namespace gui;
 		auto w = SetupWindow();
 
-		auto v1 = new View({ {1, 1}, 5, 3 });
-		auto v2 = new View({ {10, 5}, 4, 4 });
-		w->view->AddSubview(v1);
-		w->view->AddSubview(v2);
-		w->ApplyStyle(v1);
-		w->ApplyStyle(v2); v2->style.defaultBackground = Color::DarkRed();
+		auto c1 = new View({ {0, 0}, 25, 10 });
+		w->view->AddSubview(c1);
+		w->ApplyStyle(c1);
+		//c1->style.borders = false;
+		c1->padding = { 1, 1, 1, 1 };
 
-		v1->AddConstraint({ Position::CenterX, v2, Position::Left, 0, true });
+		auto v1 = new View({ {1, 1}, 5, 5 });
+		c1->AddSubview(v1);
+		//w->view->AddSubview(v1);
+		w->ApplyStyle(v1);
+		v1->style.defaultBackground = Color::Cyan();
+		//auto v2 = new View({ {10, 5}, 4, 4 });
+		
+		auto v2 = new View({ {40, 10}, 5, 3 });
+		w->view->AddSubview(v2);
+		w->ApplyStyle(v2);
+		v2->style.defaultBackground = Color::Magenta();
+
+		v2->AddConstraint({ Position::Left, v1, Position::Right, 0, true });
+
+		//w->view->AddSubview(v2);
+		//w->ApplyStyle(v1);
+		//w->ApplyStyle(v2); v2->style.defaultBackground = Color::DarkRed();
+
+		//v1->AddConstraint({ Position::CenterX, v2, Position::Left, 0, true });
 	}
 };
 

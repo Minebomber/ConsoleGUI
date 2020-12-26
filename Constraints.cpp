@@ -40,7 +40,7 @@ void Constraint::SetValue(int i, int* tgt, int* opp) {
 void Constraint::ApplyTo(View* v) {
 	if (!v || !v->parent) return;
 	int i = TrueTargetValue() + offset;
-	Point o = v->parent->TrueOrigin();
+	Point o = v->parent->TrueInnerBounds().Min();
 
 	if (source == Position::Top) {
 		SetValue(i - o.y, &v->bounds.top, &v->bounds.bottom);
