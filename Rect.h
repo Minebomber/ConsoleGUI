@@ -36,7 +36,7 @@ public:
 	void SetHeight(int h) { bottom = h + top - 1; }
 
 	Point Min() const { return { left, top }; }
-	Point Center() const { return { right / 2, bottom / 2 }; }
+	Point Center() const { return { left + Width() / 2, top + Height() / 2 }; }
 	Point Max() const { return { right, bottom }; }
 
 	bool Contains(const Point& p) const {

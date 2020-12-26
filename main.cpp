@@ -60,12 +60,7 @@ public:
 		v2->style.defaultBackground = Color::Magenta();
 
 		v2->AddConstraint({ Position::Left, v1, Position::Right, 0, true });
-
-		//w->view->AddSubview(v2);
-		//w->ApplyStyle(v1);
-		//w->ApplyStyle(v2); v2->style.defaultBackground = Color::DarkRed();
-
-		//v1->AddConstraint({ Position::CenterX, v2, Position::Left, 0, true });
+		v2->AddConstraint({ Position::CenterY, v1, Position::CenterY, 0, true });
 	}
 };
 
