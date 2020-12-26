@@ -19,13 +19,18 @@ Point View::TrueOrigin() const {
 
 Rect View::TrueBounds() const {
 	Point o = TrueOrigin();
-	return { o.x, o.y, bounds.width, bounds.height };
+	return { 
+		o.x + bounds.left, 
+		o.y + bounds.top, 
+		o.x + bounds.right, 
+		o.y + bounds.bottom 
+	};
 }
 
 Rect View::TrueInnerBounds() const {
 	Point o = TrueOrigin();
 	Rect ib = InnerBounds();
-	return { ib.x + o.x, ib.y + o.y, ib.width, ib.height };
+	return { ib.left + o.x, ib.top + o.y, ib.right + o.x, ib.bottom + o.y };
 }
 
 Color View::CurrentForeground() const {
@@ -52,10 +57,9 @@ Color View::CurrentBackground() const {
 
 void View::Autosize() {
 	bounds = {
-		bounds.x, 
-		bounds.y, 
-		style.borders * 2 + padding.TotalX(), 
-		style.borders * 2 + padding.TotalY(),
+		{ bounds.left, bounds.top },
+		2 * style.borders + padding.TotalX(), 
+		2 * style.borders + padding.TotalY()
 	};
 }
 
@@ -72,10 +76,10 @@ void View::RemoveConstraint(Constraint c) {
 
 Rect View::InnerBounds() const {
 	return {
-		bounds.x + style.borders + padding.left,
-		bounds.y + style.borders + padding.top,
-		bounds.width - (2 * style.borders) - padding.TotalX(),
-		bounds.height - (2 * style.borders) - padding.TotalY()
+		bounds.left + style.borders + padding.left,
+		bounds.top + style.borders + padding.top,
+		bounds.right - style.borders - padding.right,
+		bounds.bottom - style.borders - padding.bottom
 	};
 }
 
@@ -89,8 +93,8 @@ void View::Draw(Window* w) {
 	w->DrawRect(bounds, L' ', CurrentBackground().value << 4, true);
 
 	if (style.borders) {
-		int x0 = bounds.Left(); int x1 = bounds.Right();
-		int y0 = bounds.Top(); int y1 = bounds.Bottom();
+		int x0 = bounds.left; int x1 = bounds.right;
+		int y0 = bounds.top; int y1 = bounds.bottom;
 		WORD cl = CurrentForeground().value | CurrentBackground().value << 4;
 
 		w->SetChar(x0, y0, L'\x250F', cl);

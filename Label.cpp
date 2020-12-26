@@ -21,8 +21,7 @@ void Label::Autosize() {
 	}
 
 	bounds = { 
-		bounds.x, 
-		bounds.y, 
+		{ bounds.left, bounds.top },
 		w + 2 * style.borders + padding.TotalX(), 
 		h + 2 * style.borders + padding.TotalY()
 	};

@@ -7,20 +7,20 @@ ProgressBar::ProgressBar(Rect b, float p) : View(b), progress(p) {}
 ProgressBar::ProgressBar(const ProgressBar& e) : View(e), progress(e.progress) {}
 
 void ProgressBar::Autosize() {
-	int w = bounds.width;
+	int r = bounds.right;
 	View::Autosize();
-	bounds.width = w;
-	bounds.height++;
+	bounds.right = r;
+	bounds.bottom++;
 }
 
 void ProgressBar::Draw(Window* w) {
 	View::Draw(w);
 	Rect displayArea = InnerBounds();
 	w->DrawRect(displayArea, L'\x2591', style.defaultBackground.value, true);
-	displayArea.width = std::max(
+	displayArea.right = displayArea.left + std::max(
 		0, 
-		std::min((int)((float)displayArea.width * progress), displayArea.width)
-	);
+		std::min((int)((float)displayArea.Width() * progress), displayArea.Width())
+	) - 1;
 	w->DrawRect(displayArea, L'\x2588', style.defaultForeground.value, true);
 }
 

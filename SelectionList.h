@@ -6,7 +6,7 @@ namespace gui {
 class SelectionList : public View {
 private:
 	bool mShowOptions = false;
-	int mOldHeight = 0;
+	int mOldBottom = 0;
 
 	void Init();
 public:

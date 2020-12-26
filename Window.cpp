@@ -2,35 +2,35 @@
 
 namespace gui {
 
-Window::Window(int w, int h) : view(new View({ 0, 0, w, h })), mBuffer(new CHAR_INFO[w * h]) {}
+Window::Window(int w, int h) : view(new View({ {0, 0}, w, h })), mBuffer(new CHAR_INFO[w * h]) {}
 
-Window::Window(int w, int h, Style* defStyle) : view(new View({ 0, 0, w, h })),
+Window::Window(int w, int h, Style* defStyle) : view(new View({ {0, 0}, w, h })),
 mBuffer(new CHAR_INFO[w * h]), mStyleMap({ {std::type_index(typeid(View)), defStyle} }) {}
 
 
 void Window::SetChar(int x, int y, WCHAR chr, WORD clr) {
 	x += mDrawOffset.x;
 	y += mDrawOffset.y;
-	int i = y * view->bounds.width + x;
-	if (i < view->bounds.width * view->bounds.height) {
+	int i = y * view->bounds.Width() + x;
+	if (i < view->bounds.Width() * view->bounds.Height()) {
 		mBuffer[i].Char.UnicodeChar = chr;
 		mBuffer[i].Attributes = clr;
 	}
 }
 
 void Window::FillScreen(WCHAR chr, WORD clr) {
-	for (int i = 0; i < view->bounds.width * view->bounds.height; i++) {
+	for (int i = 0; i < view->bounds.Width() * view->bounds.Height(); i++) {
 		mBuffer[i].Char.UnicodeChar = chr;
 		mBuffer[i].Attributes = clr;
 	}
 }
 
 void Window::DrawRect(Rect r, WCHAR chr, WORD clr, bool fill) {
-	for (int i = 0; i < r.height; i++) {
-		for (int j = 0; j < r.width; j++) {
-			if (fill) SetChar(j + r.x, i + r.y, chr, clr);
-			else if (i == 0 || i == r.height - 1 || j == 0 || j == r.width - 1) 
-				SetChar(j + r.x, i + r.y, chr, clr);
+	for (int i = 0; i < r.Height(); i++) {
+		for (int j = 0; j < r.Width(); j++) {
+			if (fill) SetChar(j + r.left, i + r.top, chr, clr);
+			else if (i == 0 || i == r.Height() - 1 || j == 0 || j == r.Width() - 1) 
+				SetChar(j + r.left, i + r.top, chr, clr);
 		}
 	}
 }
@@ -39,8 +39,8 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr) {
 	x += mDrawOffset.x;
 	y += mDrawOffset.y;
 	for (int i = 0; i < str.size(); i++) {
-		int idx = y * view->bounds.width + x + i;
-		if (idx < view->bounds.width * view->bounds.height) {
+		int idx = y * view->bounds.Width() + x + i;
+		if (idx < view->bounds.Width() * view->bounds.Height()) {
 			mBuffer[idx].Char.UnicodeChar = std::max(str[i], L' ');
 			mBuffer[idx].Attributes = clr;
 		}
@@ -51,8 +51,8 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st
 	x += mDrawOffset.x;
 	y += mDrawOffset.y;
 	for (int i = 0; i < w; i++) {
-		int idx = y * view->bounds.width + x + i;
-		if (idx < view->bounds.width * view->bounds.height) {
+		int idx = y * view->bounds.Width() + x + i;
+		if (idx < view->bounds.Width() * view->bounds.Height()) {
 			mBuffer[idx].Char.UnicodeChar = std::max(str[st + i], L' ');
 			mBuffer[idx].Attributes = clr;
 		}
@@ -60,8 +60,8 @@ void Window::WriteString(int x, int y, const std::wstring& str, WORD clr, int st
 }
 
 void Window::RenderText(Rect r, const std::wstring& txt, WORD clr, Alignment alignH, Alignment alignV, TextWrap wrap) {
-	int textWidth = r.width;
-	int textHeight = r.height;
+	int textWidth = r.Width();
+	int textHeight = r.Height();
 
 	if (textHeight < 0)
 		return;
@@ -139,7 +139,7 @@ void Window::RenderText(Rect r, const std::wstring& txt, WORD clr, Alignment ali
 	if (alignV == Alignment::Mid) yOffset = (textHeight - currentLine) / 2;
 	else if (alignV == Alignment::Max) yOffset = textHeight - currentLine;
 	for (int i = 0; i < currentLine; i++)
-		WriteString(r.x + lines[i].dX, r.y + yOffset + i, txt, clr, lines[i].sI, lines[i].lW);
+		WriteString(r.left + lines[i].dX, r.top + yOffset + i, txt, clr, lines[i].sI, lines[i].lW);
 
 	delete[] lines;
 }

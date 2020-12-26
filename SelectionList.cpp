@@ -28,24 +28,24 @@ void SelectionList::Init() {
 }
 
 void SelectionList::ShowOptions() {
-	mOldHeight = bounds.height;
-	bounds.height += options.size() + 1;
+	mOldBottom = bounds.bottom;
+	bounds.bottom += options.size() + 1;
 	mShowOptions = true;
 }
 
 void SelectionList::HideOptions() {
-	bounds.height = mOldHeight;
+	bounds.bottom = mOldBottom;
 	mShowOptions = false;
 }
 
 void SelectionList::Autosize() {
 	View::Autosize();
-	bounds.width += (*std::max_element(
+	bounds.right += (*std::max_element(
 		options.begin(),
 		options.end(),
 		[](const auto& a, const auto& b) { return a.size() < b.size(); }
 	)).size();
-	bounds.height += 1;
+	bounds.bottom += 1;
 }
 
 void SelectionList::Draw(Window* w) {
@@ -62,10 +62,13 @@ void SelectionList::Draw(Window* w) {
 
 	if (mShowOptions) {
 		Rect ib = InnerBounds();
-		ib.height = 1;
-		ib.y++;
+		
+		ib.top += 1;
+		ib.bottom = ib.top + 1;
 		for (int i = 0; i < options.size(); i++) {
-			ib.y += ib.height;
+			int h = ib.Height();
+			ib.top += h;
+			ib.bottom += h;
 			w->RenderText(
 				ib,
 				options.at(i),

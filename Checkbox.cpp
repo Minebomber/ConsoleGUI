@@ -24,7 +24,7 @@ void Checkbox::Init() {
 
 void Checkbox::Autosize() {
 	Label::Autosize();
-	bounds.width += 4;
+	bounds.right += 4;
 }
 
 void Checkbox::Draw(Window* w) {
@@ -32,13 +32,12 @@ void Checkbox::Draw(Window* w) {
 	Rect textBounds = InnerBounds();
 	WORD cl = CurrentForeground().value | CurrentBackground().value << 4;
 	w->WriteString(
-		textBounds.x, 
-		textBounds.y, 
+		textBounds.left, 
+		textBounds.top, 
 		checked ? L"[\x25CF]" : L"[ ]", 
 		cl
 	);
-	textBounds.x += 4;
-	textBounds.width -= 4;
+	textBounds.left += 4;
 	w->RenderText(textBounds, text, cl, alignH, alignV, wrap);
 }
 
