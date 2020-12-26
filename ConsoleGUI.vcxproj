@@ -147,7 +147,7 @@
     <ClCompile Include="Checkbox.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="Constraints.cpp" />
-    <ClCompile Include="Element.cpp" />
+    <ClCompile Include="View.cpp" />
     <ClCompile Include="Label.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ProgressBar.cpp" />
