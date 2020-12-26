@@ -22,21 +22,25 @@ int Constraint::TrueTargetValue() {
 		return targetView->TrueBounds().left;
 	case Position::Right:
 		return targetView->TrueBounds().right;
+	case Position::CenterX:
+		return targetView->TrueBounds().Center().x;
+	case Position::CenterY:
+		return targetView->TrueBounds().Center().y;
 	default:
 		return 0;
 	}
+}
+
+void Constraint::SetValue(int i, int* tgt, int* opp) {
+	int old = *tgt;
+	*tgt = i;
+	if (preserveSize) *opp += *tgt - old;
 }
 
 void Constraint::ApplyTo(View* v) {
 	if (!v || !v->parent) return;
 	int i = TrueTargetValue() + offset;
 	Point o = v->parent->TrueOrigin();
-
-	auto SetValue = [this](int i, int* tgt, int* opp) {
-		int old = *tgt;
-		*tgt = i;
-		if (preserveSize) *opp += *tgt - old;
-	};
 
 	if (source == Position::Top) {
 		SetValue(i - o.y, &v->bounds.top, &v->bounds.bottom);
@@ -46,6 +50,10 @@ void Constraint::ApplyTo(View* v) {
 		SetValue(i - o.x, &v->bounds.left, &v->bounds.right);
 	} else if (source == Position::Right) {
 		SetValue(i - o.x, &v->bounds.right, &v->bounds.left);
-	}	
+	} else if (source == Position::CenterX) {
+		SetValue(i - o.x - v->bounds.Width() / 2, &v->bounds.left, &v->bounds.right);
+	} else if (source == Position::CenterY) {
+		SetValue(i - o.y - v->bounds.Height() / 2, &v->bounds.top, &v->bounds.bottom);
+	}
 }
 }

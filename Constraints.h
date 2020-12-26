@@ -16,6 +16,7 @@ private:
 			AxisY  = 0b0100,
 			LocMin = 0b0010,
 			LocMax = 0b0001,
+			LocMid = 0b0011,
 		};
 	};
 public:
@@ -24,12 +25,15 @@ public:
 		Bottom = Attribute::AxisY | Attribute::LocMax,
 		Left = Attribute::AxisX | Attribute::LocMin,
 		Right = Attribute::AxisX | Attribute::LocMax,
+		CenterX = Attribute::AxisX | Attribute::LocMid,
+		CenterY = Attribute::AxisY | Attribute::LocMid,
 	};
 };
 
 class Constraint {
 private:
 	int TrueTargetValue();
+	void SetValue(int i, int* tgt, int* opp);
 public:
 	Position::Type source;
 	View* targetView;
