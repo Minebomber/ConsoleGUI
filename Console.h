@@ -14,7 +14,7 @@
 #include "Timer.h"
 #include "Window.h"
 
-#include "Element.h"
+#include "View.h"
 #include "Label.h"
 #include "TextField.h"
 #include "Button.h"

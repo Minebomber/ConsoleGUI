@@ -74,9 +74,6 @@
     <ClInclude Include="ProgressBar.h">
       <Filter>Header Files\Elements</Filter>
     </ClInclude>
-    <ClInclude Include="Element.h">
-      <Filter>Header Files\Elements</Filter>
-    </ClInclude>
     <ClInclude Include="Colors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -99,6 +96,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SelectionList.h">
+      <Filter>Header Files\Elements</Filter>
+    </ClInclude>
+    <ClInclude Include="View.h">
       <Filter>Header Files\Elements</Filter>
     </ClInclude>
   </ItemGroup>

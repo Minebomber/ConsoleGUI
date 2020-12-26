@@ -5,7 +5,7 @@
 #include <typeinfo>
 #include <typeindex>
 
-#include "Element.h"
+#include "View.h"
 
 namespace gui {
 

@@ -160,7 +160,7 @@
     <ClInclude Include="Checkbox.h" />
     <ClInclude Include="Colors.h" />
     <ClInclude Include="Constraints.h" />
-    <ClInclude Include="Element.h" />
+    <ClInclude Include="View.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="Label.h" />
     <ClInclude Include="ProgressBar.h" />

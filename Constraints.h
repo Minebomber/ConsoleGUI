@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Rect.h"
-#include "Element.h"
+#include "View.h"
 #include "Window.h"
 
 namespace gui {
