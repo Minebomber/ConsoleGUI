@@ -3,14 +3,16 @@
 
 namespace gui {
 
-enum TextMode {
-	TEXT_MODE_NUMBERS = 0x1, // 0001
-	TEXT_MODE_ALPHABET = 0x2, // 0010
-	TEXT_MODE_SPECIAL = 0x4, // 0100
-	TEXT_MODE_SECURE = 0x8, // 1000
+struct TextMode {
+	enum Mode {
+		Numbers = 0x1, // 0001
+		Alphabet = 0x2, // 0010
+		Special = 0x4, // 0100
+		Secure = 0x8, // 1000
 
-	TEXT_MODE_ALPHANUM = 0x3, // 0011
-	TEXT_MODE_ALL = 0x7, // 0111
+		Alphanum = 0x3, // 0011
+		All = 0x7, // 0111
+	};
 };
 
 class TextField : public Label {
@@ -24,10 +26,10 @@ protected:
 	bool ValidKeyForMode(int k);
 	void FlashCursor();
 public:
-	int mode = TEXT_MODE_ALL;
+	TextMode::Mode mode = TextMode::All;
 
 	TextField(Rect b);
-	TextField(Rect b, int m);
+	TextField(Rect b, TextMode::Mode m);
 	TextField(const TextField& e);
 
 	virtual void Autosize() override {}

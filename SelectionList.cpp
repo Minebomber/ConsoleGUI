@@ -16,7 +16,7 @@ void SelectionList::Init() {
 					0,
 					std::min(
 					(int)options.size() - 1,
-					w->mousePosition.y - TrueOrigin().y - 2 - style.borders
+					w->mousePosition.y - TrueOrigin().y - 2 - style.borders - padding.top
 					)
 				);
 				HideOptions();
@@ -55,9 +55,9 @@ void SelectionList::Draw(Window* w) {
 		InnerBounds(),
 		options.at(selection),
 		CurrentForeground().value | CurrentBackground().value << 4,
-		TEXT_ALIGN_MIN,
-		TEXT_ALIGN_MIN,
-		TEXT_WRAP_CHAR
+		Alignment::Min,
+		Alignment::Min,
+		TextWrap::Char
 	);
 
 	if (mShowOptions) {
@@ -70,9 +70,9 @@ void SelectionList::Draw(Window* w) {
 				ib,
 				options.at(i),
 				CurrentForeground().value | CurrentBackground().value << 4,
-				TEXT_ALIGN_MIN,
-				TEXT_ALIGN_MIN,
-				TEXT_WRAP_CHAR
+				Alignment::Min,
+				Alignment::Min,
+				TextWrap::Char
 			);
 		}
 	}

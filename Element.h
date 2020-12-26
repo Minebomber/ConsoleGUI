@@ -21,7 +21,7 @@ class View {
 	friend class Window;
 protected:
 	std::vector<EventHandler*> mEventHandlers;
-	std::vector<Constraint*> mConstraints;
+	std::vector<Constraint> mConstraints;
 	std::vector<View*> mSubviews;
 public:
 	View* parent = nullptr;
@@ -60,16 +60,9 @@ public:
 	void AddEventHandler(EventHandler* e) { mEventHandlers.push_back(e); }
 	void RemoveEventHandler(EventHandler* e) { mEventHandlers.erase(std::remove(mEventHandlers.begin(), mEventHandlers.end(), e), mEventHandlers.end()); }
 
-	void AddConstraint(Constraint* c) {
-		mConstraints.push_back(c); 
-	}
+	void AddConstraint(Constraint c);
 
-	void RemoveConstraint(Constraint* c) { 
-		mConstraints.erase(
-			std::remove(mConstraints.begin(), mConstraints.end(), c), 
-			mConstraints.end()
-		);
-	}
+	void RemoveConstraint(Constraint c);
 
 	void AddSubview(View* v) {
 		v->parent = this;
@@ -85,6 +78,10 @@ public:
 	}
 
 	Point TrueOrigin() const;
+
+	Rect TrueBounds() const;
+
+	Rect TrueInnerBounds() const;
 
 	Color CurrentForeground() const;
 	Color CurrentBackground() const;

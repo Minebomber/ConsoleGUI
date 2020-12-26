@@ -3,15 +3,15 @@
 namespace gui {
 
 Checkbox::Checkbox(Rect b) : Label(b) { 
-	alignH = TEXT_ALIGN_MIN; alignV = TEXT_ALIGN_MIN; Init(); 
+	alignH = Alignment::Min; alignV = Alignment::Min; Init();
 }
 
 Checkbox::Checkbox(Rect b, std::wstring t, bool fit) : Label(b, t, fit) { 
-	alignH = TEXT_ALIGN_MIN; alignV = TEXT_ALIGN_MIN; Init(); 
+	alignH = Alignment::Min; alignV = Alignment::Min; Init();
 }
 
 Checkbox::Checkbox(const Checkbox& e) : Label(e), checked(e.checked) { 
-	alignH = TEXT_ALIGN_MIN; alignV = TEXT_ALIGN_MIN; Init(); 
+	alignH = Alignment::Min; alignV = Alignment::Min; Init();
 }
 
 void Checkbox::Init() {
@@ -39,7 +39,7 @@ void Checkbox::Draw(Window* w) {
 	);
 	textBounds.x += 4;
 	textBounds.width -= 4;
-	w->RenderText(textBounds, text, cl, alignH, alignV, textWrap);
+	w->RenderText(textBounds, text, cl, alignH, alignV, wrap);
 }
 
 }

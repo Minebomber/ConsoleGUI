@@ -7,90 +7,46 @@
 namespace gui {
 
 class View;
-class Window;
+
+struct Position {
+private:
+	struct Attribute {
+		enum {
+			AxisX  = 0b1000,
+			AxisY  = 0b0100,
+			LocMin = 0b0010,
+			LocMax = 0b0001,
+		};
+	};
+public:
+	enum Type {
+		Top = Attribute::AxisY | Attribute::LocMin,
+		Bottom = Attribute::AxisY | Attribute::LocMax,
+		Left = Attribute::AxisX | Attribute::LocMin,
+		Right = Attribute::AxisX | Attribute::LocMax,
+	};
+};
 
 class Constraint {
+private:
+	int TrueValueForTarget();
 public:
-	Rect* target;
+	enum class Adjust {
+		Align,
+		Resize
+	};
+
+	Position::Type source;
+	View* targetView;
+	Position::Type target;
+	Adjust adjust = Adjust::Align;
 	int offset;
 
-	Constraint(Rect* t, int o = 0) : target(t), offset(o) {}
-	Constraint(View* e, int o = 0);
-	Constraint(Window* w, int o = 0);
-	
-	virtual void ApplyTo(View* e) = 0;
-};
+	Constraint(Position::Type src, View* v, Position::Type tgt, int ofst = 0);
 
-class LeftToLeftConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
+	void ApplyTo(View* v);
 
-class LeftToRightConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
-
-class TopToTopConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
-
-class TopToBottomConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
-
-class RightToRightConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
-
-class RightToLeftConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
-
-class BottomToBottomConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
-
-class BottomToTopConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
-
-class HorizontalCenterConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
-
-class VerticalCenterConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
-
-class EqualWidthConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
-};
-
-class EqualHeightConstraint : public Constraint {
-public:
-	using Constraint::Constraint;
-	void ApplyTo(View* e) override;
+	bool operator==(const Constraint& c) { return source == c.source && targetView == c.targetView && target == c.target; }
 };
 
 }

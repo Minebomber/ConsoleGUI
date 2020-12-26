@@ -41,27 +41,14 @@ public:
 		using namespace gui;
 		auto w = SetupWindow();
 
-		auto cont = new View({ 1, 1, 30, 15 });
-		cont->padding = { 0, 1, 1, 1 };
+		auto v1 = new View({ 1, 1, 5, 3 });
+		auto v2 = new View({ 10, 5, 4, 4 });
+		w->view->AddSubview(v1);
+		w->view->AddSubview(v2);
+		w->ApplyStyle(v1);
+		w->ApplyStyle(v2); v2->style.defaultBackground = Color::DarkRed();
 
-		auto l = new Label({}, L"Multiline\nTest\nLabel", true);
-		cont->AddSubview(l);
-
-		auto t = new TextField({0, 0, 15, 3});
-		t->AddConstraint(new VerticalCenterConstraint(l));
-		t->AddConstraint(new LeftToRightConstraint(l, 2));
-		cont->AddSubview(t);
-		 
-		auto sl = new SelectionList({}, {L"Option 1", L"Option 2", L"Option 3", L"Option 4"});
-		sl->AddConstraint(new HorizontalCenterConstraint(cont));
-		sl->AddConstraint(new TopToBottomConstraint(t, 2));
-		
-		cont->AddSubview(sl);
-
-		w->view->AddSubview(cont);
-
-		w->ApplyStyle(cont, true);
-		sl->Autosize();
+		v1->AddConstraint({ Position::Bottom, v2, Position::Top, 0 });
 	}
 };
 

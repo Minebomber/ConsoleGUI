@@ -152,8 +152,8 @@ void Console::Run() {
 								mCurrentWindow->mMouseButtons[m] = pressed;
 								if (View* v = mCurrentWindow->ViewAtPoint(mCurrentWindow->mousePosition)) {
 									if (v->state != View::State::Disabled) {
-										if (pressed) v->HandleEvent(EventType::MouseDown, mCurrentWindow, 1 << m);
-										else v->HandleEvent(EventType::MouseUp, mCurrentWindow, 1 << m);
+										if (pressed) v->HandleEvent(EventType::MouseDown, mCurrentWindow, m);
+										else v->HandleEvent(EventType::MouseUp, mCurrentWindow, m);
 									}
 								}
 							}

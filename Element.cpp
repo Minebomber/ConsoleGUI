@@ -4,7 +4,6 @@ namespace gui {
 
 View::~View() {
 	for (EventHandler* h : mEventHandlers) delete h;
-	for (Constraint* c : mConstraints) delete c;
 	for (View* se : mSubviews) delete se;
 }
 
@@ -16,6 +15,17 @@ Point View::TrueOrigin() const {
 		p = p->parent;
 	}
 	return origin;
+}
+
+Rect View::TrueBounds() const {
+	Point o = TrueOrigin();
+	return { o.x, o.y, bounds.width, bounds.height };
+}
+
+Rect View::TrueInnerBounds() const {
+	Point o = TrueOrigin();
+	Rect ib = InnerBounds();
+	return { ib.x + o.x, ib.y + o.y, ib.width, ib.height };
 }
 
 Color View::CurrentForeground() const {
@@ -49,6 +59,17 @@ void View::Autosize() {
 	};
 }
 
+void View::AddConstraint(Constraint c) {
+	mConstraints.push_back(c);
+}
+
+void View::RemoveConstraint(Constraint c) {
+	mConstraints.erase(
+		std::remove(mConstraints.begin(), mConstraints.end(), c),
+		mConstraints.end()
+	);
+}
+
 Rect View::InnerBounds() const {
 	return {
 		bounds.x + style.borders + padding.left,
@@ -59,7 +80,7 @@ Rect View::InnerBounds() const {
 }
 
 void View::ApplyConstraints() { 
-	for (Constraint* c : mConstraints) c->ApplyTo(this); 
+	for (Constraint& c : mConstraints) c.ApplyTo(this); 
 }
 
 void View::Draw(Window* w) {

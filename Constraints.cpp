@@ -2,55 +2,44 @@
 
 namespace gui {
 
-Constraint::Constraint(View* e, int o) : Constraint(&e->bounds, o) {}
-Constraint::Constraint(Window* w, int o) : Constraint(&w->view->bounds, o) {}
-
-void LeftToLeftConstraint::ApplyTo(View* e) { 
-	e->bounds.AlignLeftToLeft(*target, offset); 
+Constraint::Constraint(Position::Type src, View* v, Position::Type tgt, int ofst) : source(src), targetView(v), target(tgt), offset(ofst) {
+	if (src >> 2 != tgt >> 2) throw "Invalid constraint, different axis for source and target";
 }
 
-void LeftToRightConstraint::ApplyTo(View* e) { 
-	e->bounds.AlignLeftToRight(*target, offset); 
+int Constraint::TrueValueForTarget() {
+	switch (target) {
+	case Position::Top:	
+		return targetView->TrueBounds().Top();
+	case Position::Bottom:
+		return targetView->TrueBounds().Bottom();
+	case Position::Left:
+		return targetView->TrueBounds().Left();
+	case Position::Right:
+		return targetView->TrueBounds().Right();
+	default:
+		return 0;
+	}
 }
 
-void TopToTopConstraint::ApplyTo(View* e) { 
-	e->bounds.AlignTopToTop(*target, offset); 
+void Constraint::ApplyTo(View* v) {
+	if (!v || !v->parent) return;
+	int i = TrueValueForTarget() + offset;
+	Point o = v->parent->TrueOrigin();
+	switch (source) {
+	case Position::Top:
+		v->bounds.y = i						- o.y;
+		break;
+	case Position::Bottom:
+		v->bounds.y = i - v->bounds.height+1- o.y;
+		break;
+	case Position::Left:
+		v->bounds.x = i						- o.x;
+		break;
+	case Position::Right:
+		v->bounds.x = i - v->bounds.width+1 - o.x;
+		break;
+	default: break;
+	}
+	
 }
-
-void TopToBottomConstraint::ApplyTo(View* e) { 
-	e->bounds.AlignTopToBottom(*target, offset); 
-}
-
-void RightToRightConstraint::ApplyTo(View* e) {
-	e->bounds.AlignRightToRight(*target, offset); 
-}
-
-void RightToLeftConstraint::ApplyTo(View* e) { 
-	e->bounds.AlignRightToLeft(*target, offset); 
-}
-
-void BottomToBottomConstraint::ApplyTo(View* e) { 
-	e->bounds.AlignBottomToBottom(*target, offset); 
-}
-
-void BottomToTopConstraint::ApplyTo(View* e) { 
-	e->bounds.AlignBottomToTop(*target, offset); 
-}
-
-void HorizontalCenterConstraint::ApplyTo(View* e) {
-	e->bounds.CenterHorizontalWith(*target, offset); 
-}
-
-void VerticalCenterConstraint::ApplyTo(View* e) { 
-	e->bounds.CenterVerticalWith(*target, offset);
-}
-
-void EqualWidthConstraint::ApplyTo(View* e) {
-	e->bounds.width = target->width;
-}
-
-void EqualHeightConstraint::ApplyTo(View* e) {
-	e->bounds.width = target->height;
-}
-
 }

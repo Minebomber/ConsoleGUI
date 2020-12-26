@@ -9,15 +9,15 @@
 
 namespace gui {
 
-enum TextAlignment {
-	TEXT_ALIGN_MIN,
-	TEXT_ALIGN_MID,
-	TEXT_ALIGN_MAX,
+enum class Alignment {
+	Min,
+	Mid,
+	Max,
 };
 
-enum TextWrap {
-	TEXT_WRAP_CHAR,
-	TEXT_WRAP_WORD,
+enum class TextWrap {
+	Char,
+	Word,
 };
 
 class View;
@@ -25,8 +25,6 @@ class View;
 class Window {
 	friend class Console;
 protected:
-	//std::vector<View*> mElements;
-
 	bool mKeyboard[256] = { 0 };
 	bool mMouseButtons[3] = { 0 };
 
@@ -34,15 +32,9 @@ protected:
 	std::unordered_map<std::type_index, Style*> mStyleMap;
 
 	Point mDrawOffset = { 0, 0 };
-
-	//View* SubElementAtPoint(, const Point& p);
-	//void ApplyToSubElements(View* e, std::function<void(View*)> f);
 public:
-	View* view;
+	View* view = nullptr;
 
-	//Rect bounds = { 0, 0 };
-
-	// Which element gets keyboard, mousemove/drag events
 	View* focusedElement = nullptr;
 	Point mousePosition;
 
@@ -62,7 +54,7 @@ public:
 	void DrawRect(Rect r, WCHAR chr, WORD clr, bool fill = false);
 	void WriteString(int x, int y, const std::wstring& str, WORD clr);
 	void WriteString(int x, int y, const std::wstring& str, WORD clr, int st, int w);
-	void RenderText(Rect r, const std::wstring& txt, WORD clr, int alignH, int alignV, int wrap);
+	void RenderText(Rect r, const std::wstring& txt, WORD clr, Alignment alignH, Alignment alignV, TextWrap wrap);
 
 	void PushOffset(const Point& p) { mDrawOffset += p; }
 	void PopOffset(const Point& p) { mDrawOffset -= p; }

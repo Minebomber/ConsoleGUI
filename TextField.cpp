@@ -2,22 +2,22 @@
 
 namespace gui {
 
-TextField::TextField(Rect b) : Label(b) { alignH = TEXT_ALIGN_MIN; alignV = TEXT_ALIGN_MIN; Init(); }
-TextField::TextField(Rect b, int m) : Label(b), mode(m) { alignH = TEXT_ALIGN_MIN; alignV = TEXT_ALIGN_MIN; Init(); }
+TextField::TextField(Rect b) : Label(b) { alignH = Alignment::Min; alignV = Alignment::Min; Init(); }
+TextField::TextField(Rect b, TextMode::Mode m) : Label(b), mode(m) { alignH = Alignment::Min; alignV = Alignment::Min; Init(); }
 TextField::TextField(const TextField& e) : Label(e), mode(e.mode) { Init(); }
 
 bool TextField::ValidKeyForMode(int k) {
-	if (mode == TEXT_MODE_ALL) return true;
+	if (mode == TextMode::All) return true;
 
 	if (k == 0x08) return true;
 
-	if (TEXT_MODE_NUMBERS & mode)
+	if (TextMode::Numbers & mode)
 		if (k >= '0' && k <= '9') return true;
 
-	if (TEXT_MODE_ALPHABET & mode)
+	if (TextMode::Alphabet & mode)
 		if ((k >= 'A' && k <= 'Z') || k == ' ' || k == 0x10 || k == 0x0D) return true;
 
-	if (TEXT_MODE_SPECIAL & mode)
+	if (TextMode::Special & mode)
 		if (!(k >= 'A' && k <= 'Z') && !(k >= '0' && k <= '9')) return true;
 
 	return false;
@@ -67,12 +67,12 @@ void TextField::Draw(Window* w) {
 	View::Draw(w);
 	w->RenderText(
 		InnerBounds(),
-		((mode & TEXT_MODE_SECURE) ? std::wstring(text.length(), L'*') : text) + 
+		((mode & TextMode::Secure) ? std::wstring(text.length(), L'*') : text) + 
 		(state == State::Focused && mShowCursor ? L"_" : L""),
 		CurrentForeground().value | CurrentBackground().value << 4,
 		alignH,
 		alignV,
-		textWrap
+		wrap
 	);
 }
 

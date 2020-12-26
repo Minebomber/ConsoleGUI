@@ -9,7 +9,7 @@ Label::Label(Rect b, std::wstring t, bool fit) : View(b), text(t) {
 }
 
 Label::Label(const Label& e) : 
-	View(e), text(e.text), alignH(e.alignH), alignV(e.alignV), textWrap(e.textWrap) {}
+	View(e), text(e.text), alignH(e.alignH), alignV(e.alignV), wrap(e.wrap) {}
 
 void Label::Autosize() {
 	int w = 0, h = 0, l = text.length();
@@ -36,7 +36,7 @@ void Label::Draw(Window* w) {
 		CurrentForeground().value | CurrentBackground().value << 4, 
 		alignH, 
 		alignV, 
-		textWrap
+		wrap
 	);
 }
 

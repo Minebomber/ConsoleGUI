@@ -86,6 +86,39 @@ public:
 		x += r.Center().x - Center().x + offset.x;
 		y += r.Center().y - Center().y + offset.y;
 	}
+
+	void ResizeLeftToLeft(const Rect& r, int offset = 0) {
+		width += r.Left() + offset - x;
+		x = r.Left() + offset;
+	}
+
+	void ResizeLeftToRight(const Rect& r, int offset = 0) {
+		x = r.Right() + offset;
+	}
+
+	void ResizeTopToTop(const Rect& r, int offset = 0) {
+		y = r.Top() + offset;
+	}
+
+	void ResizeTopToBottom(const Rect& r, int offset = 0) {
+		y = r.Bottom() + offset;
+	}
+
+	void ResizeRightToRight(const Rect& r, int offset = 0) {
+		x += r.Right() - Right() + offset;
+	}
+
+	void ResizeRightToLeft(const Rect& r, int offset = 0) {
+		x += r.Left() - Right() + offset;
+	}
+
+	void ResizeBottomToBottom(const Rect& r, int offset = 0) {
+		y += r.Bottom() - Bottom() + offset;
+	}
+
+	void ResizeBottomToTop(const Rect& r, int offset = 0) {
+		y += r.Top() - Bottom() + offset;
+	}
 	
 };
 

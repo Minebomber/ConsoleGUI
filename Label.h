@@ -7,9 +7,9 @@ class Label : public View {
 public:
 	std::wstring text = L"";
 
-	int alignH = TEXT_ALIGN_MID;
-	int alignV = TEXT_ALIGN_MID;
-	int textWrap = TEXT_WRAP_WORD;
+	Alignment alignH = Alignment::Mid;
+	Alignment alignV = Alignment::Mid;
+	TextWrap wrap = TextWrap::Word;
 	
 	Label(Rect b);
 	Label(Rect b, std::wstring t, bool fit = false);
